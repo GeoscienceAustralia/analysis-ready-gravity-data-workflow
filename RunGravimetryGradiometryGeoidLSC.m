@@ -45,7 +45,7 @@ GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-38;
 GRID_PARA.MAXLAT=-29;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
-DEM_PARA.filename='Data\DEM\AUSDEM1m.xyz';
+DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
 DEM_PARA.num_rows=3181;
 %% Gravity data

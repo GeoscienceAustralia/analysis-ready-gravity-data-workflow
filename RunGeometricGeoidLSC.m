@@ -52,7 +52,7 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename='Data/processedData/Terrestrial_Gravity.mat';%'Data\GRAVITY\Gravity.mat';
+GRAV_PARA.filename='Data/processedData/GravityAllVicNSW.mat';%'Data\GRAVITY\Gravity.mat';
 GRAV_PARA.filename1=[];%'Data\GRAVITY\Xcalibur_Gravity.mat';
 GRAV_PARA.TypeB=1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB=3;
@@ -94,10 +94,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='D:\GAbackup\Outputs\GridsVicNSWterr/';
-OUTPUT_PARA.Tiles_dir_name='D:/GAbackup/Outputs/ResidualTilesvicNSWterr/';
+OUTPUT_PARA.Grids_name='D:/GAbackup/Outputs/Grids_vicNSWgg/';
+OUTPUT_PARA.Tiles_dir_name='D:/GAbackup/Outputs/ResidualTilesvicNSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'vicNSWterr'];
+OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'vicNSWgg'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -108,12 +108,12 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-% disp('4/4 ..........................mosaicTiles is running')
-% Vals_Lev = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+disp('4/4 ..........................mosaicTiles is running')
+Vals_Lev = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
-%save([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids',date,'.mat'],'Vals_Lev')
-Vals_Lev=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids18-Jun-2024.mat']);
+save([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids',date,'.mat'],'Vals_Lev')
+%Vals_Lev=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids18-Jun-2024.mat']);
 
 %% Remove a tiled plane so the signal is zero mean for the LSC
 coeffs=[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]\Vals_Lev;
