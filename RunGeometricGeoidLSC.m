@@ -119,6 +119,8 @@ save([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids',date,'.mat'],'Vals_Lev')
 coeffs=[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]\Vals_Lev;
 Vals_Lev_detrended=Vals_Lev-[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]*coeffs;
 
+
+
 % plot up the residuals
 figure(8)
 clf

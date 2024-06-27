@@ -11,7 +11,7 @@ C2_dl=(psi.^2)./(l^3).*sigma2.*exp(-(psi.^2)/(2*l^2));
 if k==1
 sigma2=C2_dsigma2\EMP_COV;
 else
-Sol=[C2_dsigma2,C2_dl]\(EMP_COV-C2);
+Sol=[C2_dsigma2(1:5),C2_dl(1:5)]\(EMP_COV(1:5)-C2(1:5));
 sigma2=abs(sigma2+0.1*Sol(1));
 l=l+0.2*Sol(2);
 end
