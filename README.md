@@ -27,6 +27,30 @@ In summary, for computing a geoid from gravity anomalies, the process can be con
 
 The code can be run using the `Run*.m` scripts.
 
+## Function Structure in `RunLSC.m`
+
+| **Function Group**                                | **Function Name**                               |
+|---------------------------------------------------|-------------------------------------------------|
+| `importAndFormatData.m`                           |                                                 |
+|                                                   |                                                 |
+| `computeTerrainEffect.m`                          | `computeTerrainCorrection.m`                    |
+|                                                   | `computePrismGravity.m`                         |
+|                                                   | `computeNagyFormula.m`                          |
+|                                                   |                                                 |
+|                                                   | `filterDEM.m`                                   |
+|                                                   |                                                 |
+| `computeGravimetryLSC.m`                          | `computeCovarianceFunctionParameters.m`         |
+| `computeGradiometryLSC.m`                         | `computeSphericalEmpiricalCovariance.m`         |
+| `computeGravimetryGradiometryLSC.m`               | `fitEmpiricalCovariance.m`                      |
+|                                                   | `precomputeCovarianceFunction.m`                |
+|                                                   | `interpolateCovarianceFunction.m`               |
+|                                                   | `solveGravityLSCmatrix.m`                       |
+|                                                   | `solveGradientLSCmatrix.m`                      |
+|                                                   | `solveGravityGradientLSCmatrix.m`               |
+|                                                   | `createGridWeights.m`                           |
+|                                                   | `comparetoLevellingData.m`                      |
+
+
 ## Citations
 
 If you use this code in your research, please contact [neda.darbeheshti@ga.gov.au](mailto:neda.darbeheshti@ga.gov.au) for citation information.
