@@ -28,7 +28,7 @@ In summary, for computing a geoid from gravity anomalies, the process can be con
 The code can be run using the `Run*.m` scripts.
 All functions are in the `functions` folder. The hierarchy of the three main scripts and their related functions is listed in the table below.
 
-## Function Structure in `RunLSC.m`
+## Function Structure in `Run*.m`
 
 | **Function Group**                                | **Function Name**                               |
 |---------------------------------------------------|-------------------------------------------------|
