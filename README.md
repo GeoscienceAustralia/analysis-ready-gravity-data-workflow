@@ -1,13 +1,7 @@
 # Analysis Ready Gravity Data Workflow
 
 This repository introduces an open-source tool for computing regional gravimetric geoids using gravity observations. Our primary goal is to create a platform for analysis-ready gravity data, where algorithms and code for working with gravity data are openly shared and improved. The initial release features a tile-wise least-squares collocation (LSC) method based on gravity anomaly observations.
-
-
 ![18-Jun-2024vicNSWggMosaicTilesresidualGeoidvsAGQG](https://github.com/GeoscienceAustralia/analysis-ready-gravity-data-workflow/assets/50994293/a447c484-12c5-4a2c-8c76-e3ba4e5f4298)
-
-
-
-
 ## Overview
 
 This self-contained codebase provides three major steps for geoid calculation:
