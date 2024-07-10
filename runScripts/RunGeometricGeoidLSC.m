@@ -108,115 +108,111 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-disp('4/4 ..........................mosaicTiles is running')
-Vals_Lev = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+% disp('4/4 ..........................mosaicTiles is running')
+% geomGravGeoidDiff = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
-save([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids',date,'.mat'],'Vals_Lev')
-%Vals_Lev=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids18-Jun-2024.mat']);
+%save([OUTPUT_PARA.Grids_name,'levellingLSCGeoids',date,'.mat'],'Vals_Lev')
+geomGravGeoidDiff=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids26-Jun-2024.mat']);
 
-%% Remove a tiled plane so the signal is zero mean for the LSC
-coeffs=[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]\Vals_Lev;
-Vals_Lev_detrended=Vals_Lev-[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]*coeffs;
+% Remove a tiled plane so the signal is zero mean for the LSC
+coeffs=[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]\geomGravGeoidDiff;
+geomGravGeoidDiffDetrended=geomGravGeoidDiff-[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]*coeffs;
 
+% plot differences between geometric and gravimetric geoid at GPS leveling points 
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiffDetrended','m',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiff','m',OUTPUT_PARA.plotsFolder)
 
+disp('computing covariance functions')
 
-% plot up the residuals
-figure(8)
+covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
+
+[sigma2,bestFitCoeff,fittedCovariance]=fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2));
+
+% Plot covariance function
+figure('Name','computeCovarianceFunction','NumberTitle','off');
 clf
 hold on
-scatter(Lev(:,1),Lev(:,2),15,Vals_Lev_detrended,'filled')
-% scatter(Lev(:,1),Lev(:,2),15,Vals_Lev,'o')
-colorbar
-for jj=1:9
-    plot(Coastline.long{jj},Coastline.lat{jj},'k')
-end
-colorbar
-caxis([-0.25 0.25])
-colormap(jet)
-ax=gca;
-ax.PlotBoxAspectRatio =[1 abs(cos(mean(LatDEM(:,1))*pi/180)) 1];
-axis tight 
-axis([148.5 150.5 -34.2 -32.5])
+plot(rad2deg ( covarianceInfo(:,1) ), covarianceInfo(:,2), '*')
+plot(rad2deg ( covarianceInfo(:,1) ), fittedCovariance, '-')
+drawnow
+legend('Empirical data', 'Fitted function')
+xlabel('Spherical distance in degrees')
+ylabel('Covariance$(m^2)$', 'interpreter', 'latex')
+title('auto-covariance')    
+str = {['sigma2',num2str(sigma2)],['parameter',num2str(bestFitCoeff)]};
+text(0.6,40, str,'Color','g')
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'covarianceGaussian.png'])
 
-%% Compute auto covariance
-% Estimate empirical covariance
-Out=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),Vals_Lev_detrended,1);
-disp('Pre-computing covariance function')
-[EMP_COV,psi,sigma2,l]=fitEmpiricalCovarianceB(Out(:,1),Out(:,2));
-%% Compute the LSC linear functionals
+% Convert degrees to radians
+longitudeLevRadian = deg2rad (Lev(:,1));
+latitudeLevRadian = deg2rad (Lev(:,2));
+% initialize covariance matrix
+ACOVtt = zeros(length(Lev(:,1)),length(Lev(:,1)));
 for k=1:length(Lev(:,1))
-sinPSIon2=sqrt(sin((Lev(k,2)*pi/180-Lev(:,2)*pi/180)/2).^2+(sin((Lev(k,1)*pi/180-Lev(:,1)*pi/180)/2).^2).*cos(Lev(k,2)*pi/180).*cos(Lev(:,2)*pi/180));
-psi=2*asin(sinPSIon2');
-ACOV_tt(k,:)=sigma2*exp(-(psi.^2)/(2*l.^2));
+haversineDistance=haversine(latitudeLevRadian(k), longitudeLevRadian(k),latitudeLevRadian(:), longitudeLevRadian(:));
+ACOVtt(k,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
 end
-
+% LSC matrix multiplication 
 % inverse of auto covariance matrix
- inverseCovarianceMatrix=(ACOV_tt+0.000025*eye(size(ACOV_tt)))\eye(size(ACOV_tt));
+
+inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
+ 
+temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
+
+% doing the multiplication one row of latitude at a time.
+% Convert degrees to radians
+longitudeLongDEMRadian = deg2rad (LongDEM);
+latitudeLatDEMRadian = deg2rad (LatDEM);
 
 
- sol=inverseCovarianceMatrix*(Vals_Lev_detrended);
-
-
-
-%sol=inv(ACOV_tt+0.000025*eye(size(ACOV_tt)))*(Vals_Lev_detrended);
-
-%sol=(ACOV_tt+0.000025*eye(size(ACOV_tt)))\(Vals_Lev_detrended);
-%%  Now do the interpolation one row of latitude at a time.
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
-for ki=1:length(LongDEM(:,1))
-ACOV_tt_dem=[];
-for k=1:length(Lev(:,1))
-sinPSIon2=sqrt(sin((Lev(k,2)*pi/180-LatDEM(ki,:)*pi/180)/2).^2+(sin((Lev(k,1)*pi/180-LongDEM(ki,:)*pi/180)/2).^2).*cos(Lev(k,2)*pi/180).*cos(LatDEM(ki,:)*pi/180));
-psi=2*asin(sinPSIon2);
-ACOV_tt_dem(k,:)=sigma2*exp(-(psi.^2)/(2*l.^2));
-end
-ACOV_tt_dem=ACOV_tt_dem';
+%for ki=1:length(LongDEM(:,1))
+for ki=1:2
+    ACOV_tt_dem=[];
+    for k=1:length(Lev(:,1))
 
-LSC_sol(ki,:)=ACOV_tt_dem*sol;
-disp(ki)
-if mod((length(LongDEM(1,:))-ki),10)==0
-    figure(9)
-    clf
-    hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
-    scatter(Lev(:,1),Lev(:,2),15,Vals_Lev_detrended,'filled')
-    title(length(LongDEM(1,:))-ki)
-    for jj=1:9
-    plot(Coastline.long{jj},Coastline.lat{jj},'k')
+    haversineDistance=haversine(latitudeLevRadian(k), longitudeLevRadian(k),latitudeLatDEMRadian(ki,:), longitudeLongDEMRadian(ki,:));
+    ACOV_tt_dem(k,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
+
     end
-    colorbar
-    colormap(jet)
-    axis([148.5 150.5 -34.2 -32.5])   
-    drawnow
-
-LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*coeffs;
-
-    figure(10)
-    clf
-    hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),LSC_solrt)
-    scatter(Lev(:,1),Lev(:,2),15,Vals_Lev,'filled')
-%     plot(Lev(:,1),Lev(:,2),'ko')
-    title(length(LongDEM(1,:))-ki)
-    for jj=1:9
-    plot(Coastline.long{jj},Coastline.lat{jj},'k')
-    end
-    colorbar
-    caxis([min(Vals_Lev) max(Vals_Lev)])
-    colormap(jet)
-    axis([148.5 150.5 -34.2 -32.5])   
-    drawnow
-
+    ACOV_tt_dem=ACOV_tt_dem';
+    
+    LSC_sol(ki,:)=ACOV_tt_dem*temporaryVector;
+    disp(ki)
+    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*coeffs;
+    
 end
-end
-%% Add code to restore the tilt, then add back the reference geoid model.
-%.
-%..
-%...
 
-%% functions for the LSC
+% Add code to restore the tilt, then add back the reference geoid model.
+save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LSC_solrt','LSC_sol')
+
+% common variables for plotting
+axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+
+figure('Name','GeometricModel','NumberTitle','off'); 
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
+customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'GeometricModel','geomGravGeoidDiffDetrended','.png'])
+
+figure('Name','GeometricModel','NumberTitle','off'); 
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),LSC_solrt)
+customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'GeometricModel','geomGravGeoidDiff','.png'])
+
+
+
+
+ 
 
 
 

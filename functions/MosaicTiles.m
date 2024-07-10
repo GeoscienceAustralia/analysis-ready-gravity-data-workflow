@@ -1,4 +1,4 @@
-function Vals_Lev = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
+function geomGravDiff = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
 % Run this function to produce a final geoid model.
 % It will collate all of the tiles in the OUTPUT_PARA.Tiles_dir_name
 % directory, add back the GGM and output gravity, geoid and respective
@@ -17,7 +17,7 @@ function Vals_Lev = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDE
 %         REFERENCE_GEOID_Zetai=1*1 griddedInterpolant from Import_And_Format_Data_Sets_Reg?
 %         Coastline= 1*1 struct from Import_And_Format_Data_Sets_Reg
 %
-% Output:   function has no output.
+% Output: geomGravDiff = a vector of differences between geometric and gravimetric geoid at GPS leveling points
 %
 % Example: see RunGeoidLSC
 %
@@ -67,14 +67,14 @@ for k=1:length(Files)
        
     geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1:1,:)',Geoid_temp(end:-1:1,:)');
     
-    Vals_Lev=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
+    geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
     
     AGQG_Vals_Lev=Lev(:,3)-REFERENCE_GEOID_Zetai(Lev(:,1),Lev(:,2)); 
 
 end
 
 if OUTPUT_PARA.PLOT_GRIDS
-        plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,Vals_Lev, AGQG_Vals_Lev, ...
+        plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, AGQG_Vals_Lev, ...
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 

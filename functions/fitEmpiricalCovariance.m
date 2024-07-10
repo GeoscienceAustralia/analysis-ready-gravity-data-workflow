@@ -1,13 +1,12 @@
 function [bestFitCoeff_A, bestFitCoeff_B, fittedCovariance] = fitEmpiricalCovariance(sphericalDistance, empiricalCovariance, maxOrder, minOrder)
     % Fits empirical covariance to Legendre polynomial expansion.
     %
-    % Reference: Equation(8) in
+    % Reference: Equation(68) in Tscherning 1974, page 30
+    % 
     % Input:  sphericalDistance = vector of spherical distances
     %         empiricalCovariance = vector of empirical covariance
     %         maxOrder = maximum order for Legendre polynomials
     %         minOrder = minimum order for Legendre polynomials
-    % reference Tscherning 1974, page 30
-    % chekc the sign for coef B
     % 
     % Output: bestFitCoeff_A = best-fit coefficient A
     %         bestFitCoeff_B = best-fit coefficient B
