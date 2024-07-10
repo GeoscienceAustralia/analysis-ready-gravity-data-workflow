@@ -96,7 +96,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.Grids_name='D:/GAbackup/Outputs/Grids/';
 OUTPUT_PARA.Tiles_dir_name='D:/GAbackup/Outputs/ResidualTiles/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'for'];
+OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'demo'];
 
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
@@ -143,23 +143,17 @@ disp('2/4 ..........................computeTerrainEffect is running')
 save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
 
 % TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects01-May-2024.mat']);
-% 
-% disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-% computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,TE.fullTopoCorrectedGravityPoint,TE.fullTopoCorrectedGravityGradient, ...
-%     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,TE.fullTopo_griddedInterpolant, ...
-%     TE.longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 
-% disp('3/4 ..........................computeGradiometryLSC is running')
-% computeGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,TE.fullTopoCorrectedGravityPoint,TE.fullTopoCorrectedGravityGradient, ...
-%     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,TE.fullTopo_griddedInterpolant, ...
-%     TE.longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 tic
+
 disp('3/4 ..........................computeGravimetryLSC is running')
 computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 toc
-% tic
+
+tic
+
 disp('3/4 ..........................computeGravimetryLSC is running')
 computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
@@ -170,7 +164,6 @@ disp('4/4 ..........................mosaicTiles is running')
 MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
     interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline)
 
-% enquiry      
-%geotiffinfo(['Outputs/Grids_NSW/AGQG_',date,'.tif'])
+
 
 

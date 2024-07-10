@@ -2,14 +2,12 @@ function comparetoLevellingData(LEVELLING_PARA,GRID_PARA,LongDEM,LatDEM,Geoid,Gr
     REFERENCE_GEOID_Zetai,GGM_Zeta_griddedInterpolant,Weights,Coastline)
     % This function compares gravimetric geoid to geometric geoid.
     %
-    % Input:  sphericalDistance = vector of spherical distances
-    %         empiricalCovariance = vector of empirical covariance
-    %         maxOrder = maximum order for Legendre polynomials
-    %         minOrder = minimum order for Legendre polynomials
+    % Input:  
+    %        
     % 
     % Output: 
     %           
-    % Example: see computeLSC
+    % Example: 
     %
     % Written by Jack McCubbine
     % Last updated by Neda Darbeheshti

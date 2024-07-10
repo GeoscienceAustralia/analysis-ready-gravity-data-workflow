@@ -110,17 +110,25 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 % disp('4/4 ..........................mosaicTiles is running')
 % geomGravGeoidDiff = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterNodes.polant,GGM_Zeta_griddedInterpolant,Coastline);
 
 %save([OUTPUT_PARA.Grids_name,'levellingLSCGeoids',date,'.mat'],'Vals_Lev')
 geomGravGeoidDiff=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids26-Jun-2024.mat']);
 
 % Remove a tiled plane so the signal is zero mean for the LSC
-coeffs=[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]\geomGravGeoidDiff;
-geomGravGeoidDiffDetrended=geomGravGeoidDiff-[Lev(:,1)-mean(Lev(:,1)),Lev(:,2)-mean(Lev(:,2)),ones(size(Lev(:,2)))]*coeffs;
+
+% Construct the matrix for linear trend removal
+trendMatrix = [Lev(:,1) - mean(Lev(:,1)), Lev(:,2) - mean(Lev(:,2)), ones(size(Lev(:,2)))];
+
+% Calculate the coefficients of the best-fit plane
+trendCoefficients = trendMatrix \ geomGravGeoidDiff;
+
+% Remove the planar trend to obtain zero-mean data
+geomGravGeoidDiffDetrended = geomGravGeoidDiff - trendMatrix * trendCoefficients;
 
 % plot differences between geometric and gravimetric geoid at GPS leveling points 
 plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiffDetrended','m',OUTPUT_PARA.plotsFolder)
+
 plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiff','m',OUTPUT_PARA.plotsFolder)
 
 disp('computing covariance functions')
@@ -147,15 +155,15 @@ saveas(gcf,[OUTPUT_PARA.plotsFolder,'covarianceGaussian.png'])
 % Convert degrees to radians
 longitudeLevRadian = deg2rad (Lev(:,1));
 latitudeLevRadian = deg2rad (Lev(:,2));
+
 % initialize covariance matrix
 ACOVtt = zeros(length(Lev(:,1)),length(Lev(:,1)));
-for k=1:length(Lev(:,1))
-haversineDistance=haversine(latitudeLevRadian(k), longitudeLevRadian(k),latitudeLevRadian(:), longitudeLevRadian(:));
-ACOVtt(k,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
+for lonCounter=1:length(Lev(:,1))
+haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLevRadian(:), longitudeLevRadian(:));
+ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
 end
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
-
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
  
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
@@ -166,22 +174,23 @@ longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
 
 
+
+%ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
+%for latCounter=1:length(LongDEM(:,1))
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
-%for ki=1:length(LongDEM(:,1))
-for ki=1:2
+for latCounter=1:1
     ACOV_tt_dem=[];
-    for k=1:length(Lev(:,1))
+    for lonCounter=1:length(Lev(:,1))
 
-    haversineDistance=haversine(latitudeLevRadian(k), longitudeLevRadian(k),latitudeLatDEMRadian(ki,:), longitudeLongDEMRadian(ki,:));
-    ACOV_tt_dem(k,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
-
-    end
-    ACOV_tt_dem=ACOV_tt_dem';
+    haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
+    ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
     
-    LSC_sol(ki,:)=ACOV_tt_dem*temporaryVector;
-    disp(ki)
-    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*coeffs;
+    end
+    ACOV_tt_dem=ACOV_tt_dem';     
+    LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
+    disp(latCounter)
+    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
     
 end
 
