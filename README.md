@@ -40,14 +40,14 @@ All functions are in the `functions` folder. The hierarchy of the three main scr
 |                                                   |                                                 |
 |                                                   | `filterDEM.m`                                   |
 |                                                   |                                                 |
-| `computeGravimetryLSC.m`                          | `computeCovarianceFunctionParameters.m`         |
-| `computeGradiometryLSC.m`                         | `computeSphericalEmpiricalCovariance.m`         |
-| `computeGravimetryGradiometryLSC.m`               | `fitEmpiricalCovariance.m`                      |
+|                                                   | `computeCovarianceFunctionParameters.m`         |
+|                                                   | `computeSphericalEmpiricalCovariance.m`         |
+|                                                   | `fitEmpiricalCovariance.m`                      |
 |                                                   | `precomputeCovarianceFunction.m`                |
 |                                                   | `interpolateCovarianceFunction.m`               |
-|                                                   | `solveGravityLSCmatrix.m`                       |
-|                                                   | `solveGradientLSCmatrix.m`                      |
-|                                                   | `solveGravityGradientLSCmatrix.m`               |
+|             `computeGravimetryLSC.m`              | `solveGravityLSCmatrix.m`                       |
+|             `computeGradiometryLSC.m`             | `solveGradientLSCmatrix.m`                      |
+|             `computeGravimetryGradiometryLSC.m`   | `solveGravityGradientLSCmatrix.m`               |
 |                                                   | `createGridWeights.m`                           |
 |                                                   | `comparetoLevellingData.m`                      |
 
