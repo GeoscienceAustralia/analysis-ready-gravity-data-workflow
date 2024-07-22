@@ -79,7 +79,7 @@ Topo_PARA.RTM=[50,10,300];%[1000,10,2160]for egm%[0,10,300]% Range of SHM degree
 %about 1080 for EGM,we need to fix the filter by factor of 2 
 %% GGM reference signal
 % First run e.g. ./Data/GGM/RunIsGrafLab_Topo_Surf_EGM2008.m
-GGM_PARA.filename='Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
+GGM_PARA.filename='Data\processedData\GOCE_N300_For_Gridded_Int24_2height.mat';
 %% Coastline data
 COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
 %% Levelling data comparisons
@@ -102,7 +102,7 @@ keepawake=true;% Setting this to true wiggles the mouse every so often so the co
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataTest...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
@@ -111,8 +111,8 @@ save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
 save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
 'ZDEM_griddedInterpolant','GGM_Gravity_griddedInterpolant','GGM_Zeta_griddedInterpolant','REFERENCE_Zeta_griddedInterpolant')
 
-% dataDemo=importdata(['D:/GAbackup/Data/Demo/','oneTileData05-Jun-2024.mat']);
-% interpolantDemo=importdata(['D:/GAbackup/Data/Demo/','oneTileGriddedInterpolant05-Jun-2024.mat']);
+ dataDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat']);
+ interpolantDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat']);
 
 % Plot input data: 
 
@@ -122,22 +122,12 @@ plotCustomScatter(dataDemo.Gravo(:,1),dataDemo.Gravo(:,2),dataDemo.Gravo(:,3),GR
 
 plotCustomScatter(dataDemo.Gravo(:,1),dataDemo.Gravo(:,2),dataDemo.Gravo(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
 
-if GRAV_GRAD_PARA.avail
-plotCustomScatter(dataDemo.gravGradFiltered(:,1),dataDemo.gravGradFiltered(:,2),dataDemo.gravGradFiltered(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityGradientFlightAltitude','m',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(dataDemo.gravGradFiltered(:,1),dataDemo.gravGradFiltered(:,2),dataDemo.gravGradFiltered(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityGradient','mGal/m',OUTPUT_PARA.plotsFolder)
-
-plotProfiles(dataDemo.gravGradFiltered(1:180,2),dataDemo.gravGradFiltered(1:180,3),dataDemo.gravGradFiltered(1:180,4),dataDemo.gravGradFiltered(1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile1',OUTPUT_PARA.plotsFolder)
-
-plotProfiles(dataDemo.gravGradFiltered(180+1:2*180,2),dataDemo.gravGradFiltered(180+1:2*180,3),dataDemo.gravGradFiltered(180+1:2*180,4),dataDemo.gravGradFiltered(180+1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile2',OUTPUT_PARA.plotsFolder)
-end
-
 disp('2/4 ..........................computeTerrainEffect is running')
-[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant,fullTopoCorrectedGravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
-    Topo_PARA,dataDemo.Gravo,dataDemo.gravGradFiltered,interpolantDemo.GGM_Gravity_griddedInterpolant,dataDemo.DEM_data,interpolantDemo.ZDEM_griddedInterpolant, ...
+[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
+    Topo_PARA,dataDemo.Gravo,interpolantDemo.GGM_Gravity_griddedInterpolant,dataDemo.DEM_data,interpolantDemo.ZDEM_griddedInterpolant, ...
     dataDemo.LongDEM,dataDemo.LatDEM,OUTPUT_PARA.plotsFolder);
 
-save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
+save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
 
 % TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects01-May-2024.mat']);
 
@@ -149,17 +139,17 @@ computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 toc
 
-tic
-
-disp('3/4 ..........................computeGravimetryLSC is running')
-computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
-    interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-    longwaveTopo_griddedInterpolant,Topo_PARA.Density)
-toc
+% tic
+% 
+% disp('3/4 ..........................computeParallelGravimetryLSC')
+% computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
+%     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
+% toc
 
 disp('4/4 ..........................mosaicTiles is running')
-MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
-    interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline)
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
+    interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline);
 
 
 
