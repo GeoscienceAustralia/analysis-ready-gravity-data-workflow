@@ -22,6 +22,8 @@ In `RunDemo.m`, all necessary specifications are defined. The script first calls
 
 At the end of the process, `RunDemo.m` combines all the tiles and outputs the geoid in TIFF format for the specified region.
 
+In the document folder, we have provided all the detailed output files and output plots from RunDemo.m. You can download the input data required to run RunDemo.m from this link.
+
 ## Remove-Predict-Restore
 
 In summary, for computing a geoid from gravity anomalies, the process can be conceptualized as a sequence of "remove-predict-restore" operations, where the Global Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC), and then the effects are restored to obtain the final geoid model. The `functions` folder provides all the MATLAB functions to perform these three steps for geoid calculations.
