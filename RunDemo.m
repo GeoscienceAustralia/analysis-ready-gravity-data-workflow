@@ -68,7 +68,7 @@ COV_PARA.width=3;% Size of precomputed cov function in degrees - must be larger 
 COV_PARA.res=30/3600; % Resolution of the covariance function
 COV_PARA.COV_COMPUTED_Tilewise=true;% This recomputes the covariance function for each tile.
 COV_PARA.Airbornedataonly=false;% Only use airborne data in establishing Covariance parameters - good to use if we are using EGM2008 as the references as terrestrial data are not independent.
-COV_PARA.COVPlot=false;% true plots progress, false turns this off.
+COV_PARA.COVPlot=true;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
 Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
@@ -99,17 +99,17 @@ OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'demo'];
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
 
-disp('1/4 ..........................importAndFormatData is running ')
-[Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
- GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataTest...
- (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
-
-save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
- 'Gravo','DEM_data','LongDEM','LatDEM','Lev','GRID_REF','Coastline')
-
-save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
-'ZDEM_griddedInterpolant','GGM_Gravity_griddedInterpolant','GGM_Zeta_griddedInterpolant','REFERENCE_Zeta_griddedInterpolant')
+% disp('1/4 ..........................importAndFormatData is running ')
+% [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
+%  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
+%  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataTest...
+%  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+% 
+% save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
+%  'Gravo','DEM_data','LongDEM','LatDEM','Lev','GRID_REF','Coastline')
+% 
+% save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
+% 'ZDEM_griddedInterpolant','GGM_Gravity_griddedInterpolant','GGM_Zeta_griddedInterpolant','REFERENCE_Zeta_griddedInterpolant')
 
  dataDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat']);
  interpolantDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat']);
@@ -132,13 +132,17 @@ save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGra
 % TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects01-May-2024.mat']);
 
 tic
-
 disp('3/4 ..........................computeGravimetryLSC is running')
 computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 toc
 
+disp('4/4 ..........................mosaicTiles is running')
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
+    interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline);
+
+% % test Parallel pull for tilewise LSC 
 % tic
 % 
 % disp('3/4 ..........................computeParallelGravimetryLSC')
@@ -146,11 +150,4 @@ toc
 %     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
 %     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 % toc
-
-disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
-    interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline);
-
-
-
 
