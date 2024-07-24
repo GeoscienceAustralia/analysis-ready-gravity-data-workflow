@@ -22,7 +22,7 @@ In `RunDemo.m`, all necessary specifications are defined. The script first calls
 
 At the end of the process, `RunDemo.m` combines all the tiles and outputs the geoid in TIFF format for the specified region.
 
-In the document folder, we have provided all the detailed output files and output plots from RunDemo.m. You can download the input data required to run RunDemo.m from this link.
+In the document folder, we have provided all the detailed output files and output plots from `RunDemo.m`. You can download the input data required to run `RunDemo.m` from this link.
 
 ## Remove-Predict-Restore
 
