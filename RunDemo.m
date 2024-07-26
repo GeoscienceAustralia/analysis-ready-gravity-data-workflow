@@ -100,32 +100,32 @@ keepawake=true;% Setting this to true wiggles the mouse every so often so the co
 %% Run the LSC code
 
 % disp('1/4 ..........................importAndFormatData is running ')
-% [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
-%  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
-%  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataTest...
+% [Gravity6D,gravGradFiltered,DEM3D,ZDEM_griddedInterpolant,LongDEMmatrix,LatDEMmatrix,...
+%  GravityGGM_griddedInterpolant,ZetaGGM_griddedInterpolant,LevellingData3D,...
+%  ZetaRef_griddedInterpolant,GridRef3D,Coastline,DEM_PARA]=importAndFormatData...
 %  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 % 
 % save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
-%  'Gravo','DEM_data','LongDEM','LatDEM','Lev','GRID_REF','Coastline')
+%  'Gravity6D','DEM3D','LongDEMmatrix','LatDEMmatrix','LevellingData3D','GridRef3D','Coastline')
 % 
 % save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
-% 'ZDEM_griddedInterpolant','GGM_Gravity_griddedInterpolant','GGM_Zeta_griddedInterpolant','REFERENCE_Zeta_griddedInterpolant')
+% 'ZDEM_griddedInterpolant','GravityGGM_griddedInterpolant','ZetaGGM_griddedInterpolant','ZetaRef_griddedInterpolant')
 
  dataDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat']);
  interpolantDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat']);
 
 % Plot input data: 
 
-plotCustomScatter(dataDemo.DEM_data(:,1),dataDemo.DEM_data(:,2),dataDemo.DEM_data(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'DEM','m',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(dataDemo.DEM3D(:,1),dataDemo.DEM3D(:,2),dataDemo.DEM3D(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'DEM','m',OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(dataDemo.Gravo(:,1),dataDemo.Gravo(:,2),dataDemo.Gravo(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityTopographyHeight','m',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityTopographyHeight','m',OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(dataDemo.Gravo(:,1),dataDemo.Gravo(:,2),dataDemo.Gravo(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
 
 disp('2/4 ..........................computeTerrainEffect is running')
 [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
-    Topo_PARA,dataDemo.Gravo,interpolantDemo.GGM_Gravity_griddedInterpolant,dataDemo.DEM_data,interpolantDemo.ZDEM_griddedInterpolant, ...
-    dataDemo.LongDEM,dataDemo.LatDEM,OUTPUT_PARA.plotsFolder);
+    Topo_PARA,dataDemo.Gravity6D,interpolantDemo.GravityGGM_griddedInterpolant,dataDemo.DEM3D,interpolantDemo.ZDEM_griddedInterpolant, ...
+    dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix,OUTPUT_PARA.plotsFolder);
 
 save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
 
@@ -133,21 +133,21 @@ save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGra
 
 tic
 disp('3/4 ..........................computeGravimetryLSC is running')
-computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
-    interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GridRef3D,fullTopoCorrectedGravityPoint, ...
+    interpolantDemo.GravityGGM_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 toc
 
 disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.Lev,dataDemo.LongDEM,dataDemo.LatDEM, ...
-    interpolantDemo.REFERENCE_Zeta_griddedInterpolant,interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.GGM_Zeta_griddedInterpolant,dataDemo.Coastline);
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.LevellingData3D,dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix, ...
+    interpolantDemo.ZetaRef_griddedInterpolant,interpolantDemo.GravityGGM_griddedInterpolant,interpolantDemo.ZetaGGM_griddedInterpolant,dataDemo.Coastline);
 
 % % test Parallel pull for tilewise LSC 
 % tic
 % 
 % disp('3/4 ..........................computeParallelGravimetryLSC')
-% computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GRID_REF,fullTopoCorrectedGravityPoint, ...
-%     interpolantDemo.GGM_Gravity_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+% computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GridRef3D,fullTopoCorrectedGravityPoint, ...
+%     interpolantDemo.GravityGGM_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
 %     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 % toc
 
