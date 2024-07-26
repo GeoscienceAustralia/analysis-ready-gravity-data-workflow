@@ -29,7 +29,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     scatter(Lev(:,1),Lev(:,2),15,Vals_Lev-mean(Vals_Lev(~isnan(Vals_Lev))),'filled')
-    customizeMap('Geometric LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
+    customizeMap('Geometric and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
     %caxis([-0.25 0.25])
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.png']) 
     
@@ -38,7 +38,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     scatter(Lev(:,1),Lev(:,2),15,AGQG_Vals_Lev-mean(AGQG_Vals_Lev(~isnan(AGQG_Vals_Lev))),'filled')
-    customizeMap('Geometric AGQG Gravimetric Geoid Difference','m',Coastline,axisLimits)
+    customizeMap('Geometric and AGQG Difference','m',Coastline,axisLimits)
     %caxis([-0.25 0.25])
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
 

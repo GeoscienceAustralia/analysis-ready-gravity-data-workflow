@@ -1,6 +1,6 @@
 function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatrix,LatDEMmatrix,...
     GravityGGM_griddedInterpolant,ZetaGGM_griddedInterpolant,LevellingData3D,...
-    ZetaRef_griddedInterpolant,GridRef3D,Coastline]=importAndFormatData...
+    ZetaRef_griddedInterpolant,GridRef3D,Coastline,DEM_PARA]=importAndFormatDataTest...
     (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA)
     % importAndFormatData import all different data sets needed for LSC.
     %         
@@ -12,7 +12,7 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     %         GGM_PARA = GGM file name
     %         GRAV_GRAD_PARA = gravity gradiometry data (filename,TypeB,avail)
     % 
-    % Output: Gravity6D = [longitude latitude orthometric_height gravity_anomaly uncertainty(std) flag(1:terrestrial 2:airborne 3:gradiometry)]
+    % Output: Gravity6D = [longitude latitude orthometric_height gravity_anomaly uncertainty(std) flag(1:terrestrial 2:satellite altimetry 3:airborne)]
     %         GravityGradient5D = [longitude latitude height gravity_gradient flag (5:gradiometry)]
     %         DEM3D = [longitude latitude height]
     %         ZDEM_griddedInterpolant = DEM elevation griddedInterpolant
@@ -36,15 +36,11 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     % Written by Jack McCubbine
     % Last updated by Neda Darbeheshti
     % Geoscience Australia, 2023-11.
-    
-    % Read in the datasets
-    disp('Reading in data sets')
+    disp('Reading the data sets')
     % Import coastline
     Coastline=importdata(COAST_PARA.filename);
-    % import gravity data
     disp('Gravity')
     Gravity6D=importdata(GRAV_PARA.filename);
-    %Gravity6D(:,6)=[];
     Gravity6D(:,1)=round(Gravity6D(:,1)*60)/60;% make sure we have 1 arc minute data
     Gravity6D(:,2)=round(Gravity6D(:,2)*60)/60;% make sure we have 1 arc minute data
     if ~isempty(GRAV_PARA.filename1)
@@ -54,14 +50,32 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
         Gravity5D = [Gravity5D ones(length(Gravity5D), 1) * 3];% add flag column for gravity gradiometry data
         Gravity6D=[Gravity5D;Gravity6D];
     end
-    % Import DEM
     disp('DEM')
     DEM3D=importdata(DEM_PARA.filename);
+    % DEM long lat extension: [93 174 -61 -8] 
+    disp('Extracting DEM subset') 
+    % make sure DEM is bigger than gravity
+    Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
+    CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
+
+    DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
+    DEM3D(DEMin==0,:)=[];
+    % Computing grid dimensions for one-minute spatial resolution
+    DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
+    DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
+    % Set the computational grid nodes
     LongDEMmatrix=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
     LatDEMmatrix=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
     ZDEM=reshape(DEM3D(:,3),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+
     ZDEM_griddedInterpolant=griddedInterpolant(LongDEMmatrix',LatDEMmatrix(end:-1:1,:)',ZDEM(end:-1:1,:)');
-    % Import GGM reference
+    
+    GridRef3D=[LongDEMmatrix(:),LatDEMmatrix(:),ZDEM(:)];% These are the x,y,z locations the quasigeoid model will be computed at
+  
     disp('GGM')
     GGM=importdata(GGM_PARA.filename);
     GravityGGM_griddedInterpolant=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
@@ -73,8 +87,6 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     else
         ZetaRef_griddedInterpolant=[];
     end
-    % Set the computational grid nodes
-    GridRef3D=[LongDEMmatrix(:),LatDEMmatrix(:),ZDEM(:)];% These are the x,y,z locations the quasigeoid model will be computed at
     % Extract data inside computational extents
     disp('Extracting gravity subset') 
     CoordsMM_Grav=[GRID_PARA.MINLONG-GRID_PARA.buffer,GRID_PARA.MINLAT-GRID_PARA.buffer;...
@@ -103,18 +115,6 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     else 
       GravityGradient5D=[];
     end
-
-    disp('Extracting DEM subset') 
-    % make sure DEM is bigger than gravity
-    Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
-    CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
-
-    DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
-    DEM3D(DEMin==0,:)=[];
     % Levelling data
     if LEVELLING_PARA.Lev_eval
         % Buffer these so that we dont include comparisons at the grids edge.

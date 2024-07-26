@@ -1,9 +1,8 @@
-function geomGravDiff = MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
-% Run this function to produce a final geoid model.
-% It will collate all of the tiles in the OUTPUT_PARA.Tiles_dir_name
-% directory, add back the GGM and output gravity, geoid and respective
-%
-% error values in tiff files.
+function geomGravDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
+% Run this function to produce the final geoid model. It will:
+% - Collate all tiles in the OUTPUT_PARA.Tiles_dir_name directory.
+% - Add back the GGM.
+% - Output gravity, geoid, and respective error values as TIFF files.
 % The geoid model is aligned with the same zero degree term as for AGQG2017.
 % Input:  GRID_PARA = grid/tiling parameters such as extent(MINLONG,MAXLONG,MINLAT,MAXLAT), buffer, STEP    
 %         DEM_PARA=   DEM data such as filename,num_cols,num_rows
