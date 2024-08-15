@@ -2,9 +2,9 @@
 
 This repository introduces an open-source tool for computing regional gravimetric geoids using gravity observations. Our primary goal is to create a platform for analysis-ready gravity data, where algorithms and code for working with gravity data are openly shared and improved. The initial release features a tile-wise least-squares collocation (LSC) method based on gravity anomaly observations.
 
-![18-Jun-2024vicNSWterrMosaicTilesresidualGeoidvsAGQG (2)](https://github.com/user-attachments/assets/4444d059-cf1b-411a-8b2a-2196175c7f08)
+![15-Aug-2024demoMosaicTilesresidualGeoidvsAGQG-github](https://github.com/user-attachments/assets/bcfad682-ef6e-432f-bff7-938bc84ab795)
 
-Comparing the quasi-geoid calculated from Least Squares Collocation (LSC) (left) with the existing Australian gravimetric quasi-geoid (AGQG) (right). 
+Quasi-geoid calculated from Least Squares Collocation.
 
 ## Overview
 
