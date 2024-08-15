@@ -45,7 +45,7 @@ GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-38;
 GRID_PARA.MAXLAT=-29;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
-DEM_PARA.filename='Data\DEM\AUSDEM1m.xyz';
+DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
 DEM_PARA.num_rows=3181;
 %% Gravity data
@@ -110,13 +110,13 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 % Plot input data: 
 
-% plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'DEM','m',OUTPUT_PARA.plotsFolder)
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityTopographyHeight','m',OUTPUT_PARA.plotsFolder)
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Flag','',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,'DataFlag','',Coastline,OUTPUT_PARA.plotsFolder)
 
 % disp('2/4 ..........................computeTerrainEffect is running')
 % tic
@@ -138,7 +138,7 @@ disp('1/4 ..........................importAndFormatData is running ')
 %     TE.longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 
 disp('4/4 ..........................mosaicTiles is running')
-MosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline)
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
 

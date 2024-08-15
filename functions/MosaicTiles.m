@@ -77,6 +77,8 @@ if OUTPUT_PARA.PLOT_GRIDS
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 
+save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
+
 disp('Preparing final grids')
 
 Grid_res_geoid_w(isnan(Grid_res_geoid_w))=0;
