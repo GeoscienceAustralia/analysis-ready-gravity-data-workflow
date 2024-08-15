@@ -1,5 +1,5 @@
 function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpolant,fullTopography_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
-    Topo_PARA,Grav,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant,LongDEM_matrix,LatDEM_matrix,plotsFolder)
+    Topo_PARA,Grav,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant,LongDEM_matrix,LatDEM_matrix,Coastline,plotsFolder)
     % computeTerrainEffect calculates the residual terrain model. It first calculates
     % the full Bouguer correction, then filters the DEM and minimises the
     % residual gravity signal w.r.t to the GGM.
@@ -47,10 +47,10 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
 
     if Topo_PARA.TopoPlot
         
-        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'PrismGravityEffectDEM','mGal',plotsFolder);
+        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA,'PrismGravityEffectDEM','mGal',Coastline,plotsFolder);
         
-        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'PrismGravityEffectHeight','mGal',plotsFolder);
-       
+        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA,'PrismGravityEffect','mGal',Coastline,plotsFolder);
+           
     end
     
     disp('Optimising DEM filter for spherical harmonics degree ')

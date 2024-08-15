@@ -31,17 +31,9 @@ function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantit
     hold on
     scatter(longVector(:),latvector(:),.7,dataVector(:))
     customizeMap(quantityName,dataunit,Coastline,axisLimits)
+    caxis([-44 60])
     if isequal(quantityName,'DataFlag')
        colorbar('Ticks',[1,2,3],'TickLabels',{'Terrestrial','Altimetry','Airborne'})
     end
-%     colormap(jet)
-%     colorbar
-%     title(colorbar,dataunit,'FontSize',10);
-%     axis([GRID_PARA.MINLONG-2*GridRadius GRID_PARA.MAXLONG+2*GridRadius GRID_PARA.MINLAT-2*GridRadius GRID_PARA.MAXLAT+2*GridRadius])
-%     ax=gca;
-%     ax.PlotBoxAspectRatio =[1 abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT])))) 1];
-%     title(quantityName)
-%     xlabel('Longitude')
-%     ylabel('Latitude')
     saveas(gcf,[plotsFolder,'scatter',quantityName,'.png'])
 end

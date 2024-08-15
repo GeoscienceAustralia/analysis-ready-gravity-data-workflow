@@ -45,8 +45,8 @@ GRID_PARA.MINLAT=-32.5;
 GRID_PARA.MAXLAT=-32;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
-DEM_PARA.num_cols=4861;
-DEM_PARA.num_rows=3181;
+DEM_PARA.num_cols=4861; % original size, to be changed, see below
+DEM_PARA.num_rows=3181; % original size, to be changed, see below
 %% Gravity data
 % this collates all of the gravity and position data into one matlab array.
 GRAV_PARA.filename='Data\processedData\Terrestrial_Gravity.mat';
@@ -98,38 +98,46 @@ OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'demo'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
-
+% this is how demo data is created
 % disp('1/4 ..........................importAndFormatData is running ')
-[Gravity6D,gravGradFiltered,DEM3D,ZDEM_griddedInterpolant,LongDEMmatrix,LatDEMmatrix,...
- GravityGGM_griddedInterpolant,ZetaGGM_griddedInterpolant,LevellingData3D,...
- ZetaRef_griddedInterpolant,GridRef3D,Coastline,DEM_PARA]=importAndFormatData...
- (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+% [Gravity6D,gravGradFiltered,DEM3D,ZDEM_griddedInterpolant,LongDEMmatrix,LatDEMmatrix,...
+%  GravityGGM_griddedInterpolant,ZetaGGM_griddedInterpolant,LevellingData3D,...
+%  ZetaRef_griddedInterpolant,GridRef3D,Coastline,DEM_PARA]=importAndFormatData...
+%  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+% 
+% save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
+%  'Gravity6D','DEM3D','LongDEMmatrix','LatDEMmatrix','LevellingData3D','GridRef3D','Coastline')
+% 
+% save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
+% 'ZDEM_griddedInterpolant','GravityGGM_griddedInterpolant','ZetaGGM_griddedInterpolant','ZetaRef_griddedInterpolant')
 
-save([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat'],...
- 'Gravity6D','DEM3D','LongDEMmatrix','LatDEMmatrix','LevellingData3D','GridRef3D','Coastline')
+disp('1/4 ..........................import demo data')
 
-save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
-'ZDEM_griddedInterpolant','GravityGGM_griddedInterpolant','ZetaGGM_griddedInterpolant','ZetaRef_griddedInterpolant')
-
- dataDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileData141-32','.mat']);
- interpolantDemo=importdata([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat']);
+dataDemo=importdata('Data\oneTileData141-32.mat');
+interpolantDemo=importdata('Data\oneTileGriddedInterpolant141-32.mat');
 
 % Plot input data: 
 
-plotCustomScatter(dataDemo.DEM3D(:,1),dataDemo.DEM3D(:,2),dataDemo.DEM3D(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'DEM','m',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,3),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'GravityTopographyHeight','m',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(dataDemo.DEM3D(:,1),dataDemo.DEM3D(:,2),dataDemo.DEM3D(:,3),GRID_PARA,'DEM','m',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
+%caxis([-1 584])% always check plotCustomScatter for %caxis
+plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,3),GRID_PARA,'GravityHeight','m',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
+%caxis([-1 584])
+plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,4),GRID_PARA,'Gravity','mGal',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
+%caxis([-44 60])
+plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,6),GRID_PARA,'DataFlag','',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
 
 disp('2/4 ..........................computeTerrainEffect is running')
 [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
     Topo_PARA,dataDemo.Gravity6D,interpolantDemo.GravityGGM_griddedInterpolant,dataDemo.DEM3D,interpolantDemo.ZDEM_griddedInterpolant, ...
-    dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix,OUTPUT_PARA.plotsFolder);
+    dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix,dataDemo.Coastline,OUTPUT_PARA.plotsFolder);
 
-save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
+save([OUTPUT_PARA.Grids_name,'TerrainEffects','.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
 
-% TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects01-May-2024.mat']);
+% if TerrainEffects have been saved, uncomment 
+% TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects.mat']);
+
+DEM_PARA.num_rows=size(dataDemo.LatDEMmatrix,1);
+DEM_PARA.num_cols=size(dataDemo.LatDEMmatrix,2);
 
 tic
 disp('3/4 ..........................computeGravimetryLSC is running')
