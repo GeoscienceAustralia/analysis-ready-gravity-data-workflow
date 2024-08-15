@@ -17,7 +17,7 @@ This self-contained codebase provides three major steps for geoid calculation:
 
 The code is designed as a starting point for research and development in geoid calculation using a variety of gravity data, such as terrestrial gravity anomalies, gravity anomalies from satellite altimetry, airborne gravity anomalies, and gravity gradients.
 
-## Workflow
+## Running RunDemo.m
 
 The workflow for generating the geoid from gravity observations can be found in `RunDemo.m`. This script is highly flexible and can be adapted to different regions and processing requirements. Designed to be run on a personal computer, `RunDemo.m` allows users to specify an area of interest and directories where the final plots will be saved.
 
@@ -25,8 +25,14 @@ In `RunDemo.m`, all necessary specifications are defined. The script first calls
 
 At the end of the process, `RunDemo.m` combines all the tiles and outputs the geoid in TIFF format for the specified region.
 
-To run `RunDemo.m`, you can download the required input data from the following links:
+To run `RunDemo.m`:
 
+1. Create the following folders:
+   - `Data`
+   - `outputs/Grids/`
+   - `outputs/ResidualTiles/`
+
+2. Download the required input data from the following links and place them in the `Data` folder:
 - [oneTileData141-32.mat](https://geoid.s3-ap-southeast-2.amazonaws.com/AGQG/oneTileData141-32.mat)
 - [oneTileGriddedInterpolant141-32.mat](https://geoid.s3-ap-southeast-2.amazonaws.com/AGQG/oneTileGriddedInterpolant141-32.mat)
 
