@@ -122,7 +122,7 @@ plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,'DataFlag','',Coast
 % tic
 % [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
 %     Topo_PARA,Gravo,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant, ...
-%     LongDEM,LatDEM,OUTPUT_PARA.plotsFolder);
+%     LongDEM,LatDEM,Coastline,OUTPUT_PARA.plotsFolder);
 % toc
 % save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
 % TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects12-Jun-2024.mat']);

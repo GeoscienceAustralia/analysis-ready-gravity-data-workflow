@@ -1,5 +1,5 @@
 function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpolant,fullTopography_griddedInterpolant,fullTopographyCorrected_gravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
-    Topo_PARA,Grav,Grav_grad,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant,LongDEM_matrix,LatDEM_matrix,plotsFolder)
+    Topo_PARA,Grav,Grav_grad,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant,LongDEM_matrix,LatDEM_matrix,Coastline,plotsFolder)
     % computeTerrainEffect calculates the residual terrain model. It first calculates
     % the full Bouguer correction, then filters the DEM and minimises the
     % residual gravity signal w.r.t to the GGM.
@@ -49,9 +49,9 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
         
 %         plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),TC_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity correction [mGal]','PrismGravityEffectHeight',plotsFolder)
 %         plotProfiles(LatDEM_topo(:,90),ZDEM_topo(:,90),TC_DEM_point(:,90),LongDEM_topo(1,90),'Latitude','DEM[m]','GravityCorrection[mGal]','PrismGravityEffectDEM',plotsFolder)
-        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'DEMPrismGravityEffect','mGal',plotsFolder);
-        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'gravityTopoPrismGravityEffect','mGal',plotsFolder);
-     
+        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA,'DEMPrismGravityEffect','mGal',Coastline,plotsFolder);
+        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA,'gravityTopoPrismGravityEffect','mGal',Coastline,plotsFolder);
+      
     end
     
     disp('Optimising DEM filter for spherical harmonics degree ')
@@ -116,7 +116,7 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
       
        % plot gravity gradient prism topography correction
        % plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),-TCgradient_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity gradient correction [mGal/m]','PrismGravityGradientEffectHeight',plotsFolder)
-       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'flightAltitudePrismGravityGradientEffect','mGal/m',plotsFolder);
+       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA,'flightAltitudePrismGravityGradientEffect','mGal/m',Coastline,plotsFolder);
     
        % Subtract gravity gradient prism topography correction from gravity gradient
        fullTopographyCorrected_gravityGradient(:,4)=fullTopographyCorrected_gravityGradient(:,4)-TCgradient_gradient_point;

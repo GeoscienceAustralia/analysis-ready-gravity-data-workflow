@@ -31,7 +31,7 @@ function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantit
     hold on
     scatter(longVector(:),latvector(:),.7,dataVector(:))
     customizeMap(quantityName,dataunit,Coastline,axisLimits)
-    caxis([-44 60])
+    %caxis([-44 60])
     if isequal(quantityName,'DataFlag')
        colorbar('Ticks',[1,2,3],'TickLabels',{'Terrestrial','Altimetry','Airborne'})
     end

@@ -33,7 +33,7 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
 
     constants                                       % load constants
     
-    disp('Running topographic corrections')
+    disp('Running topographic corrections for gravity')
 
     LatDEM_topo  = reshape(DEM_data(:,2),length(unique(DEM_data(:,1))),length(unique(DEM_data(:,2))))';
     LongDEM_topo = reshape(DEM_data(:,1),length(unique(DEM_data(:,1))),length(unique(DEM_data(:,2))))';
@@ -49,9 +49,9 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
         
 %         plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),TC_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity correction [mGal]','PrismGravityEffectHeight',plotsFolder)
 %         plotProfiles(LatDEM_topo(:,90),ZDEM_topo(:,90),TC_DEM_point(:,90),LongDEM_topo(1,90),'Latitude','DEM[m]','GravityCorrection[mGal]','PrismGravityEffectDEM',plotsFolder)
-        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'DEMPrismGravityEffect','mGal',plotsFolder);
-        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'gravityTopoPrismGravityEffect','mGal',plotsFolder);
-     
+        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA,'DEMPrismGravityEffect','mGal',Coastlineplots,Folder);
+        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA,'gravityTopoPrismGravityEffect','mGal',Coastline,plotsFolder);
+      
     end
     
     disp('Optimising DEM filter for spherical harmonics degree ')
@@ -103,17 +103,20 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
     % A grid function of sum of terrain and Bouguer slab corrections at DEM
     fullTopographyCorrection_dem=-TC_DEM_point+longwaveTopography_griddedInterpolant(LongDEM_topo,LatDEM_topo);
     fullTopography_griddedInterpolant=griddedInterpolant(LongDEM_topo',LatDEM_topo(end:-1:1,:)',fullTopographyCorrection_dem(end:-1:1,:)');
-
+    
+  
     fullTopographyCorrected_gravityGradient=Grav_grad;
 
     if ~isempty(Grav_grad)
+        
+       disp('Running topographic corrections for gravity gradient')
 
        % Compute gravity gradient corrections at gradiometry points
        TCgradient_gradient_point = computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Grav_grad(:,2),Grav_grad(:,1),Grav_grad(:,3),     Topo_PARA.Rad,Topo_PARA.Density,'gg');
       
        % plot gravity gradient prism topography correction
-       %         plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),-TCgradient_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity gradient correction [mGal/m]','PrismGravityGradientEffectHeight',plotsFolder)
-       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA, Topo_PARA.Rad+GRID_PARA.buffer,'flightAltitudePrismGravityGradientEffect','mGal/m',plotsFolder);
+       % plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),-TCgradient_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity gradient correction [mGal/m]','PrismGravityGradientEffectHeight',plotsFolder)
+       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA,'flightAltitudePrismGravityGradientEffect','mGal/m',plotsFolder);
     
        % Subtract gravity gradient prism topography correction from gravity gradient
        fullTopographyCorrected_gravityGradient(:,4)=fullTopographyCorrected_gravityGradient(:,4)-TCgradient_gradient_point;
