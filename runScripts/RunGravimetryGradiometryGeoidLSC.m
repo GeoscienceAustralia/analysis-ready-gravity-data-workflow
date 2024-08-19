@@ -140,7 +140,6 @@ computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_
     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 
-% VicNSW=[139.5 154 -40 -27.5];
 GRID_PARA.MINLONG=140;
 GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-38;
