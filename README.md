@@ -47,8 +47,8 @@ All functions are in the `functions` folder. The hierarchy of the three main scr
 |---------------------------------------------------|-------------------------------------------------|
 | `importAndFormatData.m`                           |                                                 |
 |                                                   |                                                 |
-| `computeTerrainEffect.m`                          | `computeTerrainCorrection.m`                    |
-|                                                   | `computePrismGravity.m`                         |
+| `computeFullTerrainEffect.m`                      | `computeTerrainCorrection.m`                    |
+| `computeTerrainEffect.m`                          | `computePrismGravity.m`                         |
 |                                                   | `computeNagyFormula.m`                          |
 |                                                   |                                                 |
 |                                                   | `filterDEM.m`                                   |
@@ -62,7 +62,13 @@ All functions are in the `functions` folder. The hierarchy of the three main scr
 |             `computeGradiometryLSC.m`             | `solveGradientLSCmatrix.m`                      |
 |             `computeGravimetryGradiometryLSC.m`   | `solveGravityGradientLSCmatrix.m`               |
 |                                                   | `createGridWeights.m`                           |
-|                                                   | `comparetoLevellingData.m`                      |
+|                                                   |                                                 |
+| `mosaicTiles.m`                                   |                                                 |
+
+
+
+
+
 
 
 
