@@ -29,11 +29,8 @@ function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantit
     figure('Name','plotScatter','NumberTitle','off');
     clf
     hold on
-    scatter(longVector(:),latvector(:),.7,dataVector(:))
+    scatter(longVector(:),latvector(:),.9,dataVector(:))
     customizeMap(quantityName,dataunit,Coastline,axisLimits)
-    %caxis([-44 60])
-    if isequal(quantityName,'DataFlag')
-       colorbar('Ticks',[1,2,3],'TickLabels',{'Terrestrial','Altimetry','Airborne'})
-    end
+    caxis([-100 150])
     saveas(gcf,[plotsFolder,'scatter',quantityName,'.png'])
 end

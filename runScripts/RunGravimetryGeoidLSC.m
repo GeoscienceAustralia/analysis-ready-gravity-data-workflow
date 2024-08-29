@@ -116,8 +116,6 @@ plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyH
 
 plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,'DataFlag','',Coastline,OUTPUT_PARA.plotsFolder)
-
 % disp('2/4 ..........................computeTerrainEffect is running')
 % tic
 % [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...

@@ -39,11 +39,11 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-% VicNSW=[139.5 154 -40 -27.5];
-GRID_PARA.MINLONG=140;
+% VicNSW=[140 154 -38 -27.5];
+GRID_PARA.MINLONG=153;
 GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-29;
-GRID_PARA.MAXLAT=-27.5;
+GRID_PARA.MAXLAT=-28;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -97,7 +97,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.Grids_name='D:/GAbackup/Outputs/GridsNENSWgg/';
 OUTPUT_PARA.Tiles_dir_name='D:/GAbackup/Outputs/ResidualTilesNENSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'NENSWgg'];
+OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'focusNENSWgg'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -116,7 +116,17 @@ plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyH
 
 plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,'DataFlag','',Coastline,OUTPUT_PARA.plotsFolder)
+gravFlag  = Gravo(:,6)==1;
+
+plotCustomScatter(Gravo(gravFlag,1),Gravo(gravFlag,2),Gravo(gravFlag,4),GRID_PARA,'TerrestrialGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
+
+gravFlag  = Gravo(:,6)==2;
+
+plotCustomScatter(Gravo(gravFlag,1),Gravo(gravFlag,2),Gravo(gravFlag,4),GRID_PARA,'AltimetryGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
+
+gravFlag  = Gravo(:,6)==3;
+
+plotCustomScatter(Gravo(gravFlag,1),Gravo(gravFlag,2),Gravo(gravFlag,4),GRID_PARA,'AirborneGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
 plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,3),GRID_PARA,'GravityGradientFlightAltitude','m',Coastline,OUTPUT_PARA.plotsFolder)
 
@@ -139,11 +149,6 @@ disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
 computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
-
-GRID_PARA.MINLONG=140;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-38;
-GRID_PARA.MAXLAT=-27.5;
 
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...

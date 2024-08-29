@@ -124,8 +124,6 @@ plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravi
 %caxis([-1 584])
 plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,4),GRID_PARA,'Gravity','mGal',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
 %caxis([-44 60])
-plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,6),GRID_PARA,'DataFlag','',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
-
 disp('2/4 ..........................computeTerrainEffect is running')
 [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
     Topo_PARA,dataDemo.Gravity6D,interpolantDemo.GravityGGM_griddedInterpolant,dataDemo.DEM3D,interpolantDemo.ZDEM_griddedInterpolant, ...
