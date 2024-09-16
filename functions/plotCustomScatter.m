@@ -31,6 +31,6 @@ function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantit
     hold on
     scatter(longVector(:),latvector(:),.9,dataVector(:))
     customizeMap(quantityName,dataunit,Coastline,axisLimits)
-    caxis([-100 150])
+    %caxis([-100 150])
     saveas(gcf,[plotsFolder,'scatter',quantityName,'.png'])
 end
