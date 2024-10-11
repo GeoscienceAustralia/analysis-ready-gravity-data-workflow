@@ -79,6 +79,16 @@ end
 
 save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
 
+save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',date,'.mat'],'Grid_res_grav_err_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',date,'.mat'],'Grid_res_grav_Bouguer_w')
+
 disp('Preparing final grids')
 
 Grid_res_geoid_w(isnan(Grid_res_geoid_w))=0;
@@ -126,6 +136,19 @@ geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_2SigUncert_',date,'.tif'],bbox, 2*res
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Free_Air_Anomaly_',date,'.tif'],bbox, resamplegravity, bit_depth, option);
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Bouguer_Anomaly_',date,'.tif'],bbox, resamplegravity_bouguer, bit_depth, option);
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Gravity_2SigUncert_',date,'.tif'],bbox, 2*resamplegravity_err, bit_depth, option);
+
+% display statistics 
+Grid_res_geoid_err_w(isnan(Grid_res_geoid_err_w)) = [];
+disp('min  res_geoid_err_w ',  min (Grid_res_geoid_err_w))
+disp('max  res_geoid_err_w ',  max (Grid_res_geoid_err_w))
+disp('mean res_geoid_err_w ', mean (Grid_res_geoid_err_w))
+disp('std  res_geoid_err_w ',  std (Grid_res_geoid_err_w))
+
+Grid_res_grav_err_w(isnan(Grid_res_grav_err_w)) = [];
+disp('min  Grid_res_grav_err_w ',  min (Grid_res_grav_err_w))
+disp('max  Grid_res_grav_err_w ',  max (Grid_res_grav_err_w))
+disp('mean Grid_res_grav_err_w ', mean (Grid_res_grav_err_w))
+disp('std  Grid_res_grav_err_w ',  std (Grid_res_grav_err_w))
 
 end
 
