@@ -94,10 +94,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsWithAltimetryNSWgg/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesWithAltimetryNSWgg/';
+OUTPUT_PARA.Grids_name='outputs/GridsJustAirborneNENSWgg/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesJustAirborneNENSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'WithAltimetryNSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'JustAirborneNENSWgg'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -130,18 +130,19 @@ gravFlagAirborne  = Gravo(:,6)==3;
 
 plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(gravFlagAirborne,4),GRID_PARA,'AirborneGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
-% eliminate altimetry data
+% eliminate data
 
-% Gravo(gravFlagAltimetry==1,:)=[];
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
+Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
+
+%Gravo(gravFlagTerrestrial==1,:)=[];
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,3),GRID_PARA,'GravityGradientFlightAltitude','m',Coastline,OUTPUT_PARA.plotsFolder)
-
+    
+                                                                                                                                                            
 plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,OUTPUT_PARA.plotsFolder)
 
 %plotProfiles(gravGradFiltered(1:180,2),gravGradFiltered(1:180,3),gravGradFiltered(1:180,4),gravGradFiltered(1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile1',OUTPUT_PARA.plotsFolder)
