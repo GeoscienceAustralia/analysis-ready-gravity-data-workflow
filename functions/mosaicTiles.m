@@ -77,6 +77,28 @@ if OUTPUT_PARA.PLOT_GRIDS
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 
+disp('Display statistics')
+
+GridResGeoidErrW=Grid_res_geoid_err_w;
+GridResGravErrW=Grid_res_grav_err_w;
+
+GridResGeoidErrW(isnan(GridResGeoidErrW)) = [];
+
+fprintf('%f length  res_geoid_err_w\n',length(GridResGeoidErrW));
+fprintf('%f min  res_geoid_err_w\n',min  (GridResGeoidErrW));
+fprintf('%f max  res_geoid_err_w\n',max  (GridResGeoidErrW));
+fprintf('%f mean res_geoid_err_w\n',mean (GridResGeoidErrW));
+fprintf('%f std  res_geoid_err_w\n',std  (GridResGeoidErrW));
+
+GridResGravErrW(isnan(GridResGravErrW)) = [];
+fprintf('%f length  GridResGravErrW\n',length(GridResGravErrW));
+fprintf('%f min  GridResGravErrW\n',min  (GridResGravErrW));
+fprintf('%f max  GridResGravErrW\n',max  (GridResGravErrW));
+fprintf('%f mean GridResGravErrW\n',mean (GridResGravErrW));
+fprintf('%f std  GridResGravErrW\n',std  (GridResGravErrW));
+
+disp('Save mat files')
+
 save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
 
 save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
@@ -136,19 +158,6 @@ geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_2SigUncert_',date,'.tif'],bbox, 2*res
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Free_Air_Anomaly_',date,'.tif'],bbox, resamplegravity, bit_depth, option);
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Bouguer_Anomaly_',date,'.tif'],bbox, resamplegravity_bouguer, bit_depth, option);
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Gravity_2SigUncert_',date,'.tif'],bbox, 2*resamplegravity_err, bit_depth, option);
-
-% display statistics 
-Grid_res_geoid_err_w(isnan(Grid_res_geoid_err_w)) = [];
-disp('min  res_geoid_err_w ',  min (Grid_res_geoid_err_w))
-disp('max  res_geoid_err_w ',  max (Grid_res_geoid_err_w))
-disp('mean res_geoid_err_w ', mean (Grid_res_geoid_err_w))
-disp('std  res_geoid_err_w ',  std (Grid_res_geoid_err_w))
-
-Grid_res_grav_err_w(isnan(Grid_res_grav_err_w)) = [];
-disp('min  Grid_res_grav_err_w ',  min (Grid_res_grav_err_w))
-disp('max  Grid_res_grav_err_w ',  max (Grid_res_grav_err_w))
-disp('mean Grid_res_grav_err_w ', mean (Grid_res_grav_err_w))
-disp('std  Grid_res_grav_err_w ',  std (Grid_res_grav_err_w))
 
 end
 

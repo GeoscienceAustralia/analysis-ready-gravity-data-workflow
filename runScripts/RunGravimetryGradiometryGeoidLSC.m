@@ -40,10 +40,11 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
-GRID_PARA.MINLONG=153;
+% NENSW=[153 154 -29 -28];
+GRID_PARA.MINLONG=140;
 GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-29;
-GRID_PARA.MAXLAT=-28;
+GRID_PARA.MINLAT=-38;
+GRID_PARA.MAXLAT=-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -94,10 +95,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsJustAirborneNENSWgg/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesJustAirborneNENSWgg/';
+OUTPUT_PARA.Grids_name='outputs/Grids_vicNSWgg/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'JustAirborneNENSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWgg'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -132,9 +133,9 @@ plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(grav
 
 % eliminate data
 
-Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
+%Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
 
-%Gravo(gravFlagTerrestrial==1,:)=[];
+%Gravo(gravFlagAltimetry==1,:)=[];
 
 plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
 
