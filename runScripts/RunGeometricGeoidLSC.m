@@ -201,17 +201,21 @@ longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
 
 ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-for latCounter=1:length(LongDEM(:,1))
+
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
-%for latCounter=1:1
+
+for latCounter=1:length(LongDEM(:,1))
+
     ACOV_tt_dem=[];
+
     for lonCounter=1:length(Lev(:,1))
 
     haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
     ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
     
     end
+    
     ACOV_tt_dem=ACOV_tt_dem';     
     LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
     disp(latCounter)
