@@ -84,18 +84,20 @@ GridResGravErrW=Grid_res_grav_err_w;
 
 GridResGeoidErrW(isnan(GridResGeoidErrW)) = [];
 
-fprintf('%f length  res_geoid_err_w\n',length(GridResGeoidErrW));
-fprintf('%f min  res_geoid_err_w\n',min  (GridResGeoidErrW));
-fprintf('%f max  res_geoid_err_w\n',max  (GridResGeoidErrW));
-fprintf('%f mean res_geoid_err_w\n',mean (GridResGeoidErrW));
-fprintf('%f std  res_geoid_err_w\n',std  (GridResGeoidErrW));
+fprintf('%f length  res_geoid_err_w\n',length (GridResGeoidErrW));
+fprintf('%f min     res_geoid_err_w\n',min    (GridResGeoidErrW));
+fprintf('%f max     res_geoid_err_w\n',max    (GridResGeoidErrW));
+fprintf('%f mean    res_geoid_err_w\n',mean   (GridResGeoidErrW));
+fprintf('%f median  res_geoid_err_w\n',median (GridResGeoidErrW));
+fprintf('%f std     res_geoid_err_w\n',std    (GridResGeoidErrW));
 
 GridResGravErrW(isnan(GridResGravErrW)) = [];
-fprintf('%f length  GridResGravErrW\n',length(GridResGravErrW));
-fprintf('%f min  GridResGravErrW\n',min  (GridResGravErrW));
-fprintf('%f max  GridResGravErrW\n',max  (GridResGravErrW));
-fprintf('%f mean GridResGravErrW\n',mean (GridResGravErrW));
-fprintf('%f std  GridResGravErrW\n',std  (GridResGravErrW));
+fprintf('%f length  GridResGravErrW\n',length (GridResGravErrW));
+fprintf('%f min     GridResGravErrW\n',min    (GridResGravErrW));
+fprintf('%f max     GridResGravErrW\n',max    (GridResGravErrW));
+fprintf('%f mean    GridResGravErrW\n',mean   (GridResGravErrW));
+fprintf('%f median  GridResGravErrW\n',median (GridResGravErrW));
+fprintf('%f std     GridResGravErrW\n',std    (GridResGravErrW));
 
 disp('Save mat files')
 

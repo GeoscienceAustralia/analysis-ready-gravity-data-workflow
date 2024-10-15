@@ -60,7 +60,7 @@ GRAV_PARA.Grav_Faye_TypeB=3;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data\GRAVITY_GRAD\Xcalibur_FVD_GDD.mat';
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -94,10 +94,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='D:/GAbackup/Outputs/Grids_vicNSWgg/';
-OUTPUT_PARA.Tiles_dir_name='D:/GAbackup/Outputs/ResidualTilesvicNSWgg/';
+OUTPUT_PARA.Grids_name='outputs/GridsVicNSWgg/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['D:/GAbackup/Outputs/plots/',date,'vicNSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWgg'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -127,9 +127,16 @@ trendCoefficients = trendMatrix \ geomGravGeoidDiff;
 geomGravGeoidDiffDetrended = geomGravGeoidDiff - trendMatrix * trendCoefficients;
 
 % plot differences between geometric and gravimetric geoid at GPS leveling points 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiffDetrended','m',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,'geomGravGeoidDiffDetrended','m',Coastline,OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,Topo_PARA.Rad,'geomGravGeoidDiff','m',OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,'geomGravGeoidDiff','m', Coastline,OUTPUT_PARA.plotsFolder)
+
+fprintf('%f length  geomGravGeoidDiffDetrended\n',length (geomGravGeoidDiffDetrended));
+fprintf('%f min     geomGravGeoidDiffDetrended\n',min    (geomGravGeoidDiffDetrended));
+fprintf('%f max     geomGravGeoidDiffDetrended\n',max    (geomGravGeoidDiffDetrended));
+fprintf('%f mean    geomGravGeoidDiffDetrended\n',mean   (geomGravGeoidDiffDetrended));
+fprintf('%f median  geomGravGeoidDiffDetrended\n',median (geomGravGeoidDiffDetrended));
+fprintf('%f std     geomGravGeoidDiffDetrended\n',std    (geomGravGeoidDiffDetrended));
 
 disp('computing covariance functions')
 
@@ -167,19 +174,37 @@ end
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
  
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
+%%%%%%%%%%%%% this block trimmes and cut the DEM
+disp('DEM')
+DEM3D=importdata(DEM_PARA.filename);
+disp('Extracting DEM subset') 
+%make sure DEM is bigger than gravity
+Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
+CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
 
+DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
+DEM3D(DEMin==0,:)=[];
+%Computing grid dimensions for one-minute spatial resolution
+DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
+DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
+%Set the computational grid nodes
+LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+%%%%%%%%%%%%%
 % doing the multiplication one row of latitude at a time.
 % Convert degrees to radians
 longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
 
-
-
-%ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-%for latCounter=1:length(LongDEM(:,1))
+ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
+for latCounter=1:length(LongDEM(:,1))
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
-for latCounter=1:1
+%for latCounter=1:1
     ACOV_tt_dem=[];
     for lonCounter=1:length(Lev(:,1))
 
