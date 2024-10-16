@@ -94,10 +94,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsVicNSWgg/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
+OUTPUT_PARA.Grids_name='outputs/GridsVicNSWterr/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWterr/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWterr'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -113,7 +113,8 @@ disp('1/4 ..........................importAndFormatData is running ')
 %     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterNodes.polant,GGM_Zeta_griddedInterpolant,Coastline);
 
 %save([OUTPUT_PARA.Grids_name,'levellingLSCGeoids',date,'.mat'],'Vals_Lev')
-geomGravGeoidDiff=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids26-Jun-2024.mat']);
+%geomGravGeoidDiff=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids26-Jun-2024.mat']);
+geomGravGeoidDiff=importdata([OUTPUT_PARA.Grids_name,'levellingLSCterrGeoids18-Jun-2024.mat']);
 
 % Remove a tiled plane so the signal is zero mean for the LSC
 
@@ -219,12 +220,19 @@ for latCounter=1:length(LongDEM(:,1))
     ACOV_tt_dem=ACOV_tt_dem';     
     LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
     disp(latCounter)
+    % Add code to restore the tilt
     LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
     
 end
 
-% Add code to restore the tilt, then add back the reference geoid model.
-save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LSC_solrt','LSC_sol')
+save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LongDEM','LatDEM','LSC_solrt','LSC_sol')
+
+fprintf('%f size    gridgeomGravGeoidDiffDetrended\n',size          (LSC_sol));
+fprintf('%f min     gridgeomGravGeoidDiffDetrended\n',min(min       (LSC_sol)));
+fprintf('%f max     gridgeomGravGeoidDiffDetrended\n',max(max       (LSC_sol)));
+fprintf('%f mean    gridgeomGravGeoidDiffDetrended\n',mean(mean     (LSC_sol)));
+fprintf('%f median  gridgeomGravGeoidDiffDetrended\n',median(median (LSC_sol)));
+fprintf('%f std     gridgeomGravGeoidDiffDetrended\n',std(std       (LSC_sol)));
 
 % common variables for plotting
 axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
@@ -233,19 +241,19 @@ axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
 axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
 axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
 
-figure('Name','GeometricModel','NumberTitle','off'); 
+figure('Name','Grid','NumberTitle','off'); 
 clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
-customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'GeometricModel','geomGravGeoidDiffDetrended','.png'])
+customizeMap('geomGravGeoidDiffDetrended','m',Coastline,axisLimits)
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiffDetrended','.png'])
 
-figure('Name','GeometricModel','NumberTitle','off'); 
+figure('Name','Grid','NumberTitle','off'); 
 clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),LSC_solrt)
 customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'GeometricModel','geomGravGeoidDiff','.png'])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiff','.png'])
 
 
 
