@@ -43,11 +43,12 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     Gravity6D=importdata(GRAV_PARA.filename);
     Gravity6D(:,1)=round(Gravity6D(:,1)*60)/60;% make sure we have 1 arc minute data
     Gravity6D(:,2)=round(Gravity6D(:,2)*60)/60;% make sure we have 1 arc minute data
+    % this part added for NSW only, for gravity anomaly from gravity gradiometry
     if ~isempty(GRAV_PARA.filename1)
         Gravity5D=importdata(GRAV_PARA.filename1);
-        Nanfilter = createNanFilter(Gravity5D(:,4),470,608);%for new NSW file on 22/03/2024
+        Nanfilter = createNanFilter(Gravity5D(:,4),470,608);% for new NSW file on 22/03/2024
         Gravity5D = Gravity5D(~isnan(Gravity5D(:,4).*Nanfilter), :);
-        Gravity5D = [Gravity5D ones(length(Gravity5D), 1) * 3];% add flag column for gravity gradiometry data
+        Gravity5D = [Gravity5D ones(length(Gravity5D), 1) * 3];% add flag column for gravity from gravity gradiometry
         Gravity6D=[Gravity5D;Gravity6D];
     end
     disp('DEM')
