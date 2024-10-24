@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=140;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-38;
-GRID_PARA.MAXLAT=-27.5;
+GRID_PARA.MINLONG=105;
+GRID_PARA.MAXLONG=165;
+GRID_PARA.MINLAT=-48;
+GRID_PARA.MAXLAT=-8;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -98,7 +98,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.Grids_name='outputs/Grids_vicNSWgg/';
 OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'AUS'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -109,65 +109,12 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-% Plot input data: 
+figure
+geoscatter(Gravo(:,2),Gravo(:,1), [],Gravo(:,4), 'filled')
+colormap('turbo');
+colorbar('Ticks',[-100:20:100]);
+title(colorbar,'mGal','FontSize',10);
+geolimits([GRID_PARA.MINLAT GRID_PARA.MAXLAT ],[GRID_PARA.MINLONG GRID_PARA.MAXLONG])
 
-plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot gravity data with different source
-
-gravFlagTerrestrial  = Gravo(:,6)==1;
-
-plotCustomScatter(Gravo(gravFlagTerrestrial,1),Gravo(gravFlagTerrestrial,2),Gravo(gravFlagTerrestrial,4),GRID_PARA,'TerrestrialGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
-
-gravFlagAltimetry  = Gravo(:,6)==2;
-
-plotCustomScatter(Gravo(gravFlagAltimetry,1),Gravo(gravFlagAltimetry,2),Gravo(gravFlagAltimetry,4),GRID_PARA,'AltimetryGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
-
-gravFlagAirborne  = Gravo(:,6)==3;
-
-plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(gravFlagAirborne,4),GRID_PARA,'AirborneGravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
-
-% eliminate data
-
-%Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
-
-%Gravo(gravFlagAltimetry==1,:)=[];
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                                                                                                                                                                
-plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,OUTPUT_PARA.plotsFolder)
-
-%plotProfiles(gravGradFiltered(1:180,2),gravGradFiltered(1:180,3),gravGradFiltered(1:180,4),gravGradFiltered(1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile1',OUTPUT_PARA.plotsFolder)
-
-%plotProfiles(gravGradFiltered(180+1:2*180,2),gravGradFiltered(180+1:2*180,3),gravGradFiltered(180+1:2*180,4),gravGradFiltered(180+1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile2',OUTPUT_PARA.plotsFolder)
-
-disp('2/4 ..........................computeTerrainEffect is running')
-[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant,fullTopoCorrectedGravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
-    Topo_PARA,Gravo,gravGradFiltered,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant, ...
-    LongDEM,LatDEM,Coastline,OUTPUT_PARA.plotsFolder);
-
-save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
-
-%TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects01-May-2024.mat']);
-
-disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-    GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-    longwaveTopo_griddedInterpolant,Topo_PARA.Density)
-
-disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
-
-% enquiry tif files   
-%geotiffinfo(['Outputs/Grids_NSW/AGQG_',date,'.tif'])
 
 

@@ -24,7 +24,7 @@ Vic_Lat=round(Vic_Data.data(:,32)*60)/60;
 Vic_H=Vic_Data.data(:,39);
 Vic_Grav_anom=Vic_Data.data(:,18);
 
-[Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
+%[Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
 
 figure(1)
 clf
