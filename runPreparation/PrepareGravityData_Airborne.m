@@ -1,14 +1,28 @@
 close all
 clear 
 
-%% Look at Victoria Data first.
-%Vic_Data=importdata('Data\GRAVITY\AIRBORNE/18042024/dlv024_grav.csv');
-Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoria/FD012_Grav.csv');
+importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
+scatter(AB_Grav_BM(:,1),AB_Grav_BM(:,2),1,AB_Grav_BM(:,4))
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+
+% Look at Victoria Data first.
+%Vic_Data=importdata('Data\GRAVITY\AIRBORNE/18042024victoriaNSW/dlv024_gravVictoria.csv');
+% Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
+% Vic_Data.data(end,:)=[];
+% Vic_Long=round(Vic_Data.data(:,11)*60)/60;
+% Vic_Lat=round(Vic_Data.data(:,10)*60)/60;
+% Vic_H=Vic_Data.data(:,9);
+% Vic_Grav_anom=Vic_Data.data(:,36);
+
+% this file has different columns
+Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
 Vic_Data.data(end,:)=[];
-Vic_Long=round(Vic_Data.data(:,11)*60)/60;
-Vic_Lat=round(Vic_Data.data(:,10)*60)/60;
-Vic_H=Vic_Data.data(:,9);
-Vic_Grav_anom=Vic_Data.data(:,36);
+Vic_Long=round(Vic_Data.data(:,35)*60)/60;
+Vic_Lat=round(Vic_Data.data(:,32)*60)/60;
+Vic_H=Vic_Data.data(:,39);
+Vic_Grav_anom=Vic_Data.data(:,18);
 
 [Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
 
