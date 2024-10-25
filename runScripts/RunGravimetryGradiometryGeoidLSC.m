@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=140;
+GRID_PARA.MINLONG=153;
 GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-38;
-GRID_PARA.MAXLAT=-27.5;
+GRID_PARA.MINLAT=-29;
+GRID_PARA.MAXLAT=-28;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -95,10 +95,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/Grids_vicNSWgg/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
+OUTPUT_PARA.Grids_name='outputs/Grids/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTiles/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'vicNSWgg'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'test'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -111,11 +111,13 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 % Plot input data: 
 
-plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,OUTPUT_PARA.plotsFolder)
+plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',[0 2000],Coastline,OUTPUT_PARA.plotsFolder)
 
 plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% plot gravity data with different source
 

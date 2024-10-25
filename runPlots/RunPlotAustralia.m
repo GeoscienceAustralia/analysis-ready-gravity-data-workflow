@@ -112,7 +112,8 @@ disp('1/4 ..........................importAndFormatData is running ')
 figure
 geoscatter(Gravo(:,2),Gravo(:,1), [],Gravo(:,4), 'filled')
 colormap('turbo');
-colorbar('Ticks',[-100:20:100]);
+caxis([-100 100]);
+colorbar('Ticks',(-100:20:100));
 title(colorbar,'mGal','FontSize',10);
 geolimits([GRID_PARA.MINLAT GRID_PARA.MAXLAT ],[GRID_PARA.MINLONG GRID_PARA.MAXLONG])
 

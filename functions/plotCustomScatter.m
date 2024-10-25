@@ -1,4 +1,4 @@
-function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantityName, dataunit, Coastline, plotsFolder)
+function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantityName, dataunit, Coastline, caxisminmax, plotsFolder)
     % Input:  longVector   = vector of longitudes
     %         latvector    = vector of latitudes
     %         dataVector   = vector of data
@@ -31,6 +31,8 @@ function plotCustomScatter(longVector, latvector, dataVector, GRID_PARA, quantit
     hold on
     scatter(longVector(:),latvector(:),.9,dataVector(:))
     customizeMap(quantityName,dataunit,Coastline,axisLimits)
-    caxis([-100 100])
+    if ~isempty(caxisminmax)
+        caxis(caxisminmax)
+    end
     saveas(gcf,[plotsFolder,'scatter',quantityName,'.png'])
 end
