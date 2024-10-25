@@ -9,6 +9,7 @@ a = 6378137; %semi-major axis, WGS-84
 g_e = 978032.53359; %equatorial normal gravity, WGS-84
 f = 0.00335281066474; %flattening, WGS84
 m = 0.00344978650684; %defined as (w^2*a^2*b)/GM, WGS-84
+
 %use GEOCENTRIC latitude, which is defined as: phi
 phi = atan(tand(lat).*((1-f).^2));
 sphi2 = sin(phi).^2;
@@ -21,9 +22,13 @@ term2 =ht.^2;
 fac = (c1.*term1)-(c2.*term2);
 
 
+constants                                       % load constants
 
-SecondOrderFreeAirgrad_topo=(0*2*(EllGrav_topo/a).*(1+f+m-2*f*sin(AB_Grav_GRAD_BM(:,2)*pi/180).^2) - 2*AB_Grav_GRAD_BM(:,3)*3.*EllGrav_topo/a^2);
+EarthMajorAxis= EarthMajorAxis*1000;            
 
+c1 = ((2.*NormalGravity)./EarthMajorAxis);
+
+fac=(2*(NormalGravity/a).*(1+f+GravToCentrifugalRatio_Equator-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*NormalGravity/a^2);
 
 
 
