@@ -22,9 +22,15 @@ term2 =ht.^2;
 fac = (c1.*term1)-(c2.*term2);
 
 
+constants                                       % load constants
 
-%SecondOrderFreeAirgrad_topo=(0*2*(EllGrav_topo/a).*(1+f+m-2*f*sin(AB_Grav_GRAD_BM(:,2)*pi/180).^2) - 2*AB_Grav_GRAD_BM(:,3)*3.*EllGrav_topo/a^2);
+EarthMajorAxis= EarthMajorAxis*10^3;            % km to m
 
+c1 = ((2.*NormalGravity)./EarthMajorAxis);
+
+term1 = (1+flattening+GravToCentrifugalRatio_Equator-2*flattening*sin(data(:,2)*pi/180).^2).*ht;
+
+fac=(2*(NormalGravity/a).*(1+f+GravToCentrifugalRatio_Equator-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*NormalGravity/a^2);
 
 
 

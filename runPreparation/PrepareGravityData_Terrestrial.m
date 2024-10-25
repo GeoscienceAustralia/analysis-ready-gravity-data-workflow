@@ -1,16 +1,16 @@
 close all
 clear 
 %% Physcial parameters
-a=6378137.d0;				
-a2=a*a;
-b=6356752.3141d0;			
-b2=b*b;		
-f=1.d0/298.257222101d0;
-m=0.00344978600308d0;
-e2=0.00669438002290d0;
-kg=0.001931851353;
-e=0.00669438002290;
-G=6.67428d-11;
+% a=6378137.d0;				
+% a2=a*a;
+% b=6356752.3141d0;			
+% b2=b*b;		
+%f=1.d0/298.257222101d0;
+%m=0.00344978600308d0;   
+%e2=0.00669438002290d0;
+%e=0.00669438002290;
+%G=6.67428d-11;
+constants                                       % load constants
 %% Import the Sandwell and smith gravity anomaly
 llf=importdata('Data/GRAVITY/ALTIMETRY/sand311ausgrav.llf');
 lle=importdata('Data/GRAVITY/ALTIMETRY/sand311ausgrav.lle');
@@ -43,7 +43,7 @@ t=0;
 data=zeros(1800000,9);
 for k=1:length(data(:,1))
     try
-                   %[Longitude, Latitude, Height, height, N, Gravity, Horisontal Uncertainty, Vertical Uncertainty]
+                   %[Longitude, Latitude, Height, height, N, Gravity, Horizontal Uncertainty, Vertical Uncertainty]
         data(k,:)=[str2double(TEMP{5}),str2double(TEMP{6}),str2double(TEMP{7}),str2double(TEMP{8}),str2double(TEMP{9}),str2double(TEMP{10})/10,str2double(TEMP{19}),str2double(TEMP{20}),str2double(TEMP{23})/10];
         TEMP=strsplit(fgetl(GADDS));
         t=k;
@@ -58,12 +58,17 @@ end
 data(t+1:end,:)=[];
 %toc
 fclose(GADDS);
+phi=deg2rad(data(:,2))
+
 %% Compute the corrections
-gamma=10^5*9.7803267715*(1+kg*(sin(data(:,2)*pi/180).^2))./sqrt(1-e*(sin((data(:,2)*pi/180)).^2));
-SecondOrderFreeAirCorrection=(2*(gamma/a).*(1+f+m-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*gamma/a^2);
+NormalGravity=AbsoluteGravityEquator_mgal*(1+NormalGravityConstant*(sin(deg2rad(data(:,2))).^2) ...
+        )./sqrt(1-EarthEccentricitySquared*(sin(deg2rad(data(:,2))).^2));
+
+%NormalGravity=10^5*9.7803267715*(1+NormalGravityConstant*(sin(data(:,2)*pi/180).^2))./sqrt(1-e*(sin((data(:,2)*pi/180)).^2));
+SecondOrderFreeAirCorrection=(2*(NormalGravity/a).*(1+f+GravToCentrifugalRatio_Equator-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*NormalGravity/a^2);
 atmospheric_corr=0.871-1.0298*(10^-4)*data(:,3)+5.3105*(10^-9)*(data(:,3).^2)-2.1642*(10^-13)*(data(:,3).^3);
 % Anomaly
-FREE_AIR_Anomaly=data(:,6)-gamma+SecondOrderFreeAirCorrection+atmospheric_corr;
+FREE_AIR_Anomaly=data(:,6)-NormalGravity+SecondOrderFreeAirCorrection+atmospheric_corr;
 FREE_AIR_Anomaly_Error=sqrt(data(:,9).^2+(data(:,7).^2).*(0.000812*sin(2*data(:,2)*pi/180)).^2+((0.3086-0.1119).^2).*((data(:,8).^2)));
 disp('Combining datasets and blockmean')
 %% Combine the datasets
