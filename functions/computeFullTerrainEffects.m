@@ -49,8 +49,8 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
         
 %         plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),TC_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity correction [mGal]','PrismGravityEffectHeight',plotsFolder)
 %         plotProfiles(LatDEM_topo(:,90),ZDEM_topo(:,90),TC_DEM_point(:,90),LongDEM_topo(1,90),'Latitude','DEM[m]','GravityCorrection[mGal]','PrismGravityEffectDEM',plotsFolder)
-        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA,'DEMPrismGravityEffect','mGal',Coastline,plotsFolder);
-        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA,'gravityTopoPrismGravityEffect','mGal',Coastline,plotsFolder);
+        plotCustomScatter(LongDEM_topo, LatDEM_topo, TC_DEM_point, GRID_PARA,'DEMPrismGravityEffect','mGal',Coastline,[],plotsFolder);
+        plotCustomScatter(Grav(:,1),Grav(:,2),TC_gravity_point, GRID_PARA,'gravityTopoPrismGravityEffect','mGal',Coastline,[],plotsFolder);
       
     end
     

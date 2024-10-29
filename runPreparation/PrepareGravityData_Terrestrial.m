@@ -5,11 +5,11 @@ clear
 % a2=a*a;
 % b=6356752.3141d0;			
 % b2=b*b;		
-%f=1.d0/298.257222101d0;
-%m=0.00344978600308d0;   
-%e2=0.00669438002290d0;
-%e=0.00669438002290;
-%G=6.67428d-11;
+% f=1.d0/298.257222101d0;
+% m=0.00344978600308d0;   
+% e2=0.00669438002290d0;
+% e=0.00669438002290;
+% G=6.67428d-11;
 constants                                       % load constants
 %% Import the Sandwell and smith gravity anomaly
 llf=importdata('Data/GRAVITY/ALTIMETRY/sand311ausgrav.llf');
@@ -19,7 +19,7 @@ FreeAir_Errormo=reshape(lle(:,3),4860,3180)';
 Latmo=reshape(llf(:,2),4860,3180)';
 Longmo=reshape(llf(:,1),4860,3180)';
 %% Import DEM
-DEM=importdata('Data/DEM/AUSDEM1m.xyz');
+DEM=importdata('Data/DEM/AUSDEM1min.xyz');
 Latm_DEM=reshape(DEM(:,2),length(unique(DEM(:,1))),length(unique(DEM(:,2))))';
 Longm_DEM=reshape(DEM(:,1),length(unique(DEM(:,1))),length(unique(DEM(:,2))))';
 Hm_DEM=reshape(DEM(:,3),length(unique(DEM(:,1))),length(unique(DEM(:,2))))';
@@ -58,14 +58,19 @@ end
 data(t+1:end,:)=[];
 %toc
 fclose(GADDS);
-phi=deg2rad(data(:,2))
+% Convert degrees to radians
+phi=deg2rad(data(:,2));
 
 %% Compute the corrections
-NormalGravity=AbsoluteGravityEquator_mgal*(1+NormalGravityConstant*(sin(deg2rad(data(:,2))).^2) ...
-        )./sqrt(1-EarthEccentricitySquared*(sin(deg2rad(data(:,2))).^2));
+% NormalGravity=AbsoluteGravityEquator_mgal*(1+NormalGravityConstant*(sin(deg2rad(data(:,2))).^2) ...
+%         )./sqrt(1-EarthEccentricitySquared*(sin(deg2rad(data(:,2))).^2));
+% 
+% SecondOrderFreeAirCorrection=(2*(NormalGravity/a).*(1+f+GravToCentrifugalRatio_Equator-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*NormalGravity/a^2);
 
-%NormalGravity=10^5*9.7803267715*(1+NormalGravityConstant*(sin(data(:,2)*pi/180).^2))./sqrt(1-e*(sin((data(:,2)*pi/180)).^2));
-SecondOrderFreeAirCorrection=(2*(NormalGravity/a).*(1+f+GravToCentrifugalRatio_Equator-2*f*sin(data(:,2)*pi/180).^2).*data(:,3) - (data(:,3).^2)*3.*NormalGravity/a^2);
+NormalGravity = computeNormalGravity (phi);
+
+SecondOrderFreeAirCorrection = computeSecondOrderFreeAirCorrection (phi,data(:,3),NormalGravity);
+
 atmospheric_corr=0.871-1.0298*(10^-4)*data(:,3)+5.3105*(10^-9)*(data(:,3).^2)-2.1642*(10^-13)*(data(:,3).^3);
 % Anomaly
 FREE_AIR_Anomaly=data(:,6)-NormalGravity+SecondOrderFreeAirCorrection+atmospheric_corr;

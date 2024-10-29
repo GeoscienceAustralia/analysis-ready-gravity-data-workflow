@@ -40,8 +40,9 @@ EarthEccentricitySquared = 0.00669438002290;                % Earth Eccentricity
 
 NormalGravityConstant = 0.001931851353;                     % Normal Gravity Constant
 AbsoluteGravityEquator_mgal = 9.7803267715*(10^5);          % Absolute Gravity Equator [mgal]
-AbsoluteGravityPole_mgal = 9.8321849378*(10^5);             % Absolute Gravity Pole [mgal]
+AbsoluteGravityPole_mgal =    9.8321849378*(10^5);          % Absolute Gravity Pole [mgal]
 GravToCentrifugalRatio_Equator = 0.00344978600308;          % the ratio between the gravitational and centrifugal forces
+                                                            % defined as (w^2*a^2*b)/GM
 %computeLSC
 BouguerConstant=0.0419;                                   % Bouguer Constant
 %computeLSC,computeTerrainEffect
