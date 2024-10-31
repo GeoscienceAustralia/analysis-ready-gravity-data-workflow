@@ -84,7 +84,7 @@ Topo_PARA.RTM=[50,10,300];%[1000,10,2160]for egm%[0,10,300]% Range of SHM degree
 %about 1080 for EGM,we need to fix the filter by factor of 2 
 %% GGM reference signal
 % First run e.g. ./Data/GGM/RunIsGrafLab_Topo_Surf_EGM2008.m
-GGM_PARA.filename='Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
+GGM_PARA.filename='Data\GGM\EGM2008_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
 %% Coastline data
 COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
 %% Levelling data comparisons
@@ -95,10 +95,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsNENSWgg10altimetry/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesNENSWgg10altimetry/';
+OUTPUT_PARA.Grids_name='outputs/GridsNENSWggNoaltimetryEGM2008/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesNENSWggNoaltimetryEGM2008/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'NENSWgg5altimetry'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'NENSWggNoaltimetryEGM2008'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -147,9 +147,11 @@ CoordsMM_Grav=[airborne.MINLONG,airborne.MINLAT;...
                airborne.MINLONG,airborne.MINLAT];
         
 Gravin=inpolygon(Gravo(:,1),Gravo(:,2),CoordsMM_Grav(:,1),CoordsMM_Grav(:,2));
-% gravFlagAltimetry(Gravin==1,:)=0; this eliminates airborne
-% Add more uncertainty to the fifth (uncertainty) column where altimetry data 
-Gravo( Gravo(:,6) == 2 & Gravin, 5) = Gravo( Gravo(:,6) == 2 & Gravin , 5) + 10;
+% case 1:Eliminate
+%gravFlagAltimetry(Gravin==1,:)=0; % flag altimetry where airborne
+%Gravo(gravFlagAltimetry==1,:)=[]; % eliminate altimetry where airborne
+% case 2:Add more uncertainty to the fifth (uncertainty) column where altimetry data 
+%Gravo( Gravo(:,6) == 2 & Gravin, 5) = Gravo( Gravo(:,6) == 2 & Gravin , 5) + 10;
 
 plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
@@ -157,30 +159,30 @@ plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty
 
 %Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
 
-%Gravo(gravFlagAltimetry==1,:)=[];
+Gravo(gravFlagAltimetry==1,:)=[];
 
-%plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
-%plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                                                                                                                                                 
-plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+%plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
 
 %plotProfiles(gravGradFiltered(1:180,2),gravGradFiltered(1:180,3),gravGradFiltered(1:180,4),gravGradFiltered(1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile1',OUTPUT_PARA.plotsFolder)
 
 %plotProfiles(gravGradFiltered(180+1:2*180,2),gravGradFiltered(180+1:2*180,3),gravGradFiltered(180+1:2*180,4),gravGradFiltered(180+1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile2',OUTPUT_PARA.plotsFolder)
 
-% disp('2/4 ..........................computeTerrainEffect is running')
-% [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant,fullTopoCorrectedGravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
-%     Topo_PARA,Gravo,gravGradFiltered,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant, ...
-%     LongDEM,LatDEM,Coastline,OUTPUT_PARA.plotsFolder);
-% 
-% save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
-% disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-% computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-%     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-%     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
+disp('2/4 ..........................computeTerrainEffect is running')
+[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant,fullTopoCorrectedGravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
+    Topo_PARA,Gravo,gravGradFiltered,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant, ...
+    LongDEM,LatDEM,Coastline,OUTPUT_PARA.plotsFolder);
+
+save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
+disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+    GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+    longwaveTopo_griddedInterpolant,Topo_PARA.Density)
 
 % uncomment if there is a mat file for TerrainEffects
 TE = importdata([OUTPUT_PARA.Grids_name,'TerrainEffects29-Oct-2024.mat']);

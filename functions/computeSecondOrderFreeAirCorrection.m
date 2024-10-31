@@ -1,10 +1,9 @@
 function fac = computeSecondOrderFreeAirCorrection(lat,ht,gamma)
-    % 2nd order Free-Air Correction 
-    % reference: GRAV-D General Airborne Gravity Data User Manual, page 23
+    % 2nd order Free-Air reduction 
+    % reference: Eqa(21) in W. E. FEATHERSTONE and M.C. DENTITH (1997)
     % Input:  lat = latitude in radians
     %         ht =  height
-    %         gamma = Normal gravity, the absolute gravity of the Earth
-    %         approximating ellipsoid(Moritz 1980)
+    %         gamma = Normal gravity, be computed using computeNormalGravity
     % Written by Jack McCubbine
     % Last updated by Neda Darbeheshti
     % Geoscience Australia, 2024-11.
@@ -19,12 +18,13 @@ function fac = computeSecondOrderFreeAirCorrection(lat,ht,gamma)
     
     term1 = (1+flattening+GravToCentrifugalRatio_Equator-2*flattening*sphi2).*ht;
     
-    c2 = (3.*AbsoluteGravityEquator_mgal./(EarthMajorAxis.^2));
+    c2 = (3.*gamma./(EarthMajorAxis.^2));
 
     term2 =ht.^2;
     
     fac = (c1.*term1)-(c2.*term2);
 end
+
 
 
 
