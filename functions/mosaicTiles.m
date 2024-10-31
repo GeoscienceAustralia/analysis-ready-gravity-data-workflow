@@ -154,12 +154,13 @@ option.GTRasterTypeGeoKey = 1;
 
 % Specify bit depth
 bit_depth = 32;
+formattedDate = datestr(date, 'yyyymmdd');
 
-geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_',date,'.tif'],bbox, resamplegeoid, bit_depth, option);
-geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_SigUncert_',date,'.tif'],bbox, resamplegeoid_err, bit_depth, option);
-geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Free_Air_Anomaly_',date,'.tif'],bbox, resamplegravity, bit_depth, option);
-geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Bouguer_Anomaly_',date,'.tif'],bbox, resamplegravity_bouguer, bit_depth, option);
-geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Gravity_SigUncert_',date,'.tif'],bbox, resamplegravity_err, bit_depth, option);
+geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_',formattedDate,'.tif'],bbox, resamplegeoid, bit_depth, option);
+geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_SigUncert_',formattedDate,'.tif'],bbox, resamplegeoid_err, bit_depth, option);
+geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Free_Air_Anomaly_',formattedDate,'.tif'],bbox, resamplegravity, bit_depth, option);
+geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Bouguer_Anomaly_',formattedDate,'.tif'],bbox, resamplegravity_bouguer, bit_depth, option);
+geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Gravity_SigUncert_',formattedDate,'.tif'],bbox, resamplegravity_err, bit_depth, option);
 
 end
 
