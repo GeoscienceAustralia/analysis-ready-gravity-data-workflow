@@ -1,5 +1,9 @@
 close all
 clear 
+% Turn off the irritating warnings.
+warning off
+%% Add the path to the function files.
+addpath('functions');
 %% Physcial parameters
 % a=6378137.d0;				
 % a2=a*a;
@@ -10,7 +14,6 @@ clear
 % e2=0.00669438002290d0;
 % e=0.00669438002290;
 % G=6.67428d-11;
-constants                                       % load constants
 %% Import the Sandwell and smith gravity anomaly
 llf=importdata('Data/GRAVITY/ALTIMETRY/sand311ausgrav.llf');
 lle=importdata('Data/GRAVITY/ALTIMETRY/sand311ausgrav.lle');
@@ -58,7 +61,9 @@ end
 data(t+1:end,:)=[];
 %toc
 fclose(GADDS);
+
 % Convert degrees to radians
+
 phi=deg2rad(data(:,2));
 
 % Compute the corrections
@@ -66,13 +71,18 @@ phi=deg2rad(data(:,2));
 NormalGravity = computeNormalGravity (phi);
 
 SecondOrderFreeAirCorrection = computeSecondOrderFreeAirCorrection (phi,data(:,3),NormalGravity);
-atmospheric_corr=computeAtmosphericGravityCorrection (data(:,3));
 
-atmospheric_corr1=0.871-1.0298*(10^-4)*data(:,3)+5.3105*(10^-9)*(data(:,3).^2)-2.1642*(10^-13)*(data(:,3).^3);
-% Anomaly
-FREE_AIR_Anomaly=data(:,6)-NormalGravity+SecondOrderFreeAirCorrection+atmospheric_corr;
-FREE_AIR_Anomaly_Error=sqrt(data(:,9).^2+(data(:,7).^2).*(0.000812*sin(2*data(:,2)*pi/180)).^2+((0.3086-0.1119).^2).*((data(:,8).^2)));
+atmosphericCorrection=computeAtmosphericGravityCorrection (data(:,3));
+
+% Compute anomaly
+
+FREE_AIR_Anomaly = data(:,6)- NormalGravity + SecondOrderFreeAirCorrection + atmosphericCorrection;
+
+FREE_AIR_Anomaly_Error1=sqrt(data(:,9).^2+(data(:,7).^2).*(0.000812*sin(2*phi)).^2+((0.3086-0.1119).^2).*((data(:,8).^2)));
+
+
 disp('Combining datasets and blockmean')
+
 %% Combine the datasets
 % Define the flag column
 flagColumnTerresterial = 1 * ones(size(data, 1), 1);
