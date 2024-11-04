@@ -54,27 +54,27 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     disp('DEM')
     DEM3D=importdata(DEM_PARA.filename);
     % DEM long lat extension: [93 174 -61 -8] 
-    LongDEMmatrix=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-    LatDEMmatrix=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-    ZDEM=reshape(DEM3D(:,3),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-    %disp('Extracting DEM subset') 
-    % make sure DEM is bigger than gravity
-%     Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
-%     CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-%               GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-%               GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-%               GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-%               GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
-% 
-%     DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
-%     DEM3D(DEMin==0,:)=[];
-    % Computing grid dimensions for one-minute spatial resolution
-%     DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
-%     DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
-    % Set the computational grid nodes
 %     LongDEMmatrix=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 %     LatDEMmatrix=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 %     ZDEM=reshape(DEM3D(:,3),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+    %disp('Extracting DEM subset') 
+    % make sure DEM is bigger than gravity
+    Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
+    CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+              GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+              GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
+
+    DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
+    DEM3D(DEMin==0,:)=[];
+    %Computing grid dimensions for one-minute spatial resolution
+    DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
+    DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
+    %Set the computational grid nodes
+    LongDEMmatrix=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+    LatDEMmatrix=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+    ZDEM=reshape(DEM3D(:,3),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 
     ZDEM_griddedInterpolant=griddedInterpolant(LongDEMmatrix',LatDEMmatrix(end:-1:1,:)',ZDEM(end:-1:1,:)');
     
