@@ -116,7 +116,7 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
       
        % plot gravity gradient prism topography correction
        % plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),-TCgradient_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity gradient correction [mGal/m]','PrismGravityGradientEffectHeight',plotsFolder)
-       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA,'flightAltitudePrismGravityGradientEffect','mGal/m',Coastline,plotsFolder);
+       plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),TCgradient_gradient_point, GRID_PARA,'flightAltitudePrismGravityGradientEffect','mGal/m',Coastline,[],plotsFolder);
     
        % Subtract gravity gradient prism topography correction from gravity gradient
        fullTopographyCorrected_gravityGradient(:,4)=fullTopographyCorrected_gravityGradient(:,4)-TCgradient_gradient_point;

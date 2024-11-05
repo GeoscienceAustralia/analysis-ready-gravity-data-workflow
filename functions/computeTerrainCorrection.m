@@ -36,9 +36,9 @@ function [gravity_correction]=computeTerrainCorrection(ZDEM_topo,LatDEM_topo,Lon
     gravity_correction=H_CP*NaN;
     IND=1:length(Long_CP(:));
     %             
-    for longi=min(LongDEM_topo(:))+Rad:2*Rad:max(LongDEM_topo(:))
+    for longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
         
-        for lati=min(LatDEM_topo(:))+Rad:2*Rad:max(LatDEM_topo(:))
+        for lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
       
             LatDEM_topo_loc=LatDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
             LongDEM_topo_loc=LongDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
@@ -60,7 +60,7 @@ function [gravity_correction]=computeTerrainCorrection(ZDEM_topo,LatDEM_topo,Lon
                  %distanceFromCP=sqrt((LongDEM_topo_loc-Long_CP_loc(k)).^2+(LatDEM_topo_loc-Lat_CP_loc(k)).^2);
                  % should be tested
                  distanceFromCP = haversine(LatDEM_topo_locRadian(:), LongDEM_topo_locRadian(:), Lat_CP_locRadian(k), Long_CP_locRadian(k));
-                 distanceFromCP=rad2deg(distanceFromCP);
+                 distanceFromCP = rad2deg(distanceFromCP);
                  
                  ID=1:length(LongDEM_topo_loc(:));
                  IDr=ID(distanceFromCP(:)<=Rad);
