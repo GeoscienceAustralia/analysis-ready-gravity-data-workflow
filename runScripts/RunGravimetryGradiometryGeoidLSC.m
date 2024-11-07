@@ -32,7 +32,7 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=1;% degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
 GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
 GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
@@ -61,7 +61,7 @@ GRAV_PARA.Grav_Faye_TypeB=3;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data\GRAVITY_GRAD\Xcalibur_FVD_GDD.mat';
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -84,7 +84,7 @@ Topo_PARA.RTM=[50,10,300];%[1000,10,2160]for egm%[0,10,300]% Range of SHM degree
 %about 1080 for EGM,we need to fix the filter by factor of 2 
 %% GGM reference signal
 % First run e.g. ./Data/GGM/RunIsGrafLab_Topo_Surf_EGM2008.m
-GGM_PARA.filename='Data\GGM\EGM2008_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
+GGM_PARA.filename='Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
 %% Coastline data
 COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
 %% Levelling data comparisons
@@ -95,10 +95,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsNENSWggNoaltimetryInAirEGM2008/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesNENSWggNoaltimetryInAirEGM2008/';
+OUTPUT_PARA.Grids_name='outputs/GridsNENSWgg2degTile/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesNENSWgg2degTile/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'NENSWggNoaltimetryInAirEGM2008'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'NENSWgg2degTile'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -135,37 +135,34 @@ plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(grav
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% mark airborne in altimetry
 % Extract data inside computational extents
-airborne.MINLONG=153.3;
-airborne.MAXLONG=153.8;
-airborne.MINLAT=-28.1;
-airborne.MAXLAT=-30;
-disp('Extracting airborne gravity subset') 
-CoordsMM_Grav=[airborne.MINLONG,airborne.MINLAT;...
-               airborne.MINLONG,airborne.MAXLAT;...
-               airborne.MAXLONG,airborne.MAXLAT;...
-               airborne.MAXLONG,airborne.MINLAT;...
-               airborne.MINLONG,airborne.MINLAT];
-        
-Gravin=inpolygon(Gravo(:,1),Gravo(:,2),CoordsMM_Grav(:,1),CoordsMM_Grav(:,2));
-% case 1:Eliminate
-%gravFlagAltimetry(Gravin==1,:)=0; % flag altimetry where airborne
-%Gravo(gravFlagAltimetry==1,:)=[]; % eliminate altimetry where airborne
-% Filter out rows where the 6th column equals 2 and Gravin is true
-Gravo = Gravo(~(Gravo(:,6) == 2 & Gravin), :);
-% case 2:Add more uncertainty to the fifth (uncertainty) column where altimetry data 
-%Gravo( Gravo(:,6) == 2 & Gravin, 5) = Gravo( Gravo(:,6) == 2 & Gravin , 5) + 10;
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% airborne.MINLONG=153.3;
+% airborne.MAXLONG=153.8;
+% airborne.MINLAT=-28.1;
+% airborne.MAXLAT=-30;
+% disp('Extracting airborne gravity subset') 
+% CoordsMM_Grav=[airborne.MINLONG,airborne.MINLAT;...
+%                airborne.MINLONG,airborne.MAXLAT;...
+%                airborne.MAXLONG,airborne.MAXLAT;...
+%                airborne.MAXLONG,airborne.MINLAT;...
+%                airborne.MINLONG,airborne.MINLAT];
+%         
+% Gravin=inpolygon(Gravo(:,1),Gravo(:,2),CoordsMM_Grav(:,1),CoordsMM_Grav(:,2));
+% % case 1: Eliminate rows where the 6th column equals 2 and Gravin is true
+% % Gravo = Gravo(~(Gravo(:,6) == 2 & Gravin), :);
+% % case 2: Add more uncertainty to the fifth (uncertainty) column where altimetry data 
+%   Gravo( Gravo(:,6) == 2 & Gravin, 5) = Gravo( Gravo(:,6) == 2 & Gravin , 5) + 100;
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% eliminate data 
 
 %Gravo(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[];
 
-% Gravo(gravFlagAltimetry==1,:)=[];
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-% 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+Gravo(gravFlagAltimetry==1,:)=[];
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                                                                                                                                                 
