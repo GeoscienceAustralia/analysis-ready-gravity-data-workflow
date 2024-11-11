@@ -46,20 +46,20 @@ GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-29;
 GRID_PARA.MAXLAT=-28;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
-DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
+DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
 DEM_PARA.num_rows=3181;
 %% Gravity data
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename='Data\processedData\GravityAllVicNSW.mat';
-GRAV_PARA.filename1=[];%'Data\GRAVITY\Xcalibur_Gravity.mat';
+GRAV_PARA.filename='Data/processedData/GravityAllVicNSW.mat';
+GRAV_PARA.filename1=[];%'Data/GRAVITY/Xcalibur_Gravity.mat';
 GRAV_PARA.TypeB=1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB=3;
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data\GRAVITY_GRAD\Xcalibur_FVD_GDD.mat';
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
@@ -84,15 +84,15 @@ Topo_PARA.RTM=[50,10,300];%[1000,10,2160]for egm%[0,10,300]% Range of SHM degree
 %about 1080 for EGM,we need to fix the filter by factor of 2 
 %% GGM reference signal
 % First run e.g. ./Data/GGM/RunIsGrafLab_Topo_Surf_EGM2008.m
-GGM_PARA.filename='Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data\GGM\GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
+GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
 %% Coastline data
-COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
+COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data\GPS_LEVELLING\Lev_NSW_NG.mat';%'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_NSW_NG.mat';%'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
-LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
+LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
 OUTPUT_PARA.Grids_name='outputs/GridsNENSWgg2degTile/';
