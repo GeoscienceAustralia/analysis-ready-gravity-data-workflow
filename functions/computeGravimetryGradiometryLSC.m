@@ -13,7 +13,7 @@ function computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,G
 %         LongDEM= matrix of longitudes for DEM from Import_And_Format_Data_Sets_Reg
 %         LatDEM=  matrix of latitudes for DEM from Import_And_Format_Data_Sets_Reg
 %         GRID_REF= matrix of [*,3] from Import_And_Format_Data_Sets_Reg?
-%         Grav = [longitude latitude orthometric_height gravity_anomaly uncertainty(std) flag(1:terrestrial 2:airborne 3:gradiometry)]
+%         Grav = [longitude latitude orthometric_height gravity_anomaly uncertainty(std) flag(1:terrestrial 2:altimetry 3:airborne)]
 %         Grav_grad= [longitude latitude height gravity_gradient flag (5:gradiometry)]
 %         GGM_Gravity_griddedInterpolant = GGM gravity griddedInterpolant 
 %         GGM_Zeta_griddedInterpolant = GGM height anomaly griddedInterpolant 
@@ -133,14 +133,14 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
    
     disp('Running localised covariance analysis') 
 
-    if COV_PARA.Airbornedataonly && isempty(Gravdatout_m(Gravdatout_m(:,6)==2,:))==false
+    if COV_PARA.Airbornedataonly && isempty(Gravdatout_m(Gravdatout_m(:,6)==3,:))==false
 
-    [COV_PARA_RTM]= computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv(Gravdatout_m(:,6)==2,:),'RTM',block_counter);
+    [COV_PARA_RTM]= computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv(Gravdatout_m(:,6)==3,:),'RTM',block_counter);
     
     Gravdatout_m_cv_faye=Gravdatout_m_cv;
     
-    Gravdatout_m_cv_faye(:,4)=Gravdatout_m_cv(Gravdatout_m(:,6)==2,4)-LWLBouguer_Slab_Function(Gravdatout_m_cv(Gravdatout_m(:,6)==2,1),Gravdatout_m_cv(Gravdatout_m(:,6)==2,2))+...
-        ZDEM_griddedInterpolant(Gravdatout_m_cv(Gravdatout_m(:,6)==2,1),Gravdatout_m_cv(Gravdatout_m(:,6)==2,2))*BouguerConstant*density;
+    Gravdatout_m_cv_faye(:,4)=Gravdatout_m_cv(Gravdatout_m(:,6)==3,4)-LWLBouguer_Slab_Function(Gravdatout_m_cv(Gravdatout_m(:,6)==3,1),Gravdatout_m_cv(Gravdatout_m(:,6)==3,2))+...
+        ZDEM_griddedInterpolant(Gravdatout_m_cv(Gravdatout_m(:,6)==3,1),Gravdatout_m_cv(Gravdatout_m(:,6)==3,2))*BouguerConstant*density;
     
     [COV_PARA_Faye]= computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv_faye,'Faye',block_counter);
     
