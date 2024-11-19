@@ -1,28 +1,28 @@
 close all
 clear 
 
-importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
-scatter(AB_Grav_BM(:,1),AB_Grav_BM(:,2),1,AB_Grav_BM(:,4))
-colorbar
-colormap(jet)
-title(colorbar,'mGal','FontSize',10);
+% importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
+% scatter(AB_Grav_BM(:,1),AB_Grav_BM(:,2),1,AB_Grav_BM(:,4))
+% colorbar
+% colormap(jet)
+% title(colorbar,'mGal','FontSize',10);
 
 % Look at Victoria Data first.
 %Vic_Data=importdata('Data\GRAVITY\AIRBORNE/18042024victoriaNSW/dlv024_gravVictoria.csv');
-% Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
-% Vic_Data.data(end,:)=[];
-% Vic_Long=round(Vic_Data.data(:,11)*60)/60;
-% Vic_Lat=round(Vic_Data.data(:,10)*60)/60;
-% Vic_H=Vic_Data.data(:,9);
-% Vic_Grav_anom=Vic_Data.data(:,36);
+Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
+Vic_Data.data(end,:)=[];
+Vic_Long=round(Vic_Data.data(:,11)*60)/60;
+Vic_Lat=round(Vic_Data.data(:,10)*60)/60;
+Vic_H=Vic_Data.data(:,9);
+Vic_Grav_anom=Vic_Data.data(:,36);
 
 % this file has different columns
-Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
-Vic_Data.data(end,:)=[];
-Vic_Long=round(Vic_Data.data(:,35)*60)/60;
-Vic_Lat=round(Vic_Data.data(:,32)*60)/60;
-Vic_H=Vic_Data.data(:,39);
-Vic_Grav_anom=Vic_Data.data(:,18);
+% Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
+% Vic_Data.data(end,:)=[];
+% Vic_Long=round(Vic_Data.data(:,35)*60)/60;
+% Vic_Lat=round(Vic_Data.data(:,32)*60)/60;
+% Vic_H=Vic_Data.data(:,39);
+% Vic_Grav_anom=Vic_Data.data(:,18);
 
 %[Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
 
@@ -38,15 +38,18 @@ title(colorbar,'mGal','FontSize',10);
 % Check by comparing to EGM2008
 GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
 GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
+GGM_Gi_interpolated=GGM_Gi(Vic_Long,-Vic_Lat,Vic_H);
+disp('Mean of Difference GGM and Airborne ')
+mean(GGM_Gi_interpolated)
 
 figure(2)
 clf
 hold on
-scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom-GGM_Gi(Vic_Long,-Vic_Lat,Vic_H))
+scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom-GGM_Gi_interpolated)
 colorbar
-caxis([-100 100])
+%caxis([-100 100])
 colormap(jet)
-title('Diferences look small and zero mean? good to go!')
+title('Differences look small and zero mean? good to go!')
 
 %% Look at NSW second.
 
