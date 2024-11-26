@@ -1,4 +1,4 @@
-function plotInputData(Gravo,Coastline,GRID_PARA)
+function plotInputData(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
     % Plot input data: 
     % be carefull, the size of AusDEM is 15462841
     %plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
