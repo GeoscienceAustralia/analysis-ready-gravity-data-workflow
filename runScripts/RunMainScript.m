@@ -320,12 +320,21 @@ if GRAV_PARA.altimetry_weighting
      weightAltimetry(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
 end
 
-disp('2/4 ..........................computeTerrainEffect is running')
-[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant,fullTopoCorrectedGravityGradient]=computeFullTerrainEffects(GRID_PARA, ...
-    Topo_PARA,Gravo,gravGradFiltered,GGM_Gravity_griddedInterpolant,DEM_data,ZDEM_griddedInterpolant, ...
-    LongDEM,LatDEM,Coastline,OUTPUT_PARA.plotsFolder);
+if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
+    TE = importdata([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+    computeGravimetryGradiometryLSC(GRID_PARA, COV_PARA, DEM_PARA, GRAV_PARA, GRAV_GRAD_PARA, OUTPUT_PARA, GRID_REF, ...
+        TE.fullTopoCorrectedGravityPoint, TE.fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant, ZDEM_griddedInterpolant, TE.fullTopo_griddedInterpolant, ...
+        TE.longwaveTopo_griddedInterpolant, Topo_PARA.Density);
+else
+    disp('2/4 ..........................computeTerrainEffect is running')
+    [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
+        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
+        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
 
-save([OUTPUT_PARA.Grids_name,'TerrainEffects',date,'.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant','fullTopoCorrectedGravityGradient')
+    save([OUTPUT_PARA.Grids_name, 'TerrainEffects', date, '.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
+end
 
 disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
 computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
