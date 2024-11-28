@@ -12,6 +12,10 @@ function weightAltimetry(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
         plotCustomScatter(Gravo(gravFlagAltimetry,1),Gravo(gravFlagAltimetry,2),Gravo(gravFlagAltimetry,5),GRID_PARA,'Altimetryuncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
         plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(gravFlagAirborne,5),GRID_PARA,'Airborneuncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
+        plotCustomScatter(Gravo(gravFlagTerrestrial,1),Gravo(gravFlagTerrestrial,2),Gravo(gravFlagTerrestrial,3),GRID_PARA,'TerrestrialHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(Gravo(gravFlagAltimetry,1),Gravo(gravFlagAltimetry,2),Gravo(gravFlagAltimetry,3),GRID_PARA,'AltimetryHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(Gravo(gravFlagAirborne,1),Gravo(gravFlagAirborne,2),Gravo(gravFlagAirborne,3),GRID_PARA,'AirborneHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+
     end
     % mark airborne in altimetry
     % Extract data inside computational extents

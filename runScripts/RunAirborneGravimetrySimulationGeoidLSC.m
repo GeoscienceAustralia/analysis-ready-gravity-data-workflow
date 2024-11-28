@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=145;%153%115
-GRID_PARA.MAXLONG=154;%154%117
-GRID_PARA.MINLAT=-38;%-29%-33
-GRID_PARA.MAXLAT=-27.5;%-28%-31
+GRID_PARA.MINLONG=115;%153%115
+GRID_PARA.MAXLONG=116.5;%154%117
+GRID_PARA.MINLAT=-33;%-29%-33
+GRID_PARA.MAXLAT=-31.5;%-28%-31
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -57,7 +57,7 @@ GRAV_PARA.filename = 'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
-GRAV_PARA.altimetry_weighting = true; 
+GRAV_PARA.altimetry_weighting = false; 
 %% Gravity Gradiometry data
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';
@@ -74,7 +74,7 @@ COV_PARA.width=3;% Size of precomputed cov function in degrees - must be larger 
 COV_PARA.res=30/3600; % Resolution of the covariance function
 COV_PARA.COV_COMPUTED_Tilewise=true;% This recomputes the covariance function for each tile.
 COV_PARA.Airbornedataonly=false;%Only use airborne data in establishing Covariance parameters - good to use if we are using EGM2008 as the references as terrestrial data are not independent.
-COV_PARA.COVPlot=false;% true plots progress, false turns this off.
+COV_PARA.COVPlot=true;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
 Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
@@ -96,11 +96,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWJustPlots';
-OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
-OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
+OUTPUT_PARA.Grids_name='outputs/GridsPerthSimulation/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesPerthSimulation/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,outputName];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'PerthSimulation'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -109,6 +108,42 @@ disp('1/4 ..........................importAndFormatData is running ')
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+
+% Load your irregular gravity data
+% Assuming your data is in a matrix format with columns: longitude, latitude, height, gravity
+data = Gravo; % Replace with your actual data file
+
+% Extract columns
+lon = data(:, 1);
+lat = data(:, 2);
+height = data(:, 3);
+gravity = data(:, 4);
+
+% Define the grid for interpolation (1-minute arc)
+lon_grid = min(lon):1/60:max(lon);
+lat_grid = min(lat):1/60:max(lat);
+[LonGrid, LatGrid] = meshgrid(lon_grid, lat_grid);
+
+% Interpolate gravity data onto the grid
+GravityGrid = griddata(lon, lat, gravity, LonGrid, LatGrid, 'natural');
+
+% Interpolate height data onto the grid
+HeightGrid = griddata(lon, lat, height, LonGrid, LatGrid, 'natural');
+
+% Flatten the grids to match the original data format
+LonGrid_flat = LonGrid(:);
+LatGrid_flat = LatGrid(:);
+GravityGrid_flat = GravityGrid(:);
+HeightGrid_flat = HeightGrid(:);
+
+
+
+% Create two columns with the number 3
+column_airborne_uncertainty = ones(size(LonGrid_flat)) * 3;
+column_airborne_flag = ones(size(LonGrid_flat)) * 3;
+
+% Combine the gridded data into a single matrix with the additional columns
+Gravo = [LonGrid_flat, LatGrid_flat, HeightGrid_flat+500, GravityGrid_flat, column_airborne_uncertainty, column_airborne_flag];
 
 if OUTPUT_PARA.PLOT_GRIDS
      plotInputData(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
