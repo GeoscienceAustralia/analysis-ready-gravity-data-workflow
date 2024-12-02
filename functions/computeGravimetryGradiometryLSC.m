@@ -1,6 +1,6 @@
 function computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,Grav,Grav_grad, ...
     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,RTM_Correction_function, ...
-    LWLBouguer_Slab_Function,density)
+    LWLBouguer_Slab_Function,density,Coastline)
 % computeGravimetryGradiometryLSC runs the least squares collocation in blocks. 
 % 
 % Input:  GRID_PARA = grid/tiling parameters such as extent(MINLONG,MAXLONG,MINLAT,MAXLAT), buffer, STEP 
@@ -46,22 +46,24 @@ GGM_Gravity = GGM_Gravity_griddedInterpolant(Grav(:,1),-Grav(:,2),Grav(:,3)-ZDEM
 
 Grav(:,4) = Grav(:,4) - GGM_Gravity;
 
-% plot LSC input
-%plotCustomScatter(Grav(:,1),Grav(:,2),GGM_Gravity,GRID_PARA,2*GRID_PARA.buffer,'GGMgravity','mGal',OUTPUT_PARA.plotsFolder)
-
-%plotCustomScatter(Grav(:,1),Grav(:,2),Grav(:,4),GRID_PARA,2*GRID_PARA.buffer,'LSCinputGravity','mGal',OUTPUT_PARA.plotsFolder)
+if OUTPUT_PARA.PLOT_GRIDS
+    plotCustomScatter(Grav(:,1),Grav(:,2),GGM_Gravity,GRID_PARA,'GGMgravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+    plotCustomScatter(Grav(:,1),Grav(:,2),Grav(:,4),GRID_PARA,'GGMreferencedGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+end
 
 if GRAV_GRAD_PARA.avail
+    disp('GRAV_GRAD_PARA.avail')
     GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Grav_grad(:,1),-Grav_grad(:,2), ...
                Grav_grad(:,3)-ZDEM_griddedInterpolant(Grav_grad(:,1),Grav_grad(:,2))-0.5)-...
                GGM_Gravity_griddedInterpolant(Grav_grad(:,1),-Grav_grad(:,2), ...
                Grav_grad(:,3)-ZDEM_griddedInterpolant(Grav_grad(:,1),Grav_grad(:,2))+0.5));
     
     Grav_grad(:,4) = Grav_grad(:,4) - GGM_GravityGradient; 
-    
-    %plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),GGM_GravityGradient,GRID_PARA,2*GRID_PARA.buffer,'GGMgravityGradient','mGal/m',OUTPUT_PARA.plotsFolder)
-    
-    %plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),Grav_grad(:,4),GRID_PARA,2*GRID_PARA.buffer,'LSCinputGravityGradient','mGal/m',OUTPUT_PARA.plotsFolder)
+
+    if OUTPUT_PARA.PLOT_GRIDS
+        plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),GGM_GravityGradient,GRID_PARA,'GGMgravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),Grav_grad(:,4),GRID_PARA,'GGMreferencedGravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+    end
 end
 % Run least squares collocation in blocks
 block_counter = 0 ; % Increment the counter
