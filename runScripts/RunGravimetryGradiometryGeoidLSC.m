@@ -85,7 +85,7 @@ Topo_PARA.RTM=[50,10,300];%[1000,10,2160]for egm%[0,10,300]% Range of SHM degree
 %about 1080 for EGM,we need to fix the filter by factor of 2 
 %% GGM reference signal
 % First run e.g. ./Data/GGM/RunIsGrafLab_Topo_Surf_EGM2008.m
-GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
+GGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gridded_Int.mat';%'Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/GOCE_N200_For_Gridded_Int.mat';%'Data/GGM/Tongji_For_Gridded_Int.mat';%'Data/GGM/XGM2019_For_Gridded_Int.mat';
 %% Coastline data
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons

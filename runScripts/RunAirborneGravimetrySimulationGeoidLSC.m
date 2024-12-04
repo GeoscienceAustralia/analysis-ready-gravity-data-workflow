@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=115;%153%115
+GRID_PARA.MINLONG=115.5;%153%115
 GRID_PARA.MAXLONG=116;%154%117
 GRID_PARA.MINLAT=-33;%-29%-33
-GRID_PARA.MAXLAT=-32;%-28%-31
+GRID_PARA.MAXLAT=-32.5;%-28%-31
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -96,14 +96,14 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/GridsPerthSim165altTypeB1030/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesPerthSim165altTypeB1030/';
+OUTPUT_PARA.Grids_name='outputs/GridsPerthSim500altTypeB1030/';
+OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesPerthSim500altTypeB1030par/';
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'PerthSim165altTypeB1030'];
+OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'PerthSim500altTypeB1030par'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
-diary([OUTPUT_PARA.Grids_name,date,'PerthSim165altTypeB1030.txt']);% start recording  
+diary([OUTPUT_PARA.Grids_name,date,'PerthSim500altTypeB1030par.txt']);% start recording  
 
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
@@ -143,7 +143,7 @@ column_airborne_uncertainty = ones(size(LonGrid_flat)) * 3;
 column_airborne_flag = ones(size(LonGrid_flat)) * 3;
 
 % Combine the gridded data into a single matrix with the additional columns
-Gravo = [LonGrid_flat, LatGrid_flat, HeightGrid_flat+165, GravityGrid_flat, column_airborne_uncertainty, column_airborne_flag];
+Gravo = [LonGrid_flat, LatGrid_flat, HeightGrid_flat+500, GravityGrid_flat, column_airborne_uncertainty, column_airborne_flag];
 
 if OUTPUT_PARA.PLOT_GRIDS
      plotInputData(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
@@ -155,10 +155,20 @@ end
 
 if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+%     computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+
+%     computeParallelGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint, ...
+%     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%    longwaveTopo_griddedInterpolant,Topo_PARA.Density)
+
 else
     disp('2/4 ..........................computeTerrainEffect is running')
     [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
@@ -167,8 +177,13 @@ else
 
     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
 
+%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+%     computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end

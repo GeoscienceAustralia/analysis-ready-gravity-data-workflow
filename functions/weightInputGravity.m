@@ -40,9 +40,9 @@ function gravity6D = weightInputGravity(gravity6D,Coastline,GRID_PARA,OUTPUT_PAR
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%% eliminate data based on data flags
     
-    %gravity6D(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[]; % for two data types
+    gravity6D(gravFlagAltimetry==1 | gravFlagTerrestrial==1,:)=[]; % for two data types
     
-     gravity6D(gravFlagAirborne==1,:)=[]; %just one data type
+     %gravity6D(gravFlagAirborne==1,:)=[]; %just one data type
 
     if OUTPUT_PARA.PLOT_GRIDS
         plotCustomScatter(gravity6D(:,1),gravity6D(:,2),gravity6D(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
