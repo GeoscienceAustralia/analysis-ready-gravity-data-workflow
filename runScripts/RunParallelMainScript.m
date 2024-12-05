@@ -1,4 +1,4 @@
-function RunMainScript(varargin)
+function RunParallelMainScript(varargin)
 %RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
 %              The process involves sequence of "remove-predict-restore" operations, where the Global
 %              Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
@@ -323,7 +323,7 @@ end
 if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 
@@ -336,7 +336,7 @@ else
     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
 
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end
