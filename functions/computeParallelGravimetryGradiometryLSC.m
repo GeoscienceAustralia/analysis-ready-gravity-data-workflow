@@ -52,8 +52,7 @@ if OUTPUT_PARA.PLOT_GRIDS
 end
 
 if GRAV_GRAD_PARA.avail
-    disp('GRAV_GRAD_PARA.avail')
-    GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Grav_grad(:,1),-Grav_grad(:,2), ...
+   GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Grav_grad(:,1),-Grav_grad(:,2), ...
                Grav_grad(:,3)-ZDEM_griddedInterpolant(Grav_grad(:,1),Grav_grad(:,2))-0.5)-...
                GGM_Gravity_griddedInterpolant(Grav_grad(:,1),-Grav_grad(:,2), ...
                Grav_grad(:,3)-ZDEM_griddedInterpolant(Grav_grad(:,1),Grav_grad(:,2))+0.5));
@@ -73,6 +72,8 @@ n_long = length(long_range);
 
 % Total number of iterations
 n_total = n_lat * n_long;
+
+disp(['total tiles',num2str(n_total)])
 
 file_names = cell(n_total, 1); % Preallocate cell array for file names
 
