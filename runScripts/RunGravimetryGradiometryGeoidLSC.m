@@ -96,7 +96,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='PerthSim165altTyp13par';
+outputName='NSWvicOld';
 OUTPUT_PARA.Grids_name=['outputs\Grids',outputName,'\'];
 OUTPUT_PARA.Tiles_dir_name=['outputs\ResidualTiles',outputName,'\'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
