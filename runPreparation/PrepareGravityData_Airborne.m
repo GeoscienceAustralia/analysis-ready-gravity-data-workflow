@@ -26,6 +26,11 @@ Vic_Grav_anom=Vic_Data.data(:,36);
 
 %[Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
 
+% Check by comparing to EGM2008
+GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
+GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
+GGM_Gi_interpolated=GGM_Gi(Vic_Long,-Vic_Lat,Vic_H);
+
 figure(1)
 clf
 hold on
@@ -34,13 +39,7 @@ colorbar
 %caxis([-100 100])
 colormap(jet)
 title(colorbar,'mGal','FontSize',10);
-
-% Check by comparing to EGM2008
-GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
-GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
-GGM_Gi_interpolated=GGM_Gi(Vic_Long,-Vic_Lat,Vic_H);
-disp('Mean of Difference GGM and Airborne ')
-mean(GGM_Gi_interpolated)
+title('airborneGravity')
 
 figure(2)
 clf
@@ -49,7 +48,13 @@ scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom-GGM_Gi_interpolated)
 colorbar
 %caxis([-100 100])
 colormap(jet)
-title('Differences look small and zero mean? good to go!')
+title(colorbar,'mGal','FontSize',10);
+%title('Differences look small and zero mean? good to go!')
+title('airborneGravity-EGM2008')
+
+disp('Mean of Difference GGM and Airborne ')
+mean(Vic_Grav_anom-GGM_Gi_interpolated)
+
 
 %% Look at NSW second.
 
