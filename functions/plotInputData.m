@@ -1,29 +1,42 @@
-function plotInputData(Gravo,Coastline,GRID_PARA,OUTPUT_PARA)
+function plotInputData(Gravo, Coastline, GRID_PARA, OUTPUT_PARA)
     % Plot input data: 
-    % be carefull, the size of AusDEM is 15462841
+    % be careful, the size of AusDEM is 15462841
     % plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
-    % for perth simulation 
-    % Define the coordinates of the polygon
-    lon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167];
-    lat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000];
-    
-    plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,3),GRID_PARA,'GravityTopographyHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)%[0 2000]
-    hold on;
-    plot(lon, lat, 'b-', 'LineWidth', 2); % Plot the polygon
-    hold on;
-    plot([lon lon(1)], [lat lat(1)], 'b-', 'LineWidth', 2); % Close the polygon
+    % for Perth simulation 
 
-    plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-    hold on;
-    plot(lon, lat, 'b-', 'LineWidth', 2); % Plot the polygon
-    hold on;
-    plot([lon lon(1)], [lat lat(1)], 'b-', 'LineWidth', 2); % Close the polygon
-   
-    plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-    hold on;
-    plot(lon, lat, 'b-', 'LineWidth', 2); % Plot the polygon
-    hold on;
-    plot([lon lon(1)], [lat lat(1)], 'b-', 'LineWidth', 2); % Close the polygon
+    % Plot GravityTopographyHeight
+    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,3), GRID_PARA, 'GravityTopographyHeight', 'm', Coastline, [], OUTPUT_PARA.plotsFolder);
+    % If lon and lat are not empty, plot the polygon
+    if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
+        hold on;
+        plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+        hold off; % Release the hold to save the plot with the polygon
+        % Save the figure
+        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','GravityTopographyHeight','.png'])
+    end
+
+    % Plot Gravity
+    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,4), GRID_PARA, 'Gravity', 'mGal', Coastline, [], OUTPUT_PARA.plotsFolder);
+    % If lon and lat are not empty, plot the polygon
+    if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
+        hold on;
+        plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+        hold off; % Release the hold to save the plot with the polygon
+        % Save the figure
+        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','Gravity','.png'])
+    end
+
+    % Plot GravityUncertainty
+    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,5), GRID_PARA, 'GravityUncertainty', 'mGal', Coastline, [], OUTPUT_PARA.plotsFolder);
+    % If lon and lat are not empty, plot the polygon
+    if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
+        hold on;
+        plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+        hold off; % Release the hold to save the plot with the polygon
+        % Save the figure
+        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','GravityUncertainty','.png'])
+    end
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                                                                                                                                                     
     %plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)

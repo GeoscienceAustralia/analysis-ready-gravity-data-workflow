@@ -77,65 +77,22 @@ if OUTPUT_PARA.PLOT_GRIDS
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 
-disp('Display statistics')
- % common variables for plotting
-    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-    axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-    axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-    axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-    axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
+    Grid_res_geoid_err_w,OUTPUT_PARA)
 
-lon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167];
-lat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000];
-DEMin=inpolygon(LongDEM(1,:),LatDEM(:,1),lon,lat);
-
-Grid_res_geoid_err_w(DEMin==0,:)=[];
-figure('Name','MosaicTiles','NumberTitle','off'); 
-    clf
-    hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
-    hold on;
-    plot(lon, lat, 'b-', 'LineWidth', 2); % Plot the polygon
-    hold on;
-    plot([lon lon(1)], [lat lat(1)], 'b-', 'LineWidth', 2); % Close the polygon
-    customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
-    %caxis([0 0.075])%
-    caxis([0 0.03])
-
-
-GridResGeoidErrW=Grid_res_geoid_err_w;
-GridResGravErrW=Grid_res_grav_err_w;
-
-GridResGeoidErrW(isnan(GridResGeoidErrW)) = [];
-
-fprintf('%f length  res_geoid_err_w\n',length (GridResGeoidErrW));
-fprintf('%f min     res_geoid_err_w\n',min    (GridResGeoidErrW));
-fprintf('%f max     res_geoid_err_w\n',max    (GridResGeoidErrW));
-fprintf('%f mean    res_geoid_err_w\n',mean   (GridResGeoidErrW));
-fprintf('%f median  res_geoid_err_w\n',median (GridResGeoidErrW));
-fprintf('%f std     res_geoid_err_w\n',std    (GridResGeoidErrW));
-
-GridResGravErrW(isnan(GridResGravErrW)) = [];
-fprintf('%f length  GridResGravErrW\n',length (GridResGravErrW));
-fprintf('%f min     GridResGravErrW\n',min    (GridResGravErrW));
-fprintf('%f max     GridResGravErrW\n',max    (GridResGravErrW));
-fprintf('%f mean    GridResGravErrW\n',mean   (GridResGravErrW));
-fprintf('%f median  GridResGravErrW\n',median (GridResGravErrW));
-fprintf('%f std     GridResGravErrW\n',std    (GridResGravErrW));
-
-disp('Save mat files')
-
-save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
-
-save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
-
-save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
-
-save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
-
-save([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',date,'.mat'],'Grid_res_grav_err_w')
-
-save([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',date,'.mat'],'Grid_res_grav_Bouguer_w')
+% disp('Save mat files')
+% 
+% save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
+% 
+% save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
+% 
+% save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
+% 
+% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
+% 
+% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',date,'.mat'],'Grid_res_grav_err_w')
+% 
+% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',date,'.mat'],'Grid_res_grav_Bouguer_w')
 
 disp('Preparing final grids')
 

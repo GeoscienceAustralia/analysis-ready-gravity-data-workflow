@@ -31,7 +31,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     scatter(Lev(:,1),Lev(:,2),15,Vals_Lev-mean(Vals_Lev(~isnan(Vals_Lev))),'filled')
     customizeMap('Geometric and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
     caxis([-0.25 0.25])
-    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.png']) 
+    %saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.png']) 
     
     % plot GPSlevelling vs reference AGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
@@ -40,7 +40,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     scatter(Lev(:,1),Lev(:,2),15,AGQG_Vals_Lev-mean(AGQG_Vals_Lev(~isnan(AGQG_Vals_Lev))),'filled')
     customizeMap('Geometric and AGQG Difference','m',Coastline,axisLimits)
     caxis([-0.25 0.25])
-    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
+    %saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
 
     % plot difference LSC and AGQG at GPSlevelling
     figure('Name','MosaicTiles','NumberTitle','off'); 
@@ -50,7 +50,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
         Vals_Lev+mean(Vals_Lev(~isnan(Vals_Lev))),'filled')
     customizeMap('AGQG and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
     caxis([-0.25 0.25])
-    saveas(gcf,[plotsFolder,'MosaicTiles','AGQGvsLSCdiff','.png']) 
+    %saveas(gcf,[plotsFolder,'MosaicTiles','AGQGvsLSCdiff','.png']) 
  
     % plot residualGeoidWeighted-residualAGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
@@ -68,7 +68,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
     customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
     %caxis([0 0.075])%
-    caxis([0 0.03])
+    %caxis([0 0.03])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidSigmaError','.png'])
     
     % plot residualGravityWeighted

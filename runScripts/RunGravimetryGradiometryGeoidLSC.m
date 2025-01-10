@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=115.5;%115.5;%140;%153%115
+GRID_PARA.MINLONG=116;%115.5;%140;%153%115
 GRID_PARA.MAXLONG=116.5;%116.5;%154;%154%117
 GRID_PARA.MINLAT=-32.5;%-32.5;%-40;%-29%-33
-GRID_PARA.MAXLAT=-31.5;%-31.5;%-33;%-28%-31
+GRID_PARA.MAXLAT=-32;%-31.5;%-33;%-28%-31
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -99,8 +99,11 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 outputName='PerthSynthetic70sLP1kLines';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,outputName];
+OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
+% If there is a region of interest, for plotting purposes
+OUTPUT_PARA.polygonLon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167, 115.4333 ];
+OUTPUT_PARA.polygonLat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000,-31.4500];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -140,11 +143,6 @@ else
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end
-
-GRID_PARA.MINLONG=116;%115.5;%140;%153%115
-GRID_PARA.MAXLONG=116.5;%116.5;%154;%154%117
-GRID_PARA.MINLAT=-32.5;%-32.5;%-40;%-29%-33
-GRID_PARA.MAXLAT=-32;%-31.5;%-33;%-28%-31
 
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
