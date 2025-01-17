@@ -1,7 +1,8 @@
 close all
 clear 
 %% Import the various gravity datasets
-Grav1=importdata('Data\processedData\AirborneGravityPerthSynthetic70sLP1kLines.mat');
+Grav1=importdata('Data\processedData\AirborneGravityCaravanOtterNSW.mat');
+%Grav1=importdata('Data\processedData\AirborneGravityPerthSynthetic70sLP1kLines.mat');
 %Grav1=importdata('Data\processedData\AirborneGravityVicNSW.mat');
 %Grav2=importdata('AIRBORNE/WA/WA_Airborne.mat');
 %Grav3=importdata('AIRBORNE/NSW/Airborne_Gravity_SGL.mat');% look at more scripts here, there is bias here.
@@ -18,5 +19,6 @@ Out(isnan(Out(:,5)),:)=[];
 Out(isnan(Out(:,4)),:)=[];
 Out(isnan(Out(:,3)),:)=[];
 %save('Data\processedData\GravityAllVicNSW.mat','Out')
-save('Data\processedData\GravityAllPerthSynthetic70sLP1kLines.mat','Out')
+%save('Data\processedData\GravityAllPerthSynthetic70sLP1kLines.mat','Out')
+save('Data\processedData\GravityAllCaravanOtterNSW.mat','Out')
 disp('Done')

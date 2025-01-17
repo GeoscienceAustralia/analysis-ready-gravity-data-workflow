@@ -1,11 +1,12 @@
 close all
 clear 
 
-% AB_Grav_BM=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
-% scatter(AB_Grav_BM(:,1),AB_Grav_BM(:,2),1,AB_Grav_BM(:,4))
-% colorbar
-% colormap(jet)
-% title(colorbar,'mGal','FontSize',10);
+AB_Grav_BMtest=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
+figure
+scatter(AB_Grav_BMtest(:,1),AB_Grav_BMtest(:,2),1,AB_Grav_BMtest(:,4))
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
 
 % Look at Victoria Data first.
 %Vic_Data=importdata('Data\GRAVITY\AIRBORNE/18042024victoriaNSW/dlv024_gravVictoria.csv');
@@ -27,43 +28,43 @@ Vic_Grav_anom=Vic_Data.data(:,36);
 %[Vic_Latm,Vic_Longm]=meshgrid(min(Vic_Lat):1/60:max(Vic_Lat),min(Vic_Long):1/60:max(Vic_Long));
 
 % Check by comparing to EGM2008
-GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
-GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
-GGM_Gi_interpolated=GGM_Gi(Vic_Long,-Vic_Lat,Vic_H);
+% GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
+% GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
+% GGM_Gi_interpolated=GGM_Gi(Vic_Long,-Vic_Lat,Vic_H);
 
-figure
-    subplot(2, 1, 1) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
-    hold on
-    scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom)
-    colorbar
-    colormap(jet)
-    title(colorbar,'mGal','FontSize',10);
-    title('airborneGravity')
+%figure
+%subplot(2, 1, 1) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+hold on
+scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('airborneGravity')
 
-    subplot(2, 1, 2) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
-    hold on
-    scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom-GGM_Gi_interpolated)
-    colorbar
-    colormap(jet)
-    title(colorbar,'mGal','FontSize',10);
-    title('airborneGravity-EGM2008')
+% subplot(2, 1, 2) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+% hold on
+% scatter(Vic_Long,Vic_Lat,1,Vic_Grav_anom-GGM_Gi_interpolated)
+% colorbar
+% colormap(jet)
+% title(colorbar,'mGal','FontSize',10);
+% title('airborneGravity-EGM2008')
 
-disp('Mean of Difference GGM and Airborne ')
-mean(Vic_Grav_anom-GGM_Gi_interpolated)
-
-ABGrav=[Vic_Long,Vic_Lat,Vic_H,Vic_Grav_anom,Vic_Grav_anom*0+3];
-% Block mean as other datasets.
-AB_Grav_Long=round(ABGrav(:,1)*60)/60;   
-AB_Grav_Lat=round(ABGrav(:,2)*60)/60;
-[vals, uid, idx]=unique([AB_Grav_Long,AB_Grav_Lat],'rows');
-AB_Grav_BM(:,3) = accumarray(idx,ABGrav(:,3),[],@mean);
-AB_Grav_BM(:,4) = accumarray(idx,ABGrav(:,4),[],@mean);
-AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
-AB_Grav_BM(:,1) = AB_Grav_Long(uid);
-AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
-
-save('Data\processedData\AirborneGravityVictoriaOtter.mat','AB_Grav_BM')
-disp('Done')
+% disp('Mean of Difference GGM and Airborne ')
+% mean(Vic_Grav_anom-GGM_Gi_interpolated)
+% 
+% ABGrav=[Vic_Long,Vic_Lat,Vic_H,Vic_Grav_anom,Vic_Grav_anom*0+3];
+% % Block mean as other datasets.
+% AB_Grav_Long=round(ABGrav(:,1)*60)/60;   
+% AB_Grav_Lat=round(ABGrav(:,2)*60)/60;
+% [vals, uid, idx]=unique([AB_Grav_Long,AB_Grav_Lat],'rows');
+% AB_Grav_BM(:,3) = accumarray(idx,ABGrav(:,3),[],@mean);
+% AB_Grav_BM(:,4) = accumarray(idx,ABGrav(:,4),[],@mean);
+% AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
+% AB_Grav_BM(:,1) = AB_Grav_Long(uid);
+% AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
+% 
+% save('Data\processedData\AirborneGravityVictoriaOtter.mat','AB_Grav_BM')
+% disp('Done')
 
 
 

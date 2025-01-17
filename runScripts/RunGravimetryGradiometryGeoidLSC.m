@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=116;%115.5;%140;%153%115
-GRID_PARA.MAXLONG=116.5;%116.5;%154;%154%117
-GRID_PARA.MINLAT=-32.5;%-32.5;%-40;%-29%-33
-GRID_PARA.MAXLAT=-32;%-31.5;%-33;%-28%-31
+GRID_PARA.MINLONG=140;%115.5;%140;%153%115
+GRID_PARA.MAXLONG=154;%116.5;%154;%154%117
+GRID_PARA.MINLAT=-39;%-32.5;%-40;%-29%-33
+GRID_PARA.MAXLAT=-27.5;%-31.5;%-33;%-28%-31
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -53,11 +53,11 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename ='Data/processedData/GravityAllPerthSynthetic70sLP1kLines.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
+GRAV_PARA.filename ='Data/processedData/GravityAllCaravanOtterNSW.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
-GRAV_PARA.inputGravity_weighting = false; 
+GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';
@@ -96,7 +96,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='PerthSynthetic70sLP1kLines';
+outputName='CaravanOtterNSW';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
