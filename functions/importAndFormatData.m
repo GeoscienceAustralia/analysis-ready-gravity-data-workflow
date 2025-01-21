@@ -103,16 +103,20 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     Gravity6D(Gravin==0,:)=[];
     % import gravity gradiometry data
     if GRAV_GRAD_PARA.avail
-    disp('Gravity Gradiometry')
-    GravityGradient5D=importdata(GRAV_GRAD_PARA.filename);
+      disp('Gravity Gradiometry')
+      GravityGradient5D=importdata(GRAV_GRAD_PARA.filename);
 %     Grav_grad(:,1)=round(Grav_grad(:,1)*60)/60;% make sure we have 1 arc minute data
 %     Grav_grad(:,2)=round(Grav_grad(:,2)*60)/60;% make sure we have 1 arc minute data
 %     Grav_grad(:,4)=Grav_grad(:,4);% Change from Eotvos to mgal/m
 %     Grav_grad(:,5)=Grav_grad(:,5);% Change from Eotvos to mgal/m
 %     this works for Xcalibur_FVD_GDD.mat
       %Nanfilter = createNanFilter(GravityGradient5D(:,4),470,606);
-      Nanfilter = createNanFilter(GravityGradient5D(:,4),470,608);%for new NSW file on 22/03/2024
-      GravityGradient5D = GravityGradient5D(~isnan(GravityGradient5D(:,4).*Nanfilter), :);
+      if any(isnan(GravityGradient5D(:)))
+          Nanfilter = createNanFilter(GravityGradient5D(:,4),470,608);%for new NSW file on 22/03/2024
+          GravityGradient5D = GravityGradient5D(~isnan(GravityGradient5D(:,4).*Nanfilter), :);
+      else
+          disp('The GravityGradient5D matrix does not contain any NaN values.');
+      end
       disp('Extracting gravity gradient subset') 
       GravGradin=inpolygon(GravityGradient5D(:,1),GravityGradient5D(:,2),CoordsMM_Grav(:,1),CoordsMM_Grav(:,2));
       GravityGradient5D(GravGradin==0,:)=[];

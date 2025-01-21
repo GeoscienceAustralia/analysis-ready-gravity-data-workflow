@@ -9,13 +9,19 @@ Vic_LatOtter=round(Vic_Data.data(:,10)*60)/60;
 Vic_HOtter=Vic_Data.data(:,9);
 Vic_Grav_anomOtter=Vic_Data.data(:,36);
 
+AirborneGravitymat=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
+Vic_LongCaravan=AirborneGravitymat(:,1);
+Vic_LatCaravan=AirborneGravitymat(:,2);
+Vic_HCaravan=AirborneGravitymat(:,3);
+Vic_Grav_anomCaravan=AirborneGravitymat(:,4);
+
 % this file has different columns
-Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
-Vic_Data.data(end,:)=[];
-Vic_LongCaravan=round(Vic_Data.data(:,35)*60)/60;
-Vic_LatCaravan=round(Vic_Data.data(:,32)*60)/60;
-Vic_HCaravan=Vic_Data.data(:,39);
-Vic_Grav_anomCaravan=Vic_Data.data(:,18);
+% Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
+% Vic_Data.data(end,:)=[];
+% Vic_LongCaravan=round(Vic_Data.data(:,35)*60)/60;
+% Vic_LatCaravan=round(Vic_Data.data(:,32)*60)/60;
+% Vic_HCaravan=Vic_Data.data(:,39);
+% Vic_Grav_anomCaravan=Vic_Data.data(:,18);
 
 figure
 scatter(Vic_LongOtter,Vic_LatOtter,1,Vic_Grav_anomOtter)
@@ -133,7 +139,8 @@ AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
 AB_Grav_BM(:,1) = AB_Grav_Long(uid);
 AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
 % 
-save('Data\processedData\AirborneGravityCaravanOtterNSW.mat','AB_Grav_BM')
+%save('Data\processedData\AirborneGravityCaravanOtterNSW.mat','AB_Grav_BM')
+save('Data\processedData\AirborneGravityGippslandCaravanOtterNSW.mat','AB_Grav_BM')
 % disp('Done')
 
 
