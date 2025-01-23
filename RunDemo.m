@@ -90,10 +90,13 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/Grids/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTiles/';
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'demo'];
+OUTPUT_PARA.Grids_name = 'outputsDemo/Grids/';
+OUTPUT_PARA.Tiles_dir_name = 'outputsDemo/ResidualTiles/';
+OUTPUT_PARA.PLOT_GRIDS = true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.plotsFolder = 'outputsDemo/plots/';
+% If there is a region of interest, for plotting purposes
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
@@ -111,38 +114,56 @@ keepawake=true;% Setting this to true wiggles the mouse every so often so the co
 % save([OUTPUT_PARA.Grids_name,'oneTileGriddedInterpolant141-32','.mat'],...
 % 'ZDEM_griddedInterpolant','GravityGGM_griddedInterpolant','ZetaGGM_griddedInterpolant','ZetaRef_griddedInterpolant')
 
+% Check if the directory exists, if not, create it
+if ~exist(OUTPUT_PARA.Grids_name, 'dir')
+    mkdir(OUTPUT_PARA.Grids_name);
+end
+
+if ~exist(OUTPUT_PARA.Tiles_dir_name, 'dir')
+    mkdir(OUTPUT_PARA.Tiles_dir_name);
+end
+
+if ~exist(OUTPUT_PARA.plotsFolder, 'dir')
+    mkdir(OUTPUT_PARA.plotsFolder);
+end
+
 disp('1/4 ..........................import demo data')
 
 dataDemo=importdata('Data\oneTileData141-32.mat');
 interpolantDemo=importdata('Data\oneTileGriddedInterpolant141-32.mat');
 
-% Plot input data: 
-
-plotCustomScatter(dataDemo.DEM3D(:,1),dataDemo.DEM3D(:,2),dataDemo.DEM3D(:,3),GRID_PARA,'DEM','m',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
-%caxis([-1 584])% always check plotCustomScatter for %caxis
-plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,3),GRID_PARA,'GravityHeight','m',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
-%caxis([-1 584])
-plotCustomScatter(dataDemo.Gravity6D(:,1),dataDemo.Gravity6D(:,2),dataDemo.Gravity6D(:,4),GRID_PARA,'Gravity','mGal',dataDemo.Coastline,OUTPUT_PARA.plotsFolder)
-%caxis([-44 60])
-disp('2/4 ..........................computeTerrainEffect is running')
-[fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
-    Topo_PARA,dataDemo.Gravity6D,interpolantDemo.GravityGGM_griddedInterpolant,dataDemo.DEM3D,interpolantDemo.ZDEM_griddedInterpolant, ...
-    dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix,dataDemo.Coastline,OUTPUT_PARA.plotsFolder);
-
-save([OUTPUT_PARA.Grids_name,'TerrainEffects','.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
-
-% if TerrainEffects have been saved, uncomment 
-% TE=importdata([OUTPUT_PARA.Grids_name,'TerrainEffects.mat']);
-
 DEM_PARA.num_rows=size(dataDemo.LatDEMmatrix,1);
 DEM_PARA.num_cols=size(dataDemo.LatDEMmatrix,2);
 
-tic
-disp('3/4 ..........................computeGravimetryLSC is running')
-computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GridRef3D,fullTopoCorrectedGravityPoint, ...
+% Plot input data: 
+
+gravGradFiltered=[];
+
+if OUTPUT_PARA.PLOT_GRIDS
+     plotInputData(dataDemo.Gravity6D,gravGradFiltered,dataDemo.Coastline,GRID_PARA,OUTPUT_PARA)
+end 
+
+
+if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
+    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+    disp('3/4 ..........................computeGravimetryLSC is running')
+    computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GridRef3D,fullTopoCorrectedGravityPoint, ...
     interpolantDemo.GravityGGM_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
     longwaveTopo_griddedInterpolant,Topo_PARA.Density)
-toc
+
+else
+    disp('2/4 ..........................computeTerrainEffect is running')
+    [fullTopoCorrectedGravityPoint,longwaveTopo_griddedInterpolant,fullTopo_griddedInterpolant]=computeTerrainEffect(GRID_PARA, ...
+    Topo_PARA,dataDemo.Gravity6D,interpolantDemo.GravityGGM_griddedInterpolant,dataDemo.DEM3D,interpolantDemo.ZDEM_griddedInterpolant, ...
+    dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix,dataDemo.Coastline,OUTPUT_PARA.plotsFolder);
+
+    save([OUTPUT_PARA.Grids_name,'TerrainEffects','.mat'],'fullTopoCorrectedGravityPoint','longwaveTopo_griddedInterpolant','fullTopo_griddedInterpolant')
+
+    disp('3/4 ..........................computeGravimetryLSC is running')
+    computeGravimetryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,OUTPUT_PARA,dataDemo.GridRef3D,fullTopoCorrectedGravityPoint, ...
+    interpolantDemo.GravityGGM_griddedInterpolant,interpolantDemo.ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+    longwaveTopo_griddedInterpolant,Topo_PARA.Density)
+end
 
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,dataDemo.LevellingData3D,dataDemo.LongDEMmatrix,dataDemo.LatDEMmatrix, ...
