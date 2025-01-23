@@ -144,6 +144,9 @@ OUTPUT_PARA.Grids_name='/g/data/dg9/nd2979/outputs/GridsNENSWgg2degTile/';
 OUTPUT_PARA.Tiles_dir_name='/g/data/dg9/nd2979/outputs/ResidualTilesNENSWgg2degTile/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder='/g/data/dg9/nd2979/outputs/plots/22-Nov-2024NENSWgg2degTile';
+% If there is a region of interest, for plotting purposes
+OUTPUT_PARA.polygonLon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167, 115.4333 ];
+OUTPUT_PARA.polygonLat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000,-31.4500];
 
 % Keep the computer awake
 keepawake=true; % Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
@@ -249,6 +252,12 @@ for i=1:nargin
           OUTPUT_PARA.PLOT_GRIDS = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--output-para-plotsfolder',25)
           OUTPUT_PARA.plotsFolder = varargin{i+1};
+          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        elseif strncmp(varargin{i},'--output-para-polygonLon',24)
+          OUTPUT_PARA.polygonLon = str2num(varargin{i+1});
+        elseif strncmp(varargin{i},'--output-para-polygonLat',24)
+          OUTPUT_PARA.polygonLat = str2num(varargin{i+1});
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         elseif strncmp(varargin{i},'--keepawake',11)
           keepawake = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--help',6)
@@ -313,7 +322,7 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
-     plotInputData(Gravo,Coastline,GRID_PARA)
+     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
 end 
 
 if GRAV_PARA.inputGravity_weighting 
