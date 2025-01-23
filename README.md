@@ -27,11 +27,8 @@ At the end of the process, `RunDemo.m` combines all the tiles and outputs the ge
 
 To run `RunDemo.m`:
 
-1. Create the following folders:
+1. Create the following folder:
    - `Data`
-   - `outputs/Grids/`
-   - `outputs/ResidualTiles/`
-
 2. Download the required input data from the following links and place them in the `Data` folder:
 - [oneTileData141-32.mat](https://geoid.s3-ap-southeast-2.amazonaws.com/AGQG/oneTileData141-32.mat)
 - [oneTileGriddedInterpolant141-32.mat](https://geoid.s3-ap-southeast-2.amazonaws.com/AGQG/oneTileGriddedInterpolant141-32.mat)
