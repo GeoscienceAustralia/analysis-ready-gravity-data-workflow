@@ -22,6 +22,7 @@ octave-workspace
 .autosave
 
 #specific output folders to this repository
+outputsDemo/
 outputs/
 Data/
 
