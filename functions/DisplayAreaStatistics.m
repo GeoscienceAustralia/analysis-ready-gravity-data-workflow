@@ -13,27 +13,29 @@ function DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid
        areaIn=inpolygon(LongDEM,LatDEM,OUTPUT_PARA.polygonLon,OUTPUT_PARA.polygonLat);
        Grid_res_geoid_err_w(areaIn==0)=nan;
        Grid_res_geoid_w(areaIn==0)=nan;
-    
-        figure('Name','MosaicTiles','NumberTitle','off'); 
-        clf
-        hold on
-        imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
-        hold on;
-        plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
-        customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
-        %caxis([0 0.05])
-        caxis([0 0.02])
-        saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidSigmaErrorFocused','.png'])
-    
-        figure('Name','MosaicTiles','NumberTitle','off'); 
-        clf
-        hold on
-        imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
-        hold on;
-        plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
-        customizeMap('residualGeoid','m',Coastline,axisLimits)
-        caxis([-0.5 0.5])
-        saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidFocused','.png'])
+
+       if OUTPUT_PARA.PLOT_GRIDS
+            figure('Name','MosaicTiles','NumberTitle','off'); 
+            clf
+            hold on
+            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
+            hold on;
+            plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+            customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
+            %caxis([0 0.05])
+            caxis([0 0.02])
+            saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidSigmaErrorFocused','.png'])
+        
+            figure('Name','MosaicTiles','NumberTitle','off'); 
+            clf
+            hold on
+            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
+            hold on;
+            plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+            customizeMap('residualGeoid','m',Coastline,axisLimits)
+            caxis([-0.5 0.5])
+            saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidFocused','.png'])
+        end
 
     end
 
