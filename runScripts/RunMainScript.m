@@ -143,7 +143,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.Grids_name='/g/data/dg9/nd2979/outputs/GridsNENSWgg2degTile/';
 OUTPUT_PARA.Tiles_dir_name='/g/data/dg9/nd2979/outputs/ResidualTilesNENSWgg2degTile/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder='/g/data/dg9/nd2979/outputs/plots/22-Nov-2024NENSWgg2degTile';
+OUTPUT_PARA.plotsFolder='/g/data/dg9/nd2979/outputs/plots/';
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167, 115.4333 ];
 OUTPUT_PARA.polygonLat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000,-31.4500];
