@@ -102,6 +102,8 @@ OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well a
 OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'PerthSim165altTyp13par'];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
+OUTPUT_PARA.polygonLon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167, 115.4333 ];
+OUTPUT_PARA.polygonLat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000,-31.4500];
 
 diary([OUTPUT_PARA.Grids_name,date,'PerthSim165altTyp13par.txt']);% start recording  
 
