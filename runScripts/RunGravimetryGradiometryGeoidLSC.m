@@ -62,7 +62,7 @@ GRAV_PARA.inputGravity_weighting = true;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Otway.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -96,14 +96,15 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='GippslandCaravanOtterNogg';
+outputName='GippslandCaravanOtter';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
-OUTPUT_PARA.polygonLon = [];
-OUTPUT_PARA.polygonLat = [];
+OUTPUT_PARA.polygonLon = [141 141 143 143 141];
+OUTPUT_PARA.polygonLat = [-37 -38.5 -39 -37.5 -37];
+
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
