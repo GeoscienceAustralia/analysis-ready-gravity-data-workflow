@@ -41,10 +41,12 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -38 -27.5];
 % NENSW=[153 154 -29 -28];
+% vic=[140 154 -39 -33];
+% NSW=[140 154 -38 -27];
 GRID_PARA.MINLONG=140;%115.5;%140;%153%115
 GRID_PARA.MAXLONG=154;%116.5;%154;%154%117
-GRID_PARA.MINLAT=-39;%-32.5;%-40;%-29%-33
-GRID_PARA.MAXLAT=-33;%-31.5;%-33;%-28%-31
+GRID_PARA.MINLAT=-37.5;%-32.5;%-40;%-29%-33
+GRID_PARA.MAXLAT=-27.5;%-31.5;%-33;%-28%-31
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -60,7 +62,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Otway.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';%'Data/GRAVITY_GRAD/Otway.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
@@ -96,14 +98,14 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='GippslandCaravanOtter';
+outputName='GippslandCaravanOtterNSWXcalibur';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
-OUTPUT_PARA.polygonLon = [141 141 143 143 141];
-OUTPUT_PARA.polygonLat = [-37 -38.5 -39 -37.5 -37];
+OUTPUT_PARA.polygonLon =[]; %[141 141 143 143 141];
+OUTPUT_PARA.polygonLat =[]; %[-37 -38.5 -39 -37.5 -37];
 
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
