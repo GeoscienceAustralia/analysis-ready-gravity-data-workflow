@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 % Data matrix
 data = [
     -52.833, 8, 0, 0.000, 93, 2, 0.000, -1.34, -11.73;
@@ -37,19 +37,20 @@ data = [
     -50.661, 8, 0, 0.000, 93, 35, 0.000, -1.90, -4.94;
     -50.617, 8, 0, 0.000, 93, 36, 0.000, -1.90, -4.94
 ];
-=======
+
 
 % Define the data
 latitudes = [-53.031, -52.935, -52.833, -52.726, -52.617, -52.508, -52.399, -52.291, -52.184, -52.081, -51.983, -51.890, -51.805, -51.726, -51.653, -51.587, -51.527, -51.474, -51.427, -51.385, -51.346, -51.309, -51.271, -51.233, -51.193, -51.150];
 longitudes = 93 * ones(size(latitudes));
 values1 = [-1.68, -1.45, -1.34, -1.12, -1.01, -0.90, -0.90, -1.01, -1.12, -1.12, -1.12, -1.23, -1.12, -1.23, -1.45, -1.45, -1.57, -1.57, -1.57, -1.45, -1.45, -1.45, -1.57, -1.57, -1.68, -1.68];
 values2 = [-10.78, -11.11, -11.73, -12.12, -12.24, -12.24, -12.18, -12.07, -11.79, -11.28, -10.72, -9.99, -9.21, -8.53, -7.80, -7.07, -6.34, -5.61, -5.00, -4.55, -4.27, -4.21, -4.27, -4.38, -4.66, -5.11];
->>>>>>> ce08bed0441d6798da417df319ffab75d74748ea
+
+addpath('outputs');
 
 % Open the file for writing
-fileID = fopen('output.txt', 'w');
+fileID = fopen('outputs/output.txt', 'w');
 
-<<<<<<< HEAD
+
 % Loop through data and write to the file without commas
 for i = 1:size(data, 1)
     fprintf(fileID, 'GEO  %.3f  S  %2d  %2d  %.3f  E  %3d  %2d  %.3f  %.2f  %.2f\n', ...
@@ -63,11 +64,6 @@ fclose(fileID);
 
 
 
-=======
-% Write the data to the file
-for i = 1:length(latitudes)
-    fprintf(fileID, 'GEO  %.3f S 8  0  0.000 E %d  %d  0.000     %.2f    %.2f\n', latitudes(i), longitudes(i), i-1, values1(i), values2(i));
-end
 
-% Close the file
->>>>>>> ce08bed0441d6798da417df319ffab75d74748ea
+
+
