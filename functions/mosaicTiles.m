@@ -77,8 +77,8 @@ if OUTPUT_PARA.PLOT_GRIDS
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 
-DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
-    Grid_res_geoid_err_w,OUTPUT_PARA)
+%DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
+    %Grid_res_geoid_err_w,OUTPUT_PARA)
 
 % disp('Save mat files')
 % 
@@ -136,6 +136,8 @@ option.GTRasterTypeGeoKey = 1;
 % Specify bit depth
 bit_depth = 32;
 formattedDate = datestr(date, 'yyyymmdd');
+
+datwrite(Long_out,Lat_out,resamplegeoid,OUTPUT_PARA,formattedDate);
 
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_',formattedDate,'.tif'],bbox, resamplegeoid, bit_depth, option);
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_1SigUncert_',formattedDate,'.tif'],bbox, resamplegeoid_err, bit_depth, option);
