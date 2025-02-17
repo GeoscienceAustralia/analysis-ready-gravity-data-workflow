@@ -1,28 +1,25 @@
 function datwrite(Long_outMatrix, Lat_outMatrix, resamplegeoidMatrix, OUTPUT_PARA, formattedDate)
 
-    % Function to convert decimal degrees to DMS
-    convertToDMS = @(deg) [fix(deg), fix((deg - fix(deg)) * 60), ((deg - fix(deg)) * 60 - fix((deg - fix(deg)) * 60)) * 60];
-    
     % Replace NaN values in the first column with 9999
     resamplegeoidMatrix(isnan(resamplegeoidMatrix)) = 999;
     
     % Make sure latitude values are positive
     Lat_outMatrix = abs(Lat_outMatrix);
-    
-    % Convert longitude and latitude to DMS
-    Long_out_DMS = arrayfun(convertToDMS, Long_outMatrix, 'UniformOutput', false);
-    Lat_out_DMS = arrayfun(convertToDMS, Lat_outMatrix, 'UniformOutput', false);
-    
+
     % Reshape matrices into column vectors
-    Long_out_DMS_col = cell2mat(reshape(Long_out_DMS, [], 1));
-    Lat_out_DMS_col = cell2mat(reshape(Lat_out_DMS, [], 1));
-    resamplegeoid_col = reshape(resamplegeoidMatrix, [], 1);
+    Long_out_col = reshape(Long_outMatrix', [], 1);
+    Lat_out_col = reshape(Lat_outMatrix', [], 1);
+    resamplegeoid_col = reshape(resamplegeoidMatrix', [], 1);
     
+    % Convert longitude and latitude to DM
+    Long_out_col_DM = degrees2dms(Long_out_col);
+    Lat_out_col_DM = degrees2dms(Lat_out_col);
+   
     % Add two columns of zeros
-    zero_columns = zeros(size(resamplegeoid_col, 1), 2);
+    zero_columns = zeros(size(resamplegeoid_col, 1), 1);
     
     % Combine columns into a single matrix
-    data = [resamplegeoid_col, Lat_out_DMS_col, Long_out_DMS_col, zero_columns];
+    data = [resamplegeoid_col, Lat_out_col_DM, zero_columns, Long_out_col_DM, zero_columns, zero_columns, zero_columns];
     
     % Open the file for writing
     fileID = fopen([OUTPUT_PARA.Grids_name, 'AGQG_', formattedDate, '.dat'], 'w');
