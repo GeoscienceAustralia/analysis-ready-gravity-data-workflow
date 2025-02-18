@@ -12,8 +12,8 @@ function datwrite(Long_outMatrix, Lat_outMatrix, resamplegeoidMatrix, OUTPUT_PAR
     resamplegeoid_col = reshape(resamplegeoidMatrix', [], 1);
     
     % Convert longitude and latitude to DM
-    Long_out_col_DM = degrees2dms(Long_out_col);
-    Lat_out_col_DM = degrees2dms(Lat_out_col);
+    Long_out_col_DM = degrees2dm(Long_out_col);
+    Lat_out_col_DM = degrees2dm(Lat_out_col);
    
     % Add two columns of zeros
     zero_columns = zeros(size(resamplegeoid_col, 1), 1);
@@ -28,8 +28,9 @@ function datwrite(Long_outMatrix, Lat_outMatrix, resamplegeoidMatrix, OUTPUT_PAR
     fprintf(fileID, '../data/AGQG_%s                          www.ga.gov.au\n', formattedDate);
     
     % Write data in the specified format
-    for i = 1:1000
-        fprintf(fileID, 'GEO  %.3f  S  %2d  %2d  %.3f  E  %3d  %2d  %.3f  %.2f  %.2f\n', ...
+    %for i = 1:1000
+     for i = 1:size(data,1)
+        fprintf(fileID, 'GEO  %.3f  S  %2d  %2.f  %.3f  E  %3d  %2.f  %.3f  %.2f  %.2f\n', ...
                 data(i, 1), data(i, 2), data(i, 3), data(i, 4), data(i, 5), data(i, 6), data(i, 7), data(i, 8), data(i, 9));
     end
     

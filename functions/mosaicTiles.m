@@ -77,8 +77,8 @@ if OUTPUT_PARA.PLOT_GRIDS
     Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 end 
 
-%DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
-    %Grid_res_geoid_err_w,OUTPUT_PARA)
+DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
+    Grid_res_geoid_err_w,OUTPUT_PARA)
 
 % disp('Save mat files')
 % 

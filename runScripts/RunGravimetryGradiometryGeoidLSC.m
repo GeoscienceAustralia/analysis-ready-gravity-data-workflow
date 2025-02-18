@@ -32,7 +32,7 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer=2;% 1 degs. The x/y extent to extract data around the tile centre. .75
 GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
 GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
@@ -98,10 +98,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='GippslandCaravanOtterNSWXcalibur';
+outputName='GippslandCaravanOtterNSWEcalibur2degTile';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
