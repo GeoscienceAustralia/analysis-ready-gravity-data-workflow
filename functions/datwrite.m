@@ -25,12 +25,12 @@ function datwrite(Long_outMatrix, Lat_outMatrix, resamplegeoidMatrix, OUTPUT_PAR
     fileID = fopen([OUTPUT_PARA.Grids_name, 'AGQG_', formattedDate, '.dat'], 'w');
     
     % Write header
-    fprintf(fileID, '../data/AGQG_%s                          www.ga.gov.au\n', formattedDate);
+    fprintf(fileID, '../data/AGQG_%s                           www.ga.gov.au\n', formattedDate);
     
     % Write data in the specified format
     %for i = 1:1000
-     for i = 1:size(data,1)
-        fprintf(fileID, 'GEO  %.3f  S  %2d  %2.f  %.3f  E  %3d  %2.f  %.3f  %.2f  %.2f\n', ...
+    for i = 1:size(data,1)
+        fprintf(fileID, 'GEO  %.3f S%2d %2.f  %.3f E%3d %2.f  %.3f      %2.2f      %2.2f\n', ...
                 data(i, 1), data(i, 2), data(i, 3), data(i, 4), data(i, 5), data(i, 6), data(i, 7), data(i, 8), data(i, 9));
     end
     

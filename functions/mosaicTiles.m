@@ -45,7 +45,8 @@ ZDeg=mean(mean(REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zetai(LongDEM,-LatDEM,L
 
 resAGQG=REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zetai(LongDEM,-LatDEM,LatDEM*0);
 
-for k=1:length(Files)
+%for k=1:2
+ for k=1:length(Files)
 
     Tile_Data=importdata([OUTPUT_PARA.Tiles_dir_name,Files(k).name]);
     Wf=Tile_Data.weights;

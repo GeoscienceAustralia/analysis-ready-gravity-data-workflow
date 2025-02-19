@@ -32,21 +32,21 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=2;% 1 degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
 GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
 GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-% VicNSW=[140 154 -38 -27.5];
+% VicNSW=[140 154 -37.5 -27.5];
 % NENSW=[153 154 -29 -28];
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
 GRID_PARA.MINLONG=140;
 GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-37.5;
-GRID_PARA.MAXLAT=-27.5;
+GRID_PARA.MINLAT=-39;
+GRID_PARA.MAXLAT=-33;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -62,7 +62,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
@@ -98,10 +98,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='GippslandCaravanOtterNSWEcalibur2degTile';
+outputName='GippslandCaravanOtter';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
