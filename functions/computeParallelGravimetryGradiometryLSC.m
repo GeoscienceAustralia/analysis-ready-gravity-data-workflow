@@ -77,8 +77,8 @@ disp(['total tiles',num2str(n_total)])
 
 file_names = cell(n_total, 1); % Preallocate cell array for file names
 
-parfor block_counter = 1:n_total
- %parfor block_counter = 1:4 % to test parfor
+%parfor block_counter = 1:n_total
+ parfor block_counter = 1:12 % to test parfor
     BouguerConstant=0.0419; 
     EarthMajorAxis = 6378.137; 
     EarthMinorAxis = 6356.752; 
@@ -121,7 +121,7 @@ parfor block_counter = 1:n_total
     INOUT_grav=inpolygon(Grav(:,1),Grav(:,2),CoordsMM(:,1),CoordsMM(:,2));
     Gravdatout_m=Grav(INOUT_grav==1,:);% Extracts the full res data 
     % Assign to vairables to be used thorugh the rest of the code
-     Gravdatout = struct('Long',Gravdatout_m(:,1),'Lat',Gravdatout_m(:,2),'ortho_H',Gravdatout_m(:,3),...
+    Gravdatout = struct('Long',Gravdatout_m(:,1),'Lat',Gravdatout_m(:,2),'ortho_H',Gravdatout_m(:,3),...
         'Grav_Anom',Gravdatout_m(:,4),'STD',Gravdatout_m(:,5));
 
     GravGraddatout_m=[];
@@ -279,9 +279,7 @@ parfor block_counter = 1:n_total
                ACOVggRTM_grav,ACOVggRTM_dem,CCOVggRTM_dem_grav,CCOVgtRTM_dem_grav,ACOVttRTM_dem,ACOVggFay_dem, ...
                CCOVgtFay_dem,RTM_Correction_function,LWLBouguer_Slab_Function,ZDEM_griddedInterpolant,NormalGravity);
     end
-    disp('Done')    
-
-   % Create weights for grid blending 
+    disp('Create weights for grid blending')    
 
     inputWeightVector=INOUT.*INOUTinner;
 
@@ -289,8 +287,6 @@ parfor block_counter = 1:n_total
 
     % Save the data to a tile 
 
-    % Save the data to a tile 
-    
         weights=filterWeights;
     
         res_geoid=INOUT*0;

@@ -271,9 +271,7 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
                ACOVggRTM_grav,ACOVggRTM_dem,CCOVggRTM_dem_grav,CCOVgtRTM_dem_grav,ACOVttRTM_dem,ACOVggFay_dem, ...
                CCOVgtFay_dem,RTM_Correction_function,LWLBouguer_Slab_Function,ZDEM_griddedInterpolant,NormalGravity);
     end
-    disp('Done')    
-
-   % Create weights for grid blending 
+    disp('Create weights for grid blending')    
 
     inputWeightVector=INOUT.*INOUTinner;
 
