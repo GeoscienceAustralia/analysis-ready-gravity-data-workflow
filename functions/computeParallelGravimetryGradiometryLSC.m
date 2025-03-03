@@ -77,8 +77,8 @@ disp(['total tiles',num2str(n_total)])
 
 file_names = cell(n_total, 1); % Preallocate cell array for file names
 
-parfor block_counter = 1:n_total
- %parfor block_counter = 1:4 % to test parfor
+%parfor block_counter = 1:n_total
+ parfor block_counter = 1:2 % to test parfor
     BouguerConstant=0.0419; 
     EarthMajorAxis = 6378.137; 
     EarthMinorAxis = 6356.752; 
