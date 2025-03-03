@@ -57,7 +57,7 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
 %     LongDEMmatrix=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 %     LatDEMmatrix=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 %     ZDEM=reshape(DEM3D(:,3),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-    %disp('Extracting DEM subset') 
+    disp('Extracting DEM subset') 
     % make sure DEM is bigger than gravity
     Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
     CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
