@@ -38,6 +38,9 @@ function [res_Pot_g,Geoid_Error,residualFreeAirGravityAnomaly,res_grav_g_Bouguer
     % LSC residual gravity anomly
     res_grav_g=[CCOV_dgg_grad_dem,CCOV_gg_grav_dem]*middleMatrix;
 
+%   res_grav_g=[CCOV_dgg_grad_dem,CCOV_gg_grav_dem]*(LSCMAT_comb\[GravGraddatout.Grav_Grad_Anom;Gravdatout.Grav_Anom]);
+     
+
     % LSC residual gravity anomly - RTM correction
     residualFreeAirGravityAnomaly=res_grav_g-RTM_Correction_function(GRID_REF_dat(:,1),GRID_REF_dat(:,2));
 
