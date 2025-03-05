@@ -309,9 +309,11 @@ if ~isfolder(OUTPUT_PARA.plotsFolder)
 end
 
 %temporary breakpoint to check
-%disp(GRID_PARA)
-%disp(GRAV_GRAD_PARA)
-%disp(OUTPUT_PARA)
+disp(GRID_PARA)
+disp(COV_PARA)
+disp(GRAV_PARA)
+disp(GRAV_GRAD_PARA)
+disp(OUTPUT_PARA)
 %return
 
 %computation
