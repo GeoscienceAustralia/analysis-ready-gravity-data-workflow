@@ -14,13 +14,13 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     subplot(1,2,1);
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
-    customizeMap('residualGeoid','m',Coastline,axisLimits)
+    customizeMap('Residual Geoid','m',Coastline,axisLimits)
     caxis([-0.5 0.5])
      
     subplot(1,2,2);
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),resAGQG-ZDeg)
-    customizeMap('residualAGQG','m',Coastline,axisLimits) 
+    customizeMap('Residual AGQG','m',Coastline,axisLimits) 
     caxis([-0.5 0.5])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidvsAGQG','.png']) 
 
@@ -57,7 +57,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w-(resAGQG-ZDeg))
-    customizeMap('ResidualDiffGeoidAndAGQG','m',Coastline,axisLimits)
+    customizeMap('Residual Diff Geoid and AGQG','m',Coastline,axisLimits)
     caxis([-1 1])
     saveas(gcf,[plotsFolder,'MosaicTiles','ResidualDiffGeoidAndAGQG','.png'])
  
@@ -66,18 +66,17 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
-    customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
-    %caxis([0 0.075])%
-    %caxis([0 0.03])
-    caxis([0 0.09])
+    customizeMap('Residual Geoid Sigma Error','m',Coastline,axisLimits)
+    %caxis([0 0.075])%caxis([0 0.03])%caxis([0 0.09])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidSigmaError','.png'])
+    saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidSigmaError','.fig'])
     
     % plot residualGravityWeighted
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_w)
-    customizeMap('residualFreeAirGravityWeighted','mGal',Coastline,axisLimits)
+    customizeMap('Residual Free Air Gravity Weighted','mGal',Coastline,axisLimits)
     saveas(gcf,[plotsFolder,'MosaicTiles','residualFreeAirGravityWeighted','.png'])
  
     % plot residualBouguerGravityWeighted
@@ -85,7 +84,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_Bouguer_w)
-    customizeMap('residualBouguerGravityWeighted','mGal',Coastline,axisLimits)
+    customizeMap('Residual Bouguer Gravity Weighted','mGal',Coastline,axisLimits)
     %caxis([-110 110])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualBouguerGravityWeighted','.png'])
  
@@ -94,7 +93,8 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_err_w)
-    customizeMap('residualGravitySigmaError','mGal',Coastline,axisLimits)
+    customizeMap('Residual Gravity Sigma Error','mGal',Coastline,axisLimits)
     %caxis([0 55])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGravitySigmaError','.png'])
+    saveas(gcf,[plotsFolder,'MosaicTiles','residualGravitySigmaError','.fig'])
 end
