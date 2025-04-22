@@ -92,7 +92,7 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_NSW_NG.mat';%'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_NSW_NG.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=false;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
