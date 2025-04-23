@@ -1,10 +1,10 @@
-function covarianceModel = precomputeCovarianceFunctionTest4all(covarianceType, BjerhammarRadius, ...
+function covariance_griddedInterpolant = precomputeCovarianceFunctionTest4all(covarianceType, BjerhammarRadius, ...
     widthDegree, resolutionDegree, coefficientA, coefficientB, maxOrder, minOrder)
     % This function computes the covariance between a signal at any point and outputs 
     % interpolatable functions for any distance and two radii, i.e., a full 3D spherical covariance function.
     %
     % Input: covarianceType =
-    %              'cov_tt' = disturbing potential covariance model
+    %              'cov_tt' = disturbing potential covariance model,Tscherning(1974), Eq.(126)
     %              'cov_gg' = gravity anomaly covariance model
     %              'cov_gt' = gravity anomaly and disturbing potential cross covariance model
     %              'cov_dgdg' = gravity gradient and disturbing potential cross covariance model
@@ -93,15 +93,15 @@ function covarianceModel = precomputeCovarianceFunctionTest4all(covarianceType, 
         end
     end
 
-%     [r1imn, r2imn, psidat_intmn] = meshgrid(r1i, r2i, psidat_int);
-% 
-%     P = [2 1 3];
-%     r1imn = permute(r1imn, P);
-%     r2imn = permute(r2imn, P);
-%     psidat_intmn = permute(psidat_intmn, P);
-%     CCov_tt_intn = permute(covarianceModel, P);
-%    
-%     % make griddedInterpolant for each model
-%     covariance_griddedInterpolant = griddedInterpolant(double(r1imn), double(r2imn), double(psidat_intmn), CCov_tt_intn);
+    [r1imn, r2imn, psidat_intmn] = meshgrid(r1i, r2i, psidat_int);
+
+    P = [2 1 3];
+    r1imn = permute(r1imn, P);
+    r2imn = permute(r2imn, P);
+    psidat_intmn = permute(psidat_intmn, P);
+    CCov_tt_intn = permute(covarianceModel, P);
+
+    % make griddedInterpolant for each model
+    covariance_griddedInterpolant = griddedInterpolant(double(r1imn), double(r2imn), double(psidat_intmn), CCov_tt_intn);
 
 end

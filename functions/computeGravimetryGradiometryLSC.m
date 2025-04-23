@@ -126,9 +126,9 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
         GravGraddatout.STD=GravGraddatout_m(:,5);
     end
     % Step 1.2 Covariance analysis
-    COV_PARA_RTM=COV_PARA;
-    COV_PARA_Faye=COV_PARA;
-    if COV_PARA.COV_COMPUTED_Tilewise==true
+    COV_PARA_RTM = COV_PARA;
+    COV_PARA_Faye = COV_PARA;
+    if COV_PARA.COV_COMPUTED_Tilewise == true
    
     Gravdatout_m_cv = Gravdatout_m;
    
@@ -136,14 +136,14 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
 
     if COV_PARA.Airbornedataonly && isempty(Gravdatout_m(Gravdatout_m(:,6)==3,:))==false
 
-    [COV_PARA_RTM]= computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv(Gravdatout_m(:,6)==3,:),'RTM',block_counter);
+    [COV_PARA_RTM] = computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv(Gravdatout_m(:,6)==3,:),'RTM',block_counter);
     
-    Gravdatout_m_cv_faye=Gravdatout_m_cv;
+    Gravdatout_m_cv_faye = Gravdatout_m_cv;
     
     Gravdatout_m_cv_faye(:,4)=Gravdatout_m_cv(Gravdatout_m(:,6)==3,4)-LWLBouguer_Slab_Function(Gravdatout_m_cv(Gravdatout_m(:,6)==3,1),Gravdatout_m_cv(Gravdatout_m(:,6)==3,2))+...
         ZDEM_griddedInterpolant(Gravdatout_m_cv(Gravdatout_m(:,6)==3,1),Gravdatout_m_cv(Gravdatout_m(:,6)==3,2))*BouguerConstant*density;
     
-    [COV_PARA_Faye]= computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv_faye,'Faye',block_counter);
+    [COV_PARA_Faye] = computeCovarianceFunctionParameters(OUTPUT_PARA,COV_PARA,Gravdatout_m_cv_faye,'Faye',block_counter);
     
     else
     

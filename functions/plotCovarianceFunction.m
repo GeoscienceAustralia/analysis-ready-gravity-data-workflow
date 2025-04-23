@@ -34,7 +34,7 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     xlabel('Spherical distance in degrees')
     ylabel('Covariance$(mGal^2)$', 'interpreter', 'latex')
     title([gravityType,' gravity auto-covariance for block ',num2str(block_counter)])    
-    str = {['parameter A ',num2str(covarianceParameters.A)],['parameter B ',num2str(covarianceParameters.B)]};
+    str = {['parameter A ',num2str(round(covarianceParameters.A))],['parameter B ',num2str(round(covarianceParameters.B))]};
     text(0.6,40, str,'Color','g')
     saveas(gcf,[outputParameters.plotsFolder,gravityType,'Block',num2str(block_counter),'Covariance.png'])
 
