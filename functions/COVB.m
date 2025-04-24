@@ -20,9 +20,9 @@ function COVB(KTYPE)
     % ! Logical variables NOTD and NOTDD are used to distinguish between these cases.
     
     % Select covariance type
-    if MODEL
-        return;
-    end
+%     if MODEL
+%         return;
+%     end
     
     if KTYPE == 1
         IP = 2;

@@ -1,4 +1,5 @@
-function covarianceMatrix = interpolateCovarianceFunction(longitude1, latitude1, height1, longitude2, latitude2, height2, covariance_griddedInterpolant)
+function covarianceMatrix = interpolateCovarianceFunction(longitude1, latitude1, height1, longitude2, latitude2, height2,...
+    covariance_griddedInterpolant, outputParameters, covName, block_counter)
     % interpolateCovarianceFunction computes the covariance between a signal at any point by
     % interpolating the 3D covariance function.
     %
@@ -31,6 +32,25 @@ function covarianceMatrix = interpolateCovarianceFunction(longitude1, latitude1,
         % Interpolate covariance function
         covarianceMatrix(k, :) = covariance_griddedInterpolant(double(height1(k)) * ones(size(height2')), double(height2'), double(haversineDistance'));
     end
-     % Set NaN values to zero
+    if outputParameters.PLOT_GRIDS
+        % Plot covariance function
+        figure('Name','CovarianceFunction','NumberTitle','off');
+        clf
+        hold on
+        plot(rad2deg(haversineDistance),covarianceMatrix(k, :),'r.')
+        xlim([0 1.2]);
+        drawnow
+        xlabel('Spherical distance in degrees')
+        ylabel('Covariance', 'interpreter', 'latex')
+        title(covName)
+        saveas(gcf, [outputParameters.plotsFolder,covName,'Block',num2str(block_counter),'.png'])
+    end
+    % Set NaN values to zero
     covarianceMatrix(isnan(covarianceMatrix)) = 0;
 end
+
+
+
+
+
+
