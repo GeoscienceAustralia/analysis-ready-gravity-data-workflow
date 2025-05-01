@@ -1,4 +1,4 @@
-function COV = COVA(EPS, N1, KTYPE, PSI, HP, HQ)
+function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     %     ! This subroutine computes one of seven different covariances (see below)
     %     ! using the anomaly degree-variance model given through the values of 
     %     ! Table Seven and Equation (68). The quantity S in the table is 
@@ -32,9 +32,10 @@ function COV = COVA(EPS, N1, KTYPE, PSI, HP, HQ)
     IB1 = 25;
     IB2 = 26;
     IBM1 = 23;
+    EPS =  zeros(1, 300); % Assuming EPS is a vector of size 300
     EPSC = zeros(1, 300); % Assuming EPSC is a vector of size 300
-    EPSC(1) =[] ;
-    EPSC(2) = [];
+    %EPSC(1) =[] ;
+    %EPSC(2) = [];
     D0 = 3 * 0.0;
     D1 = 1.0;
     D2 = 2.0;
@@ -68,7 +69,7 @@ function COV = COVA(EPS, N1, KTYPE, PSI, HP, HQ)
             EPS(3) = EPS(3) * RBJ2 * 1.0e-10;
         end
         if I > 3
-            EPS(I) = RBJ2 * (EPS(I) / ((RI - D1)^2)) * 1.0e-10 - AM2 / ((RI - D1) * (RI - D2) * (RI + 8));
+            EPS(I) = RBJ2 * (EPS(I) / ((RI - D1)^2)) * 1.0e-10 - AM2 / ((RI - D1) * (RI - D2) * (RI + B));
         end
     end
     % ! Determines the type of covariance function to be computed based on KTYPE.
@@ -242,24 +243,19 @@ function COV = COVA(EPS, N1, KTYPE, PSI, HP, HQ)
         F2  = FB;
         
         if ~NOTD
-            continue;
+            DFB  = (DL + DI2 .* (F1 + T .* DF2) - DI1 .* DF1) ./ (RI .* S);
+            DF1  = DF2;
+            DF2  = DFB;
         end
-    
-        DFB  = (DL + DI2 .* (F1 + T .* DF2) - DI1 .* DF1) ./ (RI .* S);
-        DF1  = DF2;
-        DF2  = DFB;
-            
+                
         if ~NOTDD
-            continue;
+            DDFB  = (DDL + DI2 .* (D2 .* DF1 + T .* DDF2) - DI1 .* DDF1) ./ (RI .* S);
+            DDF1  = DDF2;
+            DDF2  = DDFB;
         end
+
+     end
     
-        DDFB  = (DDL + DI2 .* (D2 .* DF1 + T .* DDF2) - DI1 .* DDF1) ./ (RI .* S);
-        DDF1  = DDF2;
-        DDF2  = DDFB;
-         
-    end
-    
-        
     if ~NOTD || (KTYPE == '2')
         % From equation (133), we have:
         DK = DB0 + AM2 .* RBJ2 .* (IB1 .* DFM2 - IB2 .* (DFM1 - D3 .* T .* S3) + ...

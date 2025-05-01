@@ -32,10 +32,7 @@ function covarianceMatrix = interpolateCovarianceFunction(longitude1, latitude1,
         % Interpolate covariance function
         covarianceMatrix(k, :) = covariance_griddedInterpolant(double(height1(k)) * ones(size(height2')), double(height2'), double(haversineDistance'));
     end
-
-    COVtest = COVA([], 1, '1', haversineDistance, height1, height2)
-
-
+       
     if outputParameters.PLOT_GRIDS
         % Plot covariance function
         figure('Name','CovarianceFunction','NumberTitle','off');
