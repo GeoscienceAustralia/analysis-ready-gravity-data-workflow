@@ -1,3 +1,9 @@
+%this is how to test CVA
+haversineDistance=(0:pi/180: pi);
+COVtest = COVA(1, '4', haversineDistance, 500*10^3, 500*10^3);
+figure
+plot(rad2deg(haversineDistance),COVtest,'r.')
+
 function COVB(KTYPE)
         % ! Determines the type of covariance function to be computed based on KTYPE.
         % ! The covariance function is set as follows:
