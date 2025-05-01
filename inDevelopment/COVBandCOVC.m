@@ -1,4 +1,4 @@
-%this is how to test CVA
+%this is how to test COVA
 haversineDistance=(0:pi/180: pi);
 COVtest = COVA(1, '4', haversineDistance, 500*10^3, 500*10^3);
 figure
