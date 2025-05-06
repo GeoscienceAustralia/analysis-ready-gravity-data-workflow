@@ -39,12 +39,13 @@ function covarianceMatrix = interpolateCovarianceFunction(longitude1, latitude1,
         clf
         hold on
         plot(rad2deg(haversineDistance),covarianceMatrix(k, :),'r.')
-        xlim([0 1.2]);
+        plot(rad2deg(haversineDistance),0*rad2deg(haversineDistance),'b')
+        xlim([0 3]);
         drawnow
         xlabel('Spherical distance in degrees')
         ylabel('Covariance', 'interpreter', 'latex')
-        title(covName)
-        saveas(gcf, [outputParameters.plotsFolder,covName,'Block',num2str(block_counter),'.png'])
+        title([covName, 'for block',num2str(block_counter)])
+        saveas(gcf, [outputParameters.plotsFolder,covName(1:12),'Block',num2str(block_counter),'.png'])
     end
     % Set NaN values to zero
     covarianceMatrix(isnan(covarianceMatrix)) = 0;

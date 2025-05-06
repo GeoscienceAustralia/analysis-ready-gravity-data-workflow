@@ -32,7 +32,7 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer=2;% 1 degs. The x/y extent to extract data around the tile centre. .75
 GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
 GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
@@ -43,10 +43,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % NENSW=[153 154 -29 -28];
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
-GRID_PARA.MINLONG=152;%140;
-GRID_PARA.MAXLONG=153;%154;
-GRID_PARA.MINLAT=-30;%-37.5;
-GRID_PARA.MAXLAT=-29;%-27.5;
+GRID_PARA.MINLONG=144;%140;
+GRID_PARA.MAXLONG=146;%154;
+GRID_PARA.MINLAT=-39;%-37.5;
+GRID_PARA.MAXLAT=-37;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -64,7 +64,7 @@ GRAV_PARA.inputGravity_weighting = true;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -98,14 +98,15 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='TestCOVC';
+outputName='test';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
-OUTPUT_PARA.polygonLon = [147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
-OUTPUT_PARA.polygonLat = [-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
+OUTPUT_PARA.polygonLon = [144.3 144.3 145.2 145.2 144.3];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
+OUTPUT_PARA.polygonLat = [-37.7 -38.5 -38.5 -37.7 -37.7];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
+
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 

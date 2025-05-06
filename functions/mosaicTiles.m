@@ -1,4 +1,4 @@
-function geomGravDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
+function geomGravDiff = mosaicTiles(GRID_PARA,DEMpara,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Gi,GGM_Zetai,Coastline)
 % Run this function to produce the final geoid model. It will:
 % - Collate all tiles in the OUTPUT_PARA.Tiles_dir_name directory.
 % - Add back the GGM.
@@ -34,12 +34,12 @@ function geomGravDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,L
 disp('Tiling...')
 Files=dir(OUTPUT_PARA.Tiles_dir_name);
 Files(1:2)=[];
-Grid_res_geoid=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
-Grid_res_geoid_err=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
-Grid_res_grav=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
-Grid_res_grav_Bouguer=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
-Grid_res_grav_err=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
-Weights=zeros(DEM_PARA.num_rows,DEM_PARA.num_cols);
+Grid_res_geoid=zeros(DEMpara.num_rows,DEMpara.num_cols);
+Grid_res_geoid_err=zeros(DEMpara.num_rows,DEMpara.num_cols);
+Grid_res_grav=zeros(DEMpara.num_rows,DEMpara.num_cols);
+Grid_res_grav_Bouguer=zeros(DEMpara.num_rows,DEMpara.num_cols);
+Grid_res_grav_err=zeros(DEMpara.num_rows,DEMpara.num_cols);
+Weights=zeros(DEMpara.num_rows,DEMpara.num_cols);
 
 ZDeg=mean(mean(REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zetai(LongDEM,-LatDEM,LatDEM*0)));
 
@@ -50,11 +50,11 @@ resAGQG=REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zetai(LongDEM,-LatDEM,LatDEM*0
 
     Tile_Data=importdata([OUTPUT_PARA.Tiles_dir_name,Files(k).name]);
     Wf=Tile_Data.weights;
-    Grid_res_geoid=Grid_res_geoid+(Wf).*reshape(Tile_Data.res_geoid,DEM_PARA.num_rows,DEM_PARA.num_cols);
-    Grid_res_geoid_err=Grid_res_geoid_err+(Wf).*reshape(Tile_Data.pot_error,DEM_PARA.num_rows,DEM_PARA.num_cols);  
-    Grid_res_grav=Grid_res_grav+(Wf).*reshape(Tile_Data.res_grav,DEM_PARA.num_rows,DEM_PARA.num_cols);  
-    Grid_res_grav_Bouguer=Grid_res_grav_Bouguer+(Wf).*reshape(Tile_Data.res_grav_Bouguer,DEM_PARA.num_rows,DEM_PARA.num_cols);
-    Grid_res_grav_err=Grid_res_grav_err+(Wf).*reshape(Tile_Data.grav_error,DEM_PARA.num_rows,DEM_PARA.num_cols);
+    Grid_res_geoid=Grid_res_geoid+(Wf).*reshape(Tile_Data.res_geoid,DEMpara.num_rows,DEMpara.num_cols);
+    Grid_res_geoid_err=Grid_res_geoid_err+(Wf).*reshape(Tile_Data.pot_error,DEMpara.num_rows,DEMpara.num_cols);  
+    Grid_res_grav=Grid_res_grav+(Wf).*reshape(Tile_Data.res_grav,DEMpara.num_rows,DEMpara.num_cols);  
+    Grid_res_grav_Bouguer=Grid_res_grav_Bouguer+(Wf).*reshape(Tile_Data.res_grav_Bouguer,DEMpara.num_rows,DEMpara.num_cols);
+    Grid_res_grav_err=Grid_res_grav_err+(Wf).*reshape(Tile_Data.grav_error,DEMpara.num_rows,DEMpara.num_cols);
     Weights=(Weights+(Wf));
 
     Grid_res_geoid_w=Grid_res_geoid./Weights;

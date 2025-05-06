@@ -35,7 +35,7 @@ function covariance_griddedInterpolant = precomputeCovarianceFunction(covariance
     r2i = (BjerhammarRadius - 500:75:BjerhammarRadius + 500)';
     [r1im, r2im] = meshgrid(r1i, r2i);
     s = BjerhammarRadius^2 ./ (r1im .* r2im);
-    % Feathestone numerical recepie, stable for high degree 
+    % Featherstone numerical recepie, stable for high degree 
     pmm = ones(size(psidat_int));
     pmmp1 = cos(psidat_int) .* pmm;
     plgndr = pmmp1;

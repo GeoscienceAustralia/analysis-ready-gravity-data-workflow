@@ -50,6 +50,15 @@ function DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid
     fprintf('%f median  res_geoid_err_w\n',median (Grid_res_geoid_err_w));
     fprintf('%f std     res_geoid_err_w\n',std    (Grid_res_geoid_err_w));
 
+    Grid_res_geoid_w(isnan(Grid_res_geoid_w)) = [];
+
+    fprintf('%f length  res_geoid_w\n',length (Grid_res_geoid_w));
+    fprintf('%f min     res_geoid_w\n',min    (Grid_res_geoid_w));
+    fprintf('%f max     res_geoid_w\n',max    (Grid_res_geoid_w));
+    fprintf('%f mean    res_geoid_w\n',mean   (Grid_res_geoid_w));
+    fprintf('%f median  res_geoid_w\n',median (Grid_res_geoid_w));
+    fprintf('%f std     res_geoid_w\n',std    (Grid_res_geoid_w));
+
     
 %     fprintf('%f length  GridResGravErrW\n',length (GridResGravErrW));
 %     fprintf('%f min     GridResGravErrW\n',min    (GridResGravErrW));

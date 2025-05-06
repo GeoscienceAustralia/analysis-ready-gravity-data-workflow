@@ -52,14 +52,14 @@ function [gravity_correction]=computeTerrainCorrection(ZDEM_topo,LatDEM_topo,Lon
             % Convert degrees to radians
             LongDEM_topo_locRadian = deg2rad (LongDEM_topo_loc);
             Long_CP_locRadian = deg2rad (Long_CP_loc);
-            LatDEM_topo_locRadian=deg2rad (LatDEM_topo_loc);
+            LatDEM_topo_locRadian = deg2rad (LatDEM_topo_loc);
             Lat_CP_locRadian=deg2rad (Lat_CP_loc);
              
             for k=1:length(H_CP_loc(:))
     
-                 %distanceFromCP=sqrt((LongDEM_topo_loc-Long_CP_loc(k)).^2+(LatDEM_topo_loc-Lat_CP_loc(k)).^2);
-                 % should be tested
-                 distanceFromCP = haversine(LatDEM_topo_locRadian(:), LongDEM_topo_locRadian(:), Lat_CP_locRadian(k), Long_CP_locRadian(k));
+                 %distanceFromCP1=sqrt((LongDEM_topo_loc-Long_CP_loc(k)).^2+(LatDEM_topo_loc-Lat_CP_loc(k)).^2);
+                 % has been tested (06.05.2025), it is ok.
+                 distanceFromCP = haversine(LatDEM_topo_locRadian, LongDEM_topo_locRadian, Lat_CP_locRadian(k), Long_CP_locRadian(k));
                  distanceFromCP = rad2deg(distanceFromCP);
                  
                  ID=1:length(LongDEM_topo_loc(:));

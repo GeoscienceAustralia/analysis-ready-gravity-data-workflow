@@ -4,6 +4,8 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     MAXLONG=max(gravityData(:,1));
     MINLAT=min(gravityData(:,2));
     MAXLAT=max(gravityData(:,2));
+    % for writing covariance parameters on the plots
+    str = {['parameter A ',num2str(round(covarianceParameters.A))],['parameter B ',num2str(round(covarianceParameters.B))]};
 
     % Plot residual gravity anomaly
     figure('Name','computeCovarianceFunction','NumberTitle','off');
@@ -18,6 +20,7 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     %ax = gca;
     %ax.PlotBoxAspectRatio = [1 abs(cos(deg2rad(mean([gridParameters.MINLAT gridParameters.MAXLAT])))) 1];
     title([gravityType,' residual gravity anomaly for block ',num2str(block_counter)])
+    text((MINLONG+MAXLONG)/2,(MINLAT+MAXLAT)/2,str,'Color','black')
     xlabel('Longitude')
     ylabel('Latitude')
     %caxis([-15 15])
@@ -34,7 +37,6 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     xlabel('Spherical distance in degrees')
     ylabel('Covariance$(mGal^2)$', 'interpreter', 'latex')
     title([gravityType,' gravity auto-covariance for block ',num2str(block_counter)])    
-    str = {['parameter A ',num2str(round(covarianceParameters.A))],['parameter B ',num2str(round(covarianceParameters.B))]};
     text(0.6,40, str,'Color','g')
     saveas(gcf,[outputParameters.plotsFolder,gravityType,'Block',num2str(block_counter),'Covariance.png'])
 
