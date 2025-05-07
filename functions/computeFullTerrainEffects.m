@@ -40,7 +40,7 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
     ZDEM_topo    = reshape(DEM_data(:,3),length(unique(DEM_data(:,1))),length(unique(DEM_data(:,2))))';
 
     % Compute gravity corrections at gravity points
-    TC_gravity_point = computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Grav(:,2),Grav(:,1),Grav(:,3),     Topo_PARA.Rad,Topo_PARA.Density,'g');
+    TC_gravity_point = computeParallelTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Grav(:,2),Grav(:,1),Grav(:,3),     Topo_PARA.Rad,Topo_PARA.Density,'g');
     
     % Compute gravity corrections at DEM points
     TC_DEM_point =     computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,LatDEM_topo,LongDEM_topo,ZDEM_topo,Topo_PARA.Rad,Topo_PARA.Density,'g');

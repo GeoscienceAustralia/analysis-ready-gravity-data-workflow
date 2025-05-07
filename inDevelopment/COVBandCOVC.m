@@ -1,8 +1,45 @@
 %this is how to test COVA
 haversineDistance=(0:pi/180: pi);
-COVtest = COVA(1, '4', haversineDistance, 500*10^3, 500*10^3);
+COVtest500 = COVA(1, '1', haversineDistance, 500*10^3, 500*10^3);
+COVtest0 = COVA(1, '1', haversineDistance,0, 0);
 figure
-plot(rad2deg(haversineDistance),COVtest,'r.')
+plot(rad2deg(haversineDistance),COVtest500,'r.')
+hold on 
+plot(rad2deg(haversineDistance),0*haversineDistance,'b.')
+figure
+plot(rad2deg(haversineDistance),COVtest0,'r.')
+hold on 
+plot(rad2deg(haversineDistance),0*haversineDistance,'b.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function COVB(KTYPE)
         % ! Determines the type of covariance function to be computed based on KTYPE.
