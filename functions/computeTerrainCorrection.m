@@ -35,11 +35,16 @@ function [gravity_correction]=computeTerrainCorrection(ZDEM_topo,LatDEM_topo,Lon
     % Initialise
     gravity_correction=H_CP*NaN;
     IND=1:length(Long_CP(:));
-    %             
+    % Run in blocks
+    block_counter = 0 ; % Increment the counter        
     for longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
-        
         for lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
-      
+            block_counter = block_counter + 1; % Increment the counter
+            if mod(block_counter, 100) == 0
+                disp('...................................................................')
+                disp(['Working on block ', num2str(block_counter), ...
+                      ' centred at: ', num2str(longi), ', ', num2str(lati)])
+            end
             LatDEM_topo_loc=LatDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
             LongDEM_topo_loc=LongDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
             ZDEM_topo_loc=ZDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);

@@ -69,9 +69,9 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
             EPS(3) = EPS(3) * RBJ2 * 1.0e-10;
         end
         if I > 3
-            EPS(I) = RBJ2 * (EPS(I) / ((RI - D1)^2)) * 1.0e-10 - AM2 / ((RI - D1) * (RI - D2) * (RI + B));
+            EPS(I) = RBJ2 * (EPS(I) / ((RI - D1)^2) * 1.0e-10 - AM2 / ((RI - D1) * (RI - D2) * (RI + B)));
         end
-    end
+     end
     % ! Determines the type of covariance function to be computed based on KTYPE.
     % ! The covariance function is set as follows:
     % ! - KTYPE = 1: Covariance between the gravity anomaly at P and at Q.
@@ -106,7 +106,7 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     end
     
     for I = 3:N1
-        EPSC(I) = EPS(I) * (((I - 2) * D5 / RBJ) ^ IP);
+        EPSC(I) = EPS(I) * ((I - 2) * D5 / RBJ) ^ IP;
     end
     NOTD = (KTYPE == '1') || (KTYPE == '3') || (KTYPE == '7');
     NOTDD = (KTYPE ~= '5') && (KTYPE ~= '4');
@@ -265,7 +265,7 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     switch KTYPE
             % EQUATION (132) AND (146) GIVES: 
         case '1'
-            COV1 = S .* B0 ;
+            %COV1 = S .* B0 ;
            COV = S .* B0 + ...
                   A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
             % EQUATION (139) AND (150) GIVES: 

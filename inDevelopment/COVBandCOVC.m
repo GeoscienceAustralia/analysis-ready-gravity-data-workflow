@@ -1,7 +1,7 @@
 %this is how to test COVA
 haversineDistance=(0:pi/180: pi);
-COVtest500 = COVA(1, '1', haversineDistance, 500*10^3, 500*10^3);
-COVtest0 = COVA(1, '1', haversineDistance,0, 0);
+COVtest500 = COVA(300, '1', haversineDistance, 500*10^3, 500*10^3);
+COVtest0 = COVA(300, '1', haversineDistance,0, 0);
 figure
 plot(rad2deg(haversineDistance),COVtest500,'r.')
 hold on 

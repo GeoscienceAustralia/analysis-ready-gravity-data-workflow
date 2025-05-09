@@ -1,4 +1,4 @@
-function [gravity_correction]=computeParallelTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Lat_CP,Long_CP,H_CP,Rad,rho,gravityType)
+function [gravity_correction]=computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Lat_CP,Long_CP,H_CP,Rad,rho,gravityType)
     % This function computes the terrain correction. 
     %
     % Input:    ZDEM_topo = elevation matrix
@@ -36,18 +36,14 @@ function [gravity_correction]=computeParallelTerrainCorrection(ZDEM_topo,LatDEM_
     gravity_correction=H_CP*NaN;
     IND=1:length(Long_CP(:));
     %             
-% Define grid steps
-longi_vals = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:));
-lati_vals = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:));
-
-    parfor longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
+    for longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
         
-        parfor lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
-      % big region
+        for lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
+      
             LatDEM_topo_loc=LatDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
             LongDEM_topo_loc=LongDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
             ZDEM_topo_loc=ZDEM_topo(LatDEM_topo>lati-2*Rad & LatDEM_topo<lati+2*Rad & LongDEM_topo>longi-2*Rad & LongDEM_topo<longi+2*Rad);
-            %inner region
+            
             Lat_CP_loc=Lat_CP(Lat_CP>=lati-Rad & Lat_CP<=lati+Rad & Long_CP>=longi-Rad & Long_CP<=longi+Rad);
             Long_CP_loc=Long_CP(Lat_CP>=lati-Rad & Lat_CP<=lati+Rad & Long_CP>=longi-Rad & Long_CP<=longi+Rad);
             H_CP_loc=H_CP(Lat_CP>=lati-Rad & Lat_CP<=lati+Rad & Long_CP>=longi-Rad & Long_CP<=longi+Rad);
@@ -58,7 +54,7 @@ lati_vals = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:));
             Long_CP_locRadian = deg2rad (Long_CP_loc);
             LatDEM_topo_locRadian = deg2rad (LatDEM_topo_loc);
             Lat_CP_locRadian=deg2rad (Lat_CP_loc);
-             % each point in inner region is cal point
+             
             for k=1:length(H_CP_loc(:))
     
                  %distanceFromCP1=sqrt((LongDEM_topo_loc-Long_CP_loc(k)).^2+(LatDEM_topo_loc-Lat_CP_loc(k)).^2);
