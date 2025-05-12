@@ -39,10 +39,10 @@ function [fullTopographyCorrected_gravityPoint,longwaveTopography_griddedInterpo
 
     disp('Running topographic corrections for gravity points')
     TC_gravity_point = computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,Grav(:,2),Grav(:,1),Grav(:,3),     Topo_PARA.Rad,Topo_PARA.Density,'g');
-    save([plotsFolder, 'terrainEffects1','.mat'], 'TC_gravity_point'); 
+    %save([plotsFolder, 'terrainEffects1','.mat'], 'TC_gravity_point'); 
     disp('Running topographic corrections for DEM points')
     TC_DEM_point =     computeTerrainCorrection(ZDEM_topo,LatDEM_topo,LongDEM_topo,LatDEM_topo,LongDEM_topo,ZDEM_topo,Topo_PARA.Rad,Topo_PARA.Density,'g');
-    save([plotsFolder, 'terrainEffects2','.mat'], 'TC_DEM_point');
+    %save([plotsFolder, 'terrainEffects2','.mat'], 'TC_DEM_point');
     if Topo_PARA.TopoPlot
         
 %         plotProfiles(Grav(13676:13796,2),Grav(13676:13796,3),TC_gravity_point(13676:13796,1),Grav(13676,1),'Latitude','Height [m]','Gravity correction [mGal]','PrismGravityEffectHeight',plotsFolder)
