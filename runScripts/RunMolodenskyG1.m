@@ -147,19 +147,60 @@ computeMolodenskyG1LSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTP
     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,Coastline)
 
 % disp('4/4 ..........................mosaicTiles is running')
- mosaicTiles4MolodenskyG1(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM,GGM_Zeta_griddedInterpolant,Coastline);
-OUTPUT_PARA.PLOT_GRIDS=false;
-Grid_res_grav=reshape(Dataset_save.res_grav,DEM_PARA.num_rows,DEM_PARA.num_cols);  
+ GridResGravW= mosaicTiles4MolodenskyG1(GRID_PARA,DEM_PARA,OUTPUT_PARA,LongDEM,LatDEM,Coastline);
+
+% Compute FFTs
+
+DEMmatrix=reshape(DEM_data(:,3),DEM_PARA.num_rows,DEM_PARA.num_cols); 
+imagesc(LongDEM(1,:),LatDEM(:,1),DEMmatrix)
+
+dphi = 1;      % latitudinal spacing (in meters, after discretization)
+dlambda = 1;   % longitudinal spacing (in meters)
+
+% Load 2D grids (same size):
+% H          - topography height (in meters)
+% dg_FA      - Faye gravity anomaly (in mGal)
+% l          - distance kernel matrix (in meters), precomputed
 
 
- % plot residualGravityWeighted
-    figure('Name','MosaicTiles','NumberTitle','off'); 
-    clf
-    hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav)
-    customizeMap('Residual Free Air Gravity Weighted','mGal',Coastline,axisLimits)
-    %saveas(gcf,[plotsFolder,'MosaicTiles','residualFreeAirGravityWeighted','.png'])
- 
+for longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
+        for lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
+distanceFromCP = haversine(LatDEM_topo_locRadian, LongDEM_topo_locRadian, Lat_CP_locRadian(k), Long_CP_locRadian(k));
+        end
+end
+
+l= 2*R*sin(distanceFromCP/2);
+inv_l3 = 1 ./ (l.^3);
+
+F_H = fft2(DEMmatrix);
+F_dg = fft2(GridResGravW);
+F_inv_l3 = fft2(inv_l3);
+
+% Term 1: (H * dg_FA) * (1/l^3)
+term1 = ifft2(fft2(H .* dg_FA) .* F_inv_l3);
+
+% Term 2: H * (dg_FA * (1/l^3))
+term2 = H .* ifft2(fft2(dg_FA .* inv_l3));
+
+% Final result
+G1 = (dphi * dlambda) / (2 * pi) * (term1 - term2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 diary off

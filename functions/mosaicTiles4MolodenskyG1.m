@@ -1,4 +1,4 @@
-function mosaicTiles4MolodenskyG1(GRID_PARA,DEMpara,OUTPUT_PARA,Lev,LongDEM,LatDEM,REFERENCE_GEOID_Zetai,GGM_Zetai,Coastline)
+function Grid_res_grav_w = mosaicTiles4MolodenskyG1(GRID_PARA,DEMpara,OUTPUT_PARA,LongDEM,LatDEM,Coastline)
 % Run this function to produce the final geoid model. It will:
 % - Collate all tiles in the OUTPUT_PARA.Tiles_dir_name directory.
 % - Add back the GGM.
@@ -48,12 +48,21 @@ Weights=zeros(DEMpara.num_rows,DEMpara.num_cols);
     Grid_res_grav_w=Grid_res_grav./Weights;
  end
 
-if OUTPUT_PARA.PLOT_GRIDS
-        plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, AGQG_Vals_Lev, ...
-    Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
-end 
-
-
+ if OUTPUT_PARA.PLOT_GRIDS
+    % common variables for plotting
+    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+    axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+    axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+    axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+    axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+    % plot residualGravityWeighted
+    figure('Name','MosaicTiles','NumberTitle','off'); 
+    clf
+    hold on
+    imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_w)
+    customizeMap('Residual Free Air Gravity Weighted','mGal',Coastline,axisLimits)
+    saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualFreeAirGravityWeighted','.png'])
+ end 
 
 disp('Save mat files')
 
