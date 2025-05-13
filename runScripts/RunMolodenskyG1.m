@@ -136,6 +136,7 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 if OUTPUT_PARA.PLOT_GRIDS
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
+     plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
 end 
 
 if GRAV_PARA.inputGravity_weighting 
@@ -148,28 +149,49 @@ computeMolodenskyG1LSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTP
 
 % disp('4/4 ..........................mosaicTiles is running')
  GridResGravW= mosaicTiles4MolodenskyG1(GRID_PARA,DEM_PARA,OUTPUT_PARA,LongDEM,LatDEM,Coastline);
-
+ GridResGravW(isnan(GridResGravW))=0;
 % Compute FFTs
 
 DEMmatrix=reshape(DEM_data(:,3),DEM_PARA.num_rows,DEM_PARA.num_cols); 
-imagesc(LongDEM(1,:),LatDEM(:,1),DEMmatrix)
+% common variables for plotting
+    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+    axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+    axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+    axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+    axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+    % plot residualGravityWeighted
+    figure('Name','DEM','NumberTitle','off'); 
+    clf
+    hold on
+    imagesc(LongDEM(1,:),LatDEM(:,1),DEMmatrix')
+    customizeMap('DEM','m',Coastline,axisLimits)
+    saveas(gcf,[OUTPUT_PARA.plotsFolder,'DEM','DEM','.png'])
 
-dphi = 1;      % latitudinal spacing (in meters, after discretization)
-dlambda = 1;   % longitudinal spacing (in meters)
+     % define the differential element 
+    constants                          % load constants
+    min2deg=1/60;
+    dphidlambda=(deg2meter*min2deg)^2;         
+
+
 
 % Load 2D grids (same size):
 % H          - topography height (in meters)
 % dg_FA      - Faye gravity anomaly (in mGal)
 % l          - distance kernel matrix (in meters), precomputed
 
-
-for longi = min(LongDEM_topo(:)) + Rad : 2*Rad : max(LongDEM_topo(:))
-        for lati = min(LatDEM_topo(:)) + Rad : 2*Rad : max(LatDEM_topo(:))
-distanceFromCP = haversine(LatDEM_topo_locRadian, LongDEM_topo_locRadian, Lat_CP_locRadian(k), Long_CP_locRadian(k));
-        end
+% Convert degrees to radians
+LongDEM_Radian = deg2rad (LongDEM);
+LatDEM_Radian = deg2rad (LatDEM);
+for k=1:length(LongDEM)
+    for longi = min(LongDEM): max(LongDEM(:))
+            for lati = min(LatDEM(:)) : max(LatDEM(:))
+    distanceFromCP = haversine(LatDEM_Radian, LongDEM_Radian, lati(k), longi(k));
+    
+            end
+    end
 end
 
-l= 2*R*sin(distanceFromCP/2);
+l= 2*EarthRadius*sin(distanceFromCP/2);
 inv_l3 = 1 ./ (l.^3);
 
 F_H = fft2(DEMmatrix);
@@ -177,16 +199,18 @@ F_dg = fft2(GridResGravW);
 F_inv_l3 = fft2(inv_l3);
 
 % Term 1: (H * dg_FA) * (1/l^3)
-term1 = ifft2(fft2(H .* dg_FA) .* F_inv_l3);
+term1 = ifft2(fft2(DEMmatrix .* GridResGravW) .* F_inv_l3);
 
 % Term 2: H * (dg_FA * (1/l^3))
-term2 = H .* ifft2(fft2(dg_FA .* inv_l3));
+term2 = DEMmatrix .* ifft2(fft2(GridResGravW .* inv_l3));
 
 % Final result
 G1 = (dphi * dlambda) / (2 * pi) * (term1 - term2);
 
 
-
+% Optional: visualize
+imagesc(G1); colorbar;
+title('G1 Term via FFT');
 
 
 
