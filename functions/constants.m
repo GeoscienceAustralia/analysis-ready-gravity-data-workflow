@@ -12,7 +12,7 @@
 % au     = 149.597870691e9;     % astronomical unit [m]
 % 
 % % GRS80 defining constants:
-% ae     = 6378136.3;           % semi-major axis of ellipsoid [m]
+  ae     = 6378136.3;           % semi-major axis of ellipsoid [m]
 % GM     = 3.986004415e14;      % geocentric grav. constant [m^3 / s^2]
 % J2     = 1.08263e-3;          % earth's dyn. form factor (= -C20 unnormalized)
 % Omega  = 7.292115e-5;         % mean ang. velocity [rad/s]

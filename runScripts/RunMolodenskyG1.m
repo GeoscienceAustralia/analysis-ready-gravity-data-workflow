@@ -167,6 +167,46 @@ DEMmatrix=reshape(DEM_data(:,3),DEM_PARA.num_rows,DEM_PARA.num_cols);
     customizeMap('DEM','m',Coastline,axisLimits)
     saveas(gcf,[OUTPUT_PARA.plotsFolder,'DEM','DEM','.png'])
 
+
+G1_o=FFTG1Deg(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
+
+[G1_p1,G1_p2]=FFTG1Deg_split(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
+
+[G1n, G1_p1n, G1_p2n]=fftMolodenskyG1(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
+
+figure(11)
+clf
+imagesc((G1n))
+colorbar
+colormap(jet)
+%caxis([-2.5 2.5])
+
+figure(22)
+clf
+imagesc((G1_p1n+DEMmatrix'.*G1_p2n-G1n))
+colorbar
+colormap(jet)
+
+figure(1)
+clf
+imagesc((G1_o))
+colorbar
+colormap(jet)
+%caxis([-2.5 2.5])
+
+figure(2)
+clf
+imagesc((G1_p1+DEMmatrix'.*G1_p2-G1_o))
+colorbar
+colormap(jet)
+
+
+
+
+
+
+
+
      % define the differential element 
     constants                          % load constants
     min2deg=1/60;
@@ -198,11 +238,13 @@ F_H = fft2(DEMmatrix);
 F_dg = fft2(GridResGravW);
 F_inv_l3 = fft2(inv_l3);
 
+
+
 % Term 1: (H * dg_FA) * (1/l^3)
-term1 = ifft2(fft2(DEMmatrix .* GridResGravW) .* F_inv_l3);
+term1 = ifft2(fft2(DEMmatrix .* GridResGravW) .* fftshift(F_inv_l3));
 
 % Term 2: H * (dg_FA * (1/l^3))
-term2 = DEMmatrix .* ifft2(fft2(GridResGravW .* inv_l3));
+term2 = DEMmatrix .* ifft2(fft2(GridResGravW ) .* fftshift(F_inv_l3));
 
 % Final result
 G1 = (dphi * dlambda) / (2 * pi) * (term1 - term2);
