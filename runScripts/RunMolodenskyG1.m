@@ -172,7 +172,7 @@ G1_o=FFTG1Deg(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
 
 [G1_p1,G1_p2]=FFTG1Deg_split(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
 
-[G1n, G1_p1n, G1_p2n]=fftMolodenskyG1(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
+[G1n, G1_p1n, G1_p2n]=fftMolodenskyG1(DEMmatrix',GridResGravW,LatDEM,LongDEM,1/60,1);
 
 figure(11)
 clf
