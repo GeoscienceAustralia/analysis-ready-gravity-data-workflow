@@ -39,15 +39,10 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-% VicNSW=[140 154 -37.5 -27.5];
-% NENSW=[153 154 -29 -28];
-% vic=[140 154 -39 -33];
-% NSW=[140 154 -38 -27];
-%[93 174 -61 -8]; 
 GRID_PARA.MINLONG=146;%140;
-GRID_PARA.MAXLONG=147;%154;
+GRID_PARA.MAXLONG=146.5;%154;
 GRID_PARA.MINLAT=-37;%-37.5;
-GRID_PARA.MAXLAT=-36;%-27.5;
+GRID_PARA.MAXLAT=-36.5;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -131,7 +126,7 @@ disp(OUTPUT_PARA)
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData4MolodenskyG1...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
@@ -143,130 +138,31 @@ if GRAV_PARA.inputGravity_weighting
      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
 end
 
-disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-computeMolodenskyG1LSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,Gravo,gravGradFiltered, ...
-    GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,Coastline)
+if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
+    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+    computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
+        OUTPUT_PARA,LongDEM,LatDEM,DEM_data,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 
-% disp('4/4 ..........................mosaicTiles is running')
- GridResGravW= mosaicTiles4MolodenskyG1(GRID_PARA,DEM_PARA,OUTPUT_PARA,LongDEM,LatDEM,Coastline);
- GridResGravW(isnan(GridResGravW))=0;
-% Compute FFTs
+else
+    disp('2/4 ..........................computeTerrainEffect is running')
+    [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
+        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
+        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
 
-DEMmatrix=reshape(DEM_data(:,3),DEM_PARA.num_rows,DEM_PARA.num_cols); 
-% common variables for plotting
-    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-    axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-    axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-    axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-    axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-    % plot residualGravityWeighted
-    figure('Name','DEM','NumberTitle','off'); 
-    clf
-    hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),DEMmatrix')
-    customizeMap('DEM','m',Coastline,axisLimits)
-    saveas(gcf,[OUTPUT_PARA.plotsFolder,'DEM','DEM','.png'])
+    save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
 
-
-G1_o=FFTG1Deg(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
-
-[G1_p1,G1_p2]=FFTG1Deg_split(DEMmatrix',GridResGravW,LatDEM,mean(LatDEM(:,1)),LongDEM,1/60,1);
-
-[G1n, G1_p1n, G1_p2n]=fftMolodenskyG1(DEMmatrix',GridResGravW,LatDEM,LongDEM,1/60,1);
-
-figure(11)
-clf
-imagesc((G1n))
-colorbar
-colormap(jet)
-%caxis([-2.5 2.5])
-
-figure(22)
-clf
-imagesc((G1_p1n+DEMmatrix'.*G1_p2n-G1n))
-colorbar
-colormap(jet)
-
-figure(1)
-clf
-imagesc((G1_o))
-colorbar
-colormap(jet)
-%caxis([-2.5 2.5])
-
-figure(2)
-clf
-imagesc((G1_p1+DEMmatrix'.*G1_p2-G1_o))
-colorbar
-colormap(jet)
-
-
-
-
-
-
-
-
-     % define the differential element 
-    constants                          % load constants
-    min2deg=1/60;
-    dphidlambda=(deg2meter*min2deg)^2;         
-
-
-
-% Load 2D grids (same size):
-% H          - topography height (in meters)
-% dg_FA      - Faye gravity anomaly (in mGal)
-% l          - distance kernel matrix (in meters), precomputed
-
-% Convert degrees to radians
-LongDEM_Radian = deg2rad (LongDEM);
-LatDEM_Radian = deg2rad (LatDEM);
-for k=1:length(LongDEM)
-    for longi = min(LongDEM): max(LongDEM(:))
-            for lati = min(LatDEM(:)) : max(LatDEM(:))
-    distanceFromCP = haversine(LatDEM_Radian, LongDEM_Radian, lati(k), longi(k));
-    
-            end
-    end
+    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+    computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA, ...
+        LongDEM,LatDEM,DEM_data,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end
 
-l= 2*EarthRadius*sin(distanceFromCP/2);
-inv_l3 = 1 ./ (l.^3);
-
-F_H = fft2(DEMmatrix);
-F_dg = fft2(GridResGravW);
-F_inv_l3 = fft2(inv_l3);
-
-
-
-% Term 1: (H * dg_FA) * (1/l^3)
-term1 = ifft2(fft2(DEMmatrix .* GridResGravW) .* fftshift(F_inv_l3));
-
-% Term 2: H * (dg_FA * (1/l^3))
-term2 = DEMmatrix .* ifft2(fft2(GridResGravW ) .* fftshift(F_inv_l3));
-
-% Final result
-G1 = (dphi * dlambda) / (2 * pi) * (term1 - term2);
-
-
-% Optional: visualize
-imagesc(G1); colorbar;
-title('G1 Term via FFT');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+disp('4/4 ..........................mosaicTiles is running')
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
 diary off

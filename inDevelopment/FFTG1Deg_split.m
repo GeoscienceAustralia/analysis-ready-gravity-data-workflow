@@ -1,10 +1,12 @@
-function [G1]=FFTG1Deg(H,FA,Latm,Latmi,Longm,res,sphericalCap)
+function [G1_p1,G1_p2]=FFTG1Deg_split(H,FA,Latm,Latmi,Longm,res,sphericalCap)
 %FFTG1(filename,filenameFA,minlat,maxlat,minlong,maxlong,res,sphericalCap,outfile,PadS,PadN,PadW,PadE)
 % Import the DEM esri ascii data file
 %%
 
 H(H==-9999)=0;
 FA(FA==-9999)=0;
+FA(isnan(FA))=0;
+H(isnan(H))=0;
 FA=FA*(10^-5);
 %% Calculate integration kernel    
 disp('Setting up integration kernel')
@@ -34,7 +36,8 @@ disp('FFT H.*FA')
 FHFA=fft2(H.*FA);
 %% Compute the G1 term in mGal for the whole strip
 disp('Computing G1')
-G1=((10^5)*(R^2)/(2*pi))*(ifft2(FHFA.*FK)-H.*ifft2(FFA.*FK)).*((res*pi/180)*(res*pi/180));
+G1_p1=((10^5)*(R^2)/(2*pi))*(ifft2(FHFA.*FK)).*((res*pi/180)*(res*pi/180));
+G1_p2=((10^5)*(R^2)/(2*pi))*(-1.*ifft2(FFA.*FK)).*((res*pi/180)*(res*pi/180));
 end
 
 
