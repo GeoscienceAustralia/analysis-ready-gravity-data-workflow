@@ -67,8 +67,8 @@ end
 lat_range = GRID_PARA.MAXLAT:-GRID_PARA.STEP:GRID_PARA.MINLAT;
 long_range = GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG;
 
-n_lat = length(lat_range);
-n_long = length(long_range);
+n_lat = length(lat_range)-1;
+n_long = length(long_range)-1;
 
 % Total number of iterations
 n_total = n_lat * n_long;

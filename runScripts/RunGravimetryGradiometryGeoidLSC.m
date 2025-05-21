@@ -44,10 +44,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
 %[93 174 -61 -8]; 
-GRID_PARA.MINLONG=110;%140;
-GRID_PARA.MAXLONG=160;%154;
-GRID_PARA.MINLAT=-50;%-37.5;
-GRID_PARA.MAXLAT=-8;%-27.5;
+GRID_PARA.MINLONG=146;%110;%140;
+GRID_PARA.MAXLONG=146.5;%160;%154;
+GRID_PARA.MINLAT=-37;%-37.5;
+GRID_PARA.MAXLAT=-36.5;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -65,7 +65,7 @@ GRAV_PARA.inputGravity_weighting = true;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=true;
+GRAV_GRAD_PARA.avail=false;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -99,7 +99,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='test';
+outputName='testArea4Molodensky';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -131,7 +131,7 @@ disp(OUTPUT_PARA)
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
