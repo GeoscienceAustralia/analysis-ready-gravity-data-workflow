@@ -39,10 +39,10 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-GRID_PARA.MINLONG=146;%140;
-GRID_PARA.MAXLONG=146.5;%154;
-GRID_PARA.MINLAT=-37;%-37.5;
-GRID_PARA.MAXLAT=-36.5;%-27.5;
+GRID_PARA.MINLONG=143.5;%140;
+GRID_PARA.MAXLONG=151;%154;
+GRID_PARA.MINLAT=-38;%-37.5;
+GRID_PARA.MAXLAT=-34;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -72,7 +72,7 @@ COV_PARA.width=3;% Size of precomputed cov function in degrees - must be larger 
 COV_PARA.res=30/3600; % Resolution of the covariance function
 COV_PARA.COV_COMPUTED_Tilewise=true;% This recomputes the covariance function for each tile.
 COV_PARA.Airbornedataonly=false;%Only use airborne data in establishing Covariance parameters - good to use if we are using EGM2008 as the references as terrestrial data are not independent.
-COV_PARA.COVPlot=true;% true plots progress, false turns this off.
+COV_PARA.COVPlot=false;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
 Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
@@ -94,14 +94,14 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='testMolodenskyG1';
+outputName='vicMolodenskyG1';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
-OUTPUT_PARA.polygonLon = [144.3 144.3 145.2 145.2 144.3];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
-OUTPUT_PARA.polygonLat = [-37.7 -38.5 -38.5 -37.7 -37.7];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
+OUTPUT_PARA.polygonLon = [143.5 143.5 148 148 143.5];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
+OUTPUT_PARA.polygonLat = [-36.4 -37.6 -37.6 -36.4 -36.4];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
 
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
@@ -130,8 +130,7 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
-     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
-     plotCustomScatter(DEM_data(:,1),DEM_data(:,2),DEM_data(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
 end 
 
 if GRAV_PARA.inputGravity_weighting 
@@ -142,7 +141,7 @@ if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
     computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
-        OUTPUT_PARA,LongDEM,LatDEM,DEM_data,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 
@@ -156,7 +155,7 @@ else
 
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
     computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA, ...
-        LongDEM,LatDEM,DEM_data,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end

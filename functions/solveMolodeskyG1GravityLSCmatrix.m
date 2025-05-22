@@ -43,7 +43,7 @@ function [LSCResidualGeoid,errorMatrixGeoid,residualFreeAirGravityAnomaly,residu
     lonmatrix=reshape(GRID_REF_dat(:,1),N2,N2);
     latmatrix=reshape(GRID_REF_dat(:,2),N2,N2);
     DEMmatrix=reshape(GRID_REF_dat(:,3),N2,N2);
-    [MolodenskyG1term, ~, ~]=fftMolodenskyG1(DEMmatrix,FAGmatrix,latmatrix(:,1),lonmatrix(:,1),1/60,1);
+    MolodenskyG1term=fftMolodenskyG1(DEMmatrix,FAGmatrix,latmatrix(:,1),lonmatrix(:,1),1/60,1);
     
     % residual Molodensky Gravity Anomaly
     residualMolodenskyGravityAnomaly=reshape((MolodenskyG1term+FAGmatrix),N2*N2,1);

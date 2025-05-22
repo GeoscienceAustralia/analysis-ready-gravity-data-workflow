@@ -1,4 +1,4 @@
-function [G1, G1_p1, G1_p2] = fftMolodenskyG1(DEM, freeAirGravity, latDEM, longDEM, res, sphericalCap)
+function G1 = fftMolodenskyG1(DEM, freeAirGravity, latDEM, longDEM, res, sphericalCap)
 % FFTG1Deg computes the G1 topographic correction term using FFT-based convolution.
 %
 % INPUTS:
@@ -46,6 +46,6 @@ FHFA = fft2(DEM .* freeAirGravity);
 % Compute G1 term
 areaElement = (ae^2 / (2 * pi)) *(deg2rad (res))^2;
 G1 =    (ifft2(FHFA .* FK) - DEM .* ifft2(FFA .* FK)) * areaElement;
-G1_p1 = (ifft2(FHFA.*FK))* areaElement;
-G1_p2 = (-1.*ifft2(FFA.*FK))* areaElement;
+%G1_p1 = (ifft2(FHFA.*FK))* areaElement;
+%G1_p2 = (-1.*ifft2(FFA.*FK))* areaElement;
 end
