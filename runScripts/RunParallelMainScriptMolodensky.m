@@ -1,4 +1,4 @@
-function RunParallelMainScript(varargin)
+function RunParallelMainScriptMolodensky(varargin)
 %RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
 %              The process involves sequence of "remove-predict-restore" operations, where the Global
 %              Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
@@ -308,24 +308,19 @@ if ~isfolder(OUTPUT_PARA.plotsFolder)
     mkdir(OUTPUT_PARA.plotsFolder)
 end
 
-%temporary breakpoint to check
-%disp(GRID_PARA)
-%disp(GRAV_GRAD_PARA)
-%disp(OUTPUT_PARA)
-%return
-
 %computation
 disp('importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
- disp('computeGravimetryGradiometryLSC is running')
- computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
-     OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-     longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+disp('computeGravimetryGradiometryLSC is running')
+computeParallelMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
+        OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+
 
 function helptext
 str={'RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
