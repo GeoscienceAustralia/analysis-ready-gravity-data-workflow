@@ -94,11 +94,11 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='vicMolodenskyG1';
-OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
-OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
+outputName='vicMolodenskyG126may';
+OUTPUT_PARA.Grids_name=['C:\Users\u99017\OneDrive - Geoscience Australia\AGQGtif2share/Grids',outputName,'/'];
+OUTPUT_PARA.Tiles_dir_name=['C:\Users\u99017\OneDrive - Geoscience Australia\AGQGtif2share/ResidualTiles',outputName,'/'];
+OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.plotsFolder=['C:\Users\u99017\OneDrive - Geoscience Australia\AGQGtif2share/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [143.5 143.5 148 148 143.5];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
 OUTPUT_PARA.polygonLat = [-36.4 -37.6 -37.6 -36.4 -36.4];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
@@ -115,7 +115,7 @@ if ~exist(OUTPUT_PARA.Tiles_dir_name, 'dir')
     mkdir(OUTPUT_PARA.Tiles_dir_name);
 end
 % start recording
-dfile =['outputs/Grids',outputName,'/',date,outputName,'.txt'];
+dfile =['C:\Users\u99017\OneDrive - Geoscience Australia\AGQGtif2share/Grids',outputName,'/',date,outputName,'.txt'];
 if exist(dfile, 'file') ; delete(dfile); end
 diary(dfile)
 diary on
@@ -129,36 +129,36 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-if OUTPUT_PARA.PLOT_GRIDS
-     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
-end 
+% if OUTPUT_PARA.PLOT_GRIDS
+%      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+% end 
+% 
+% if GRAV_PARA.inputGravity_weighting 
+%      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
+% end
 
-if GRAV_PARA.inputGravity_weighting 
-     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-end
-
-if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
-    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
-    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeParallelMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
-        OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-
-else
-    disp('2/4 ..........................computeTerrainEffect is running')
-    [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
-        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
-        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
-
-    save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
-
-    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA, ...
-        GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-end
+% if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
+%     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+%     computeParallelMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
+%         OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+% 
+% else
+%     disp('2/4 ..........................computeTerrainEffect is running')
+%     [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
+%         computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
+%         LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
+% 
+%     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
+% 
+%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+%     computeMolodenskyG1GravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA, ...
+%         GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+% end
 
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
