@@ -3,8 +3,8 @@
 haversineDistance=(0:pi/180: pi);
 
 for i=1:1
-cov0 =   COVA(100, num2str(i), haversineDistance,0, 0);
-cov500 = COVA(100, num2str(i), haversineDistance,500*10^3, 500*10^3);
+cov0 =   COVA(1, num2str(i), haversineDistance,0, 0);
+cov500 = COVA(1, num2str(i), haversineDistance,500*10^3, 500*10^3);
 
 figure
 plot(rad2deg(haversineDistance),cov0,'r-')
