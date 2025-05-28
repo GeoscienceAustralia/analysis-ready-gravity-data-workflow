@@ -6,12 +6,10 @@ function JobSubmission(func,varargin)
 %
 %e.g.
 %Within Matlab
-%             JobSubmission('RunMainScript ','--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz,'--grav-grad-para-avail',true);
-%             JobSubmission('--help');
+%             JobSubmission('RunMainScript ','--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz','--grav-grad-para-avail',true);
 %
 %Compiled
 %             JobSubmission RunMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true
-%             JobSubmission RunMainScript --help
 %
 %Available options:
 %--grid-para-buffer <value>                             e.g. --grid-para-buffer 1
@@ -64,7 +62,6 @@ function JobSubmission(func,varargin)
 %--output-para-plot-grids <logical>                     e.g. --output-para-plot-grids false
 %--output-para-plotsfolder <path_to_folder>             e.g. --output-para-plotsfolder /g/data/dh8/outputs/plots/22-Nov-2024NENSWgg2degTile
 %--keepawake <logical>                                  e.g. --keepawake true
-%--executables-folder <path_to_folder>                  e.g. --executables-folder /g/data/dg9/gravityLibrary/executables
 %--memtype <string>                                     e.g. --memtype normal
 %--ntasks <value>                                       e.g. --ntasks 8
 %--walltime <string>                                    e.g. --walltime 48:00:00
@@ -77,7 +74,7 @@ function JobSubmission(func,varargin)
 %
 
 % Default parameters
-executables_folder = '/g/data/dg9/gravityLibrary/executables';
+execpath = '/g/data/dg9/gravityLibrary/executables/';
 proj = 'dg9';
 walltime = '24:00:00';
 mem = '512GB';
@@ -87,7 +84,7 @@ memtype = 'hugemem';
 ntasks = 1;
 str = [];
 
-%check for first input argument
+%check for first input argument if --help
 if strncmp(func,'--help',6)
     helptext
     return
@@ -254,11 +251,11 @@ for i=1:nargin-1
         elseif strncmp(varargin{i},'--keepawake',11)
             keepawake = str2num(varargin{i+1});
             str = [str ' ' varargin{i} ' ' varargin{i+1} ''];
+        elseif strncmp(varargin{i},'--executables-path',18)
+            execpath = varargin{i+1};
+            % str = [str ' ' varargin{i} ' ' varargin{i+1} ''];
         elseif strncmp(varargin{i},'--proj',6)
             proj = varargin{i+1};
-            % str = [str ' ' varargin{i} ' ' varargin{i+1} ''];
-        elseif strncmp(varargin{i},'--executables-folder',20)
-            executables_folder = varargin{i+1};
             % str = [str ' ' varargin{i} ' ' varargin{i+1} ''];
         elseif strncmp(varargin{i},'--memtype',9)
             memtype = varargin{i+1};
@@ -282,11 +279,7 @@ for i=1:nargin-1
                 return
             end
         elseif strncmp(varargin{i},'--help',6)
-            if strncmpi(computer,'pcwin',5)
-                dos([func ' --help &']);
-            else
-                unix([func ' --help']);
-            end
+            helptext
             return
         end
     end
@@ -301,7 +294,8 @@ for i=1:1:ntasks
     if strncmpi(computer,'pcwin',5)
         jobfname = [func '_' num2str(nowinsec) '.bat'];
         fidjob = fopen(jobfname,'w');
-        fprintf(fidjob,'%s\n',['set PATH=%PATH%;' executables_folder]);
+        % fprintf(fidjob,'%s\n','set PATH=%PATH%;C:\W10DEV\app\neda');
+        fprintf(fidjob,'%s\n',['set PATH=%PATH%;' execpath]);
         fprintf(fidjob,'%s\n','prompt $N:\$G');
         fprintf(fidjob,'%s\n','');
         fprintf(fidjob,'%s\n',[func '' str '' boundarystr]);
@@ -317,8 +311,10 @@ for i=1:1:ntasks
         fprintf(fidjob,'%s\n','#PBS -l wd');
         fprintf(fidjob,'%s\n','#PBS -l storage=gdata/dg9');
         fprintf(fidjob,'%s\n','');
-        fprintf(fidjob,'%s\n',['export PATH="' executables_folder ':$PATH"']); %always check for the one used and loaded in raijin
+        % fprintf(fidjob,'%s\n','export PATH="/home/547/jxs547/executables:$PATH"'); %always check for the one used and loaded in raijin
+        fprintf(fidjob,'%s\n',['export PATH="' execpath ':$PATH"']); %always check for the one used and loaded in raijin
         fprintf(fidjob,'%s\n','module load matlab'); %always check for the one used and loaded in raijin
+        % fprintf(fidjob,'%s\n',['~/executables/' func '' str '' boundarystr]);
         fprintf(fidjob,'%s\n',[func '' str '' boundarystr]);
         fclose(fidjob);
         % unix(['qsub ' jobfname]);
@@ -414,26 +410,17 @@ for i = 0:n_rows-1
 end
 
 function helptext
-str={'JobSubmission computes regional gravimetric geoids using gravity observations from gravity anomalies.'
-'              The process involves sequence of "remove-predict-restore" operations, where the Global '
-'              Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC), '
-'              and then the effects are restored to obtain the final geoid model. The functions folder '
-'              provides all the MATLAB functions to perform these three steps for geoid calculations. '
-'              The primary goal is to create a platform for analysis-ready gravity data, '
-'              featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly '
-'              observations.'
+str={'JobSubmission creates and submits dos batch or pbs scripts to relevant machine to execute certain functions.'
 ' '
-' Usage: JobSubmission(''flag'',value)'
-'    or: JobSubmission flag value'
+' Usage: JobSubmission(''RunMainScript'',''flag'',value)'
+'    or: JobSubmission RunMainScript flag value'
 ' '
 'e.g.'
 'Within Matlab'
-'             JobSubmission(''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz'',''--grav-grad-para-avail'',true);'
-'             JobSubmission(''--help'');'
+'             JobSubmission(''RunMainScript '',''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz'',''--grav-grad-para-avail'',true);'
 ' '
 'Compiled'
-'             JobSubmission --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true'
-'             JobSubmission RunMainScript --help'
+'            JobSubmission --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true'
 ' '
 'Available options:'
 '--grid-para-buffer <value>                             e.g. --grid-para-buffer 1'
@@ -486,7 +473,6 @@ str={'JobSubmission computes regional gravimetric geoids using gravity observati
 '--output-para-plot-grids <logical>                     e.g. --output-para-plot-grids false'
 '--output-para-plotsfolder <path_to_folder>             e.g. --output-para-plotsfolder /g/data/dh8/outputs/plots/22-Nov-2024NENSWgg2degTile'
 '--keepawake <logical>                                  e.g. --keepawake true'
-'--executables-folder <path_to_folder>                  e.g. --executables-folder /g/data/dg9/gravityLibrary/executables'
 '--memtype <string>                                     e.g. --memtype normal'
 '--ntasks <value>                                       e.g. --ntasks 8'
 '--walltime <string>                                    e.g. --walltime 48:00:00'

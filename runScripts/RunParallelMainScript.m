@@ -13,7 +13,7 @@ function RunParallelMainScript(varargin)
 %
 %e.g.
 %Within Matlab
-%             RunMainScript('--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz,'--grav-grad-para-avail',true);
+%             RunMainScript('--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz','--grav-grad-para-avail',true);
 %
 %Compiled
 %             RunMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true
@@ -193,76 +193,76 @@ for i=1:nargin
         elseif strncmp(varargin{i},'--grav-grad-para-typeb',22)
             GRAV_GRAD_PARA.TypeB = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--grav-grad-para-avail',22)
-           GRAV_GRAD_PARA.avail = str2num(varargin{i+1});
+            GRAV_GRAD_PARA.avail = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-compute-empircal-cov-dec',35)
-           COV_PARA.Compute_Empircal_COV_Dec = str2num(varargin{i+1});
+            COV_PARA.Compute_Empircal_COV_Dec = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-fit-empircal-cov',27)
-           COV_PARA.Fit_Empircal_COV = varargin{i+1};
+            COV_PARA.Fit_Empircal_COV = varargin{i+1};
         elseif strncmp(varargin{i},'--cov-para-fitempiricalcovnsearch',33)
-           COV_PARA.FitEmpiricalCOVNSearch = str2num(varargin{i+1});
+            COV_PARA.FitEmpiricalCOVNSearch = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-fitempiricalcovmsearch',33)
-           COV_PARA.FitEmpiricalCOVMSearch = str2num(varargin{i+1});
+            COV_PARA.FitEmpiricalCOVMSearch = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-n',12)
-           COV_PARA.N = str2num(varargin{i+1});
+            COV_PARA.N = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-m',12)
-           COV_PARA.M = str2num(varargin{i+1});
+            COV_PARA.M = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-width',16)
-          COV_PARA.width = str2num(varargin{i+1});
+            COV_PARA.width = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-res',14)
-          COV_PARA.res = str2num(varargin{i+1});
+            COV_PARA.res = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-cov-computed_tilewise',32)
-          COV_PARA.COV_COMPUTED_Tilewise = str2num(varargin{i+1});
+            COV_PARA.COV_COMPUTED_Tilewise = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-airbornedataonly',27)
-          COV_PARA.Airbornedataonly = str2num(varargin{i+1});
+            COV_PARA.Airbornedataonly = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--cov-para-covplot',18)
-          COV_PARA.COVPlot = str2num(varargin{i+1});
+            COV_PARA.COVPlot = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-corr',16)
-          Topo_PARA.Corr = str2num(varargin{i+1});
+            Topo_PARA.Corr = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-topoplot',20)
-          Topo_PARA.TopoPlot = str2num(varargin{i+1});
+            Topo_PARA.TopoPlot = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-density',19)
-          Topo_PARA.Density = str2num(varargin{i+1});
+            Topo_PARA.Density = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-depth',17)
-          Topo_PARA.Depth = str2num(varargin{i+1});
+            Topo_PARA.Depth = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-rad',15)
-          Topo_PARA.Rad = str2num(varargin{i+1});
+            Topo_PARA.Rad = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--topo-para-rtm',15)
-          Topo_PARA.RTM = str2num(varargin{i+1});
+            Topo_PARA.RTM = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--ggm-para-filename',19)
-          GGM_PARA.filename = varargin{i+1};
+            GGM_PARA.filename = varargin{i+1};
         elseif strncmp(varargin{i},'--coast-para-filename',21)
-          COAST_PARA.filename = varargin{i+1};
+            COAST_PARA.filename = varargin{i+1};
         elseif strncmp(varargin{i},'--levelling-para-lev-eval',25)
-          LEVELLING_PARA.Lev_eval = str2num(varargin{i+1});
+            LEVELLING_PARA.Lev_eval = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--levelling-para-filename',25)
-          LEVELLING_PARA.filename = varargin{i+1};
+            LEVELLING_PARA.filename = varargin{i+1};
         elseif strncmp(varargin{i},'--levelling-para-plot-stats',27)
-          LEVELLING_PARA.Plot_Stats = str2num(varargin{i+1});
+            LEVELLING_PARA.Plot_Stats = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--levelling-para-compare-to-existing-model',42)
-          LEVELLING_PARA.Compare_To_Existing_Model = str2num(varargin{i+1});
+            LEVELLING_PARA.Compare_To_Existing_Model = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--levelling-para-existing-model',31)
-          LEVELLING_PARA.Existing_Model = varargin{i+1};
+            LEVELLING_PARA.Existing_Model = varargin{i+1};
         elseif strncmp(varargin{i},'--levelling-para-max-diff',25)
-          LEVELLING_PARA.max_diff = str2num(varargin{i+1});
+            LEVELLING_PARA.max_diff = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--output-para-grids-name',24)
-          OUTPUT_PARA.Grids_name = varargin{i+1};
+            OUTPUT_PARA.Grids_name = varargin{i+1};
         elseif strncmp(varargin{i},'--output-para-tiles-dir-name',28)
-          OUTPUT_PARA.Tiles_dir_name = varargin{i+1};
+            OUTPUT_PARA.Tiles_dir_name = varargin{i+1};
         elseif strncmp(varargin{i},'--output-para-plot-grids',24)
-          OUTPUT_PARA.PLOT_GRIDS = str2num(varargin{i+1});
+            OUTPUT_PARA.PLOT_GRIDS = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--output-para-plotsfolder',25)
-          OUTPUT_PARA.plotsFolder = varargin{i+1};
-          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            OUTPUT_PARA.plotsFolder = varargin{i+1};
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         elseif strncmp(varargin{i},'--output-para-polygonLon',24)
-          OUTPUT_PARA.polygonLon = str2num(varargin{i+1});
+            OUTPUT_PARA.polygonLon = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--output-para-polygonLat',24)
-          OUTPUT_PARA.polygonLat = str2num(varargin{i+1});
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            OUTPUT_PARA.polygonLat = str2num(varargin{i+1});
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         elseif strncmp(varargin{i},'--keepawake',11)
-          keepawake = str2num(varargin{i+1});
+            keepawake = str2num(varargin{i+1});
         elseif strncmp(varargin{i},'--help',6)
-          helptext
-          return
+            helptext
+            return
         end
     end
 end
@@ -344,7 +344,7 @@ str={'RunMainScript computes regional gravimetric geoids using gravity observati
 ' '
 'e.g.'
 'Within Matlab'
-'             RunMainScript(''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz,''--grav-grad-para-avail'',true);'
+'             RunMainScript(''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz'',''--grav-grad-para-avail'',true);'
 ' '
 'Compiled'
 '             RunMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true'
