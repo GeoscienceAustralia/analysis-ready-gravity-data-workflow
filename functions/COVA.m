@@ -265,9 +265,10 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     switch KTYPE
             % EQUATION (132) AND (146) GIVES: 
         case '1'
-            %COV1 = S .* B0 ;
-           COV = S .* B0 + ...
-                  A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
+            COV = S .* B0 ;
+            %COV = A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
+            %COV = S .* B0 + ...
+                  %A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
             % EQUATION (139) AND (150) GIVES: 
         case '2'
             COV = U .* (DB0 .* RBJ ./ (RP .* RQ) +...

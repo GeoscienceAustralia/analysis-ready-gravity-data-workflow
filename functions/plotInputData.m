@@ -1,7 +1,7 @@
 function plotInputData(Gravo, gravGradFiltered, Coastline, GRID_PARA, OUTPUT_PARA,DEMdata)
     % Plot input data: 
     % be careful, the size of AusDEM is 15462841
-    plotCustomScatter(DEMdata(:,1),DEMdata(:,2),DEMdata(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+    %plotCustomScatter(DEMdata(:,1),DEMdata(:,2),DEMdata(:,3),GRID_PARA,'DEM','m',Coastline,[],OUTPUT_PARA.plotsFolder)
     % for Perth simulation 
 
     % Plot GravityTopographyHeight
