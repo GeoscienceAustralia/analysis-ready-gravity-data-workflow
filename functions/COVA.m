@@ -74,18 +74,17 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
      end
     % ! Determines the type of covariance function to be computed based on KTYPE.
     % ! The covariance function is set as follows:
-    % ! - KTYPE = 1: Covariance between the gravity anomaly at P and at Q.
-    % ! - KTYPE = 2: Covariance between the longitudinal component of the deflection 
-    % !              of the vertical at P and Q.
-    % ! - KTYPE = 3: Covariance between the gravity anomaly at P and the height 
-    % !              anomaly at Q.
-    % ! - KTYPE = 4: Covariance between the longitudinal component of the deflection 
-    % !              of the vertical at P and the same at Q.
-    % ! - KTYPE = 5: Covariance between the transversal component of the deflection 
-    % !              of the vertical at P and the same at Q.
-    % ! - KTYPE = 6: Covariance between the longitudinal component of the deflection 
-    % !              of the vertical at P and the height anomaly at Q.
-    % ! - KTYPE = 7: Covariance between the height anomaly at P and at Q.
+    % ! - KTYPE = 1: THE GRAVITY ANOMALY AT P AND THE GRAVITY ANOMALY AT Q
+    % ! - KTYPE = 2: THE GRAVITY ANOMALY AT P AND THE LONGITUDIOONAL COMPONENT 
+    %                OF THE DEFLECTION OF THE VERTICAL AT Q
+    % ! - KTYPE = 3: THE GRAVITY ANOMALY AT P AND THE HEIGHT ANOMALY AT Q
+    % ! - KTYPE = 4: THE LONGITUDIOONAL COMPONENT OF THE DEFLECTION OF THE VERTICAL AT P
+    %                AND THE SAME TYPE OF QUANTITY AT Q.
+    % ! - KTYPE = 5: THE TRANSVERSAL COMPONENT OF THE DEFLECTION OF THE VERTICAL AT P
+    %                AND THE SAME TYPE OF QUANTITY AT Q.
+    % ! - KTYPE = 6: THE LONGITUDIOONAL COMPONENT OF THE DEFLECTION OF THE VERTICAL AT P
+    % !              AND THE HEIGHT ANOMALY AT Q
+    % ! - KTYPE = 7: THE HEIGHT ANOMALY AT P AND THE HEIGHT ANOMALY AT Q
     % !
     % ! The value of KTYPE also determines which coefficients (151)-(153) are used
     % ! in the evaluation of the Legendre series and whether differentiation 
@@ -125,9 +124,9 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     S2 = S .* S;
     S3 = S2 .* S;
     TS = T .* S;
-    P2 = (D3 .* D2 - D1) ./ D2;
-    GP = GM ./ (RP .* RP);
-    GQ = GM ./ (RQ .* RQ);
+    P2 = (D3 .* T2 - D1) ./ D2;
+    GP = GM / (RP * RP);
+    GQ = GM / (RQ * RQ);
 
     %  THF QUANTITIES L,M AND N DFFINED IN EQ.(75) ARE HERE CALLED SL,SM 
     %  AND SN. L**2 = SL2. 
@@ -164,13 +163,12 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     % THE TERM (176A) DIVIDED BY T IS CALLED EL AND FL1 IS THE TERM (176B) 
     % FOR SUBSCRIPT L+l. 
     for I = 1:N1
-        EL = (D2 .* RL1 - D1) .* S ./ RL1;
-        FL1 = -RL1 .* S2 ./ (RL1 + D1);
-        RL1 = RL1 - 1;
-        
+        EL = (D2 * RL1 - D1) * S / RL1;
+        FL1 = -RL1 * S2 / (RL1 + D1);
+        RL1 = RL1 - D1;
         B2 = B1;
         B1 = B0;
-        B0 = B1 .* EL .* T + B2 .* FL1 + EPSC(L1);
+        B0 = B1 * EL .* T + B2 * FL1 + EPSC(L1);
         
 %         if ~NOTD
 %             continue;
@@ -178,7 +176,7 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     
         DB2 = DB1;
         DB1 = DB0;
-        DB0 = EL .* (DB1 .* T + B1) + FL1 .* DB2;
+        DB0 = EL * (DB1 .* T + B1) + FL1 * DB2;
     
 %         if ~NOTDD
 %             continue;
@@ -186,7 +184,7 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     
         DDB2 = DDB1;
         DDB1 = DDB0;
-        DDB0 = EL .* (DB1 .* D2 + DDB1 .* T) + FL1 .* DDB2;
+        DDB0 = EL * (DB1 * D2 + DDB1 .* T) + FL1 * DDB2;
     
         L1 = L1 - 1;
     end
@@ -265,22 +263,22 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
     switch KTYPE
             % EQUATION (132) AND (146) GIVES: 
         case '1'
-            %COV = S .* B0 ;
+            %COV = -S .* B0 ;
             %COV = A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
-            COV = S .* B0 + ...
+            COV = -S .* B0 + ...
                   A .* S .* (IB1 .* (FB - S ./ B - S2 .* T ./ IB1- S3 .* P2 ./ IB2) + FM2) ./ IB2;
             % EQUATION (139) AND (150) GIVES: 
         case '2'
-            COV = U .* (DB0 .* RBJ ./ (RP .* RQ) +...
+            COV = U .* (-DB0 .* RBJ ./ (RP .* RQ) +...
                   AM .* S .* (DFM2 - DFB + S2 ./ IB1 + D3 .* S3 .* T ./ IB2) ./ IB2) ./ (GQ .* RADSEC);
-        % EQUAION (131) AND (145) GIVES:
+            % EQUAION (131) AND (145) GIVES:
         case '3'
-            COV = (B0 .* RBJ + AM .* RBJ2 .* (FM2 - FB + S ./ B + ...
+            COV = (-B0 .* RBJ + AM .* RBJ2 .* (FM2 - FB + S ./ B + ...
                  S2 .* T ./ IB1 + S3 .* P2 ./ IB2) ./ IB2) ./ (RP .* GQ);
             % EOUATIGM (136) AND (l47) GIVES:
         case '4'
             COV = (T .* DK ./ (RP .* RQ) - U2 .* ...
-                 (DDB0 ./ (RP .* RQ) + AM2 .* S .* (IB1 .* DDFM2 - ...
+                 (-DDB0 ./ (RP .* RQ) + AM2 .* S .* (IB1 .* DDFM2 - ...
                   IB2 .* (DDFM1 - D3 .* S3) + DDFB - D3 .* S3 ./ IB2) ./ IB12)) .* ...
                  RADSE2 ./ (GP .* GQ);
             % EOUATION (137) AND (148) GIVES: 
@@ -291,7 +289,7 @@ function COV = COVA(N1, KTYPE, PSI, HP, HQ)
             COV = U .* DK ./ (GP .* GQ .* RP) .* RADSEC;
             % AND EQUATION (37), (130) AND (144) GIVES:
         case '7'
-            COV = (B0 + AM2 .* RBJ2 * ...
+            COV = (-B0 + AM2 .* RBJ2 * ...
                  (IB1 .* FM2 - IB2 .* (FM1 - S3 .* P2) + ...
                  FB - S ./ B - S2 .* T ./ IB1 - S3 .* P2 ./ IB2) ./ IB12) ./ (GP .* GQ);
         otherwise
