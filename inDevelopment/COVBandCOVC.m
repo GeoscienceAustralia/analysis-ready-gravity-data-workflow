@@ -2,7 +2,7 @@
 
 haversineDistance=(0:pi/180/2: pi);
 
-for i=7:7
+for i=1:1
 cov0 =   COVA(300, num2str(i), haversineDistance,0, 0);
 cov500 = COVA(300, num2str(i), haversineDistance,500*10^3, 500*10^3);
 

@@ -1,6 +1,10 @@
 close all
 clear 
 
+Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
+
+
+
 AB_Grav_BMtest=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
 figure
 scatter(AB_Grav_BMtest(:,1),AB_Grav_BMtest(:,2),1,AB_Grav_BMtest(:,4))
