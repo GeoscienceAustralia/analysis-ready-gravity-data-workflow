@@ -1,20 +1,6 @@
 close all
 clear 
 
-Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
-Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
-Adelaide_Lat=round(Adelaide_Data(:,21)*60)/60;
-Adelaide_H=Adelaide_Data(:,26);
-Adelaide_Grav_anom=Adelaide_Data(:,72)/10;
-
-figure
-scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom)
-colorbar
-colormap(jet)
-title(colorbar,'mGal','FontSize',10);
-
-
-
 AB_Grav_BMtest=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
 figure
 scatter(AB_Grav_BMtest(:,1),AB_Grav_BMtest(:,2),1,AB_Grav_BMtest(:,4))

@@ -1,7 +1,64 @@
 close all
 clear 
 
-% Look at Victoria Data first.
+% Look at Adelaide Data.
+
+Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
+Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
+Adelaide_Lat=round(Adelaide_Data(:,21)*60)/60;
+Adelaide_H=Adelaide_Data(:,26);
+Adelaide_Grav_anom=Adelaide_Data(:,72)/10;
+
+figure
+scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Free air gravity (Geoid), 56sline filter, levelled, vertical')
+
+AdelaideFreeAirVertical=Adelaide_Data(:,79);
+AdelaideFreeAirVertical(AdelaideFreeAirVertical == -9999999.99) = NaN;
+figure
+scatter(Adelaide_Long,Adelaide_Lat,1,AdelaideFreeAirVertical/10)
+%caxis([-262 168])
+colorbar
+colormap(jet)
+title(colorbar, 'mGal', 'FontSize', 10)
+title('Final Free Air Gravity, 6000 m spatial filter (Geoid), vertical')
+
+AdelaideTopoGravityVertical=Adelaide_Data(:,80);
+AdelaideTopoGravityVertical(AdelaideTopoGravityVertical == -9999999.99) = NaN;
+figure
+scatter(Adelaide_Long,Adelaide_Lat,1,-AdelaideTopoGravityVertical)
+colorbar
+colormap(jet)
+title(colorbar, '\mu\it{m}/s^2', 'FontSize', 10)
+title('Final Topographic Gravity, 6000 m spatial filter vertical')
+
+AdelaideTopoGravityeast=Adelaide_Data(:,108);
+AdelaideTopoGravityeast(AdelaideTopoGravityeast == -9999999.99) = NaN;
+figure
+scatter(Adelaide_Long,Adelaide_Lat,1,-AdelaideTopoGravityeast)
+colorbar
+colormap(jet)
+title(colorbar, '\mu\it{m}/s^2', 'FontSize', 10)
+title('Final Topographic Gravity, 6000 m spatial filter,east')
+
+AdelaideTopoGravitynorth=Adelaide_Data(:,140);
+AdelaideTopoGravitynorth(AdelaideTopoGravitynorth == -9999999.99) = NaN;
+figure
+scatter(Adelaide_Long,Adelaide_Lat,1,-AdelaideTopoGravitynorth)
+colorbar
+colormap(jet)
+title(colorbar, '\mu\it{m}/s^2', 'FontSize', 10)
+title('Final Topographic Gravity, 6000 m spatial filter,north')
+
+
+
+
+
+
+% Look at Victoria Data.
 Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
 Vic_Data.data(end,:)=[];
 Vic_LongOtter=round(Vic_Data.data(:,11)*60)/60;
@@ -15,13 +72,6 @@ Vic_LatCaravan=AirborneGravitymat(:,2);
 Vic_HCaravan=AirborneGravitymat(:,3);
 Vic_Grav_anomCaravan=AirborneGravitymat(:,4);
 
-% this file has different columns
-% Vic_Data=importdata('Data\GRAVITY\AIRBORNE/24102024victoriaCaravan/dlv009.csv');
-% Vic_Data.data(end,:)=[];
-% Vic_LongCaravan=round(Vic_Data.data(:,35)*60)/60;
-% Vic_LatCaravan=round(Vic_Data.data(:,32)*60)/60;
-% Vic_HCaravan=Vic_Data.data(:,39);
-% Vic_Grav_anomCaravan=Vic_Data.data(:,18);
 
 figure
 scatter(Vic_LongOtter,Vic_LatOtter,1,Vic_Grav_anomOtter)
@@ -52,6 +102,7 @@ GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
 GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
 GGM_Gi_interpolatedCaravan=GGM_Gi(Vic_LongCaravan,-Vic_LatCaravan,Vic_HCaravan);
 GGM_Gi_interpolatedOtter=GGM_Gi(Vic_LongOtter,-Vic_LatOtter,Vic_HOtter);
+GGM_Gi_interpolatedAdelaide=GGM_Gi(Adelaide_Long,-Adelaide_Lat,Adelaide_H);
 
 figure
 subplot(2, 1, 1) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
@@ -93,7 +144,27 @@ title('Caravan-EGM2008')
 disp('Mean of Difference GGM and Caravan ')
 mean(Vic_Grav_anomCaravan-GGM_Gi_interpolatedCaravan)
 
-% Look at NSW second.
+figure
+subplot(2, 1, 1) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+hold on
+scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Adelaide')
+
+subplot(2, 1, 2) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+hold on
+scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom-GGM_Gi_interpolatedAdelaide)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Adelaide-EGM2008')
+
+disp('Mean of Difference GGM and Adelaide')
+mean(Adelaide_Grav_anom-GGM_Gi_interpolatedAdelaide)
+
+% Look at NSW data.
 
 NSW_Data=importdata('Data\GRAVITY\AIRBORNE\18042024victoriaNSW/gravNSW.csv');
 NSW_Data.data(end,:)=[];
