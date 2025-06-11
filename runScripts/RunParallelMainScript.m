@@ -1,12 +1,12 @@
 function RunParallelMainScript(varargin)
-%              computes regional gravimetric geoids using gravity observations from gravity anomalies.
-%              The process involves sequence of "remove-predict-restore" operations, where the Global
-%              Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
-%              and then the effects are restored to obtain the final geoid model. The functions folder
-%              provides all the MATLAB functions to perform these three steps for geoid calculations.
-%              The primary goal is to create a platform for analysis-ready gravity data,
-%              featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly
-%              observations.
+% RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
+%                       The process involves sequence of "remove-predict-restore" operations, where the Global
+%                       Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
+%                       and then the effects are restored to obtain the final geoid model. The functions folder
+%                       provides all the MATLAB functions to perform these three steps for geoid calculations.
+%                       The primary goal is to create a platform for analysis-ready gravity data,
+%                       featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly
+%                       observations.
 %
 % Usage: RunParallelMainScript('flag',value)
 %    or: RunParallelMainScript flag value
@@ -330,14 +330,14 @@ disp('importAndFormatData is running ')
      longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 
 function helptext
-str={'RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
-'              The process involves sequence of "remove-predict-restore" operations, where the Global '
-'              Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC), '
-'              and then the effects are restored to obtain the final geoid model. The functions folder '
-'              provides all the MATLAB functions to perform these three steps for geoid calculations. '
-'              The primary goal is to create a platform for analysis-ready gravity data, '
-'              featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly '
-'              observations.'
+str={' RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
+'                       The process involves sequence of "remove-predict-restore" operations, where the Global'
+'                       Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),'
+'                       and then the effects are restored to obtain the final geoid model. The functions folder'
+'                       provides all the MATLAB functions to perform these three steps for geoid calculations.'
+'                       The primary goal is to create a platform for analysis-ready gravity data,'
+'                       featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly'
+'                       observations.'
 ' '
 ' Usage: RunParallelMainScript(''flag'',value)'
 '    or: RunParallelMainScript flag value'
