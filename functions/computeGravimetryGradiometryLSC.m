@@ -299,9 +299,6 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
     Dataset_save.COV_PARA_RTM=COV_PARA_RTM;
     Dataset_save.COV_PARA_Faye=COV_PARA_Faye;
 
-    %plotOutputData(LongDEM,LatDEM,Grid_res_geoid,Weights,Gravity,Gravity_BA,Grid_res_grav,GGM_Zeta_griddedInterpolant, ...
-    %Grid_res_geoid_err,Grid_res_grav_err,Lev,Coastline,GRID_PARA,LEVELLING_PARA,block_counter,LONGsi,LATsi)
- 
     save([OUTPUT_PARA.Tiles_dir_name,'/Tile',num2str(LONGsi),'_',num2str(abs(LATsi)),'.mat'],'Dataset_save')
     
     else

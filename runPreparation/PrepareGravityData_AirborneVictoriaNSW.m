@@ -2,7 +2,6 @@ close all
 clear 
 
 % Look at Adelaide Data.
-
 Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
 Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
 Adelaide_Lat=round(Adelaide_Data(:,21)*60)/60;
