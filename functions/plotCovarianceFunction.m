@@ -32,6 +32,7 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     hold on
     plot(rad2deg ( covarianceInfo(:,1) ), covarianceInfo(:,2), '*')
     plot(rad2deg ( covarianceInfo(:,1) ), covarianceParameters.A * fittedCovariance, '-')
+    %plot(rad2deg ( covarianceInfo(:,1) ), fittedCovariance, '-')
     drawnow
     legend('Empirical data', 'Fitted function')
     xlabel('Spherical distance in degrees')
