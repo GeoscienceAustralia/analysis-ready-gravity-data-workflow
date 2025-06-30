@@ -63,7 +63,7 @@ function JobSubmission(func,varargin)
 %--output-para-plotsfolder <path_to_folder>             e.g. --output-para-plotsfolder /g/data/dh8/outputs/plots/22-Nov-2024NENSWgg2degTile
 %--keepawake <logical>                                  e.g. --keepawake true
 %--memtype <string>                                     e.g. --memtype normal
-%--ntasks <value>                                       e.g. --ntasks 8
+%--nsubsets <value>                                     e.g. --nsubsets 8
 %--walltime <string>                                    e.g. --walltime 48:00:00
 %--mem <string>                                         e.g. --mem 512GB
 %--jobfs <string>                                       e.g. --jobfs 400GB
@@ -82,7 +82,11 @@ jobfs = '400GB';
 ncpus = '48';
 memtype = 'hugemem';
 ntasks = 1;
+isnsubsets = false;
+issubset_size = false;
+dxdy = [];
 str = [];
+GRID_PARA.STEP=0.5; % The step size. This must be less than buffer2 to avoid gaps in the final grid.
 
 %check for first input argument if --help
 if strncmp(func,'--help',6)
@@ -272,22 +276,48 @@ for i=1:nargin-1
         elseif strncmp(varargin{i},'--ncpus',7)
             ncpus = varargin{i+1};
             % str = [str ' ' varargin{i} ' ' varargin{i+1} ''];
-        elseif strncmp(varargin{i},'--ntasks',8)
+        elseif strncmp(varargin{i},'--nsubsets',10)
             ntasks = str2num(varargin{i+1});
             if ~ntasks
                 disp('Must be > 0');
                 return
             end
-        elseif strncmp(varargin{i},'--help',6)
+            isnsubsets = true;
+            issubset_size = false;
+        elseif strncmp(varargin{i},'--subset-size',13)
+            dxdy = str2num(varargin{i+1});
+            if ~dxdy
+                disp('Must be > 0');
+                return
+            elseif length(dxdy) > 2
+                disp('Length must be < 3')
+                return
+            end
+            issubset_size = true;
+            isnsubsets = false;
+      elseif strncmp(varargin{i},'--help',6)
             helptext
             return
         end
     end
 end
 
+% terminate if both --nsubsets and --subset-size have been selected.
+if isnsubsets & issubset_size
+    disp('Cannot be both --nsubsets and --subset-size')
+    return
+end
+
+if isnsubsets
+    subset_boundaries = divide_area_flexible(GRID_PARA.MINLONG, GRID_PARA.MAXLONG, GRID_PARA.MINLAT, GRID_PARA.MAXLAT, ntasks);
+elseif issubset_size
+    subset_boundaries = divide_area_by_cell_size(GRID_PARA.MINLONG, GRID_PARA.MAXLONG, GRID_PARA.MINLAT, GRID_PARA.MAXLAT, dxdy(1), dxdy(end));
+    ntasks = length(subset_boundaries);
+    ncpus = num2str(dxdy(1) / GRID_PARA.STEP * dxdy(end) / GRID_PARA.STEP);
+end
 c4pbs = ['walltime=' walltime ',' 'mem=' mem ',' 'jobfs=' jobfs ',' 'ncpus=' ncpus]; %pbs setting
 joblist = {};
-subset_boundaries = divide_area_flexible(GRID_PARA.MINLONG, GRID_PARA.MAXLONG, GRID_PARA.MINLAT, GRID_PARA.MAXLAT, ntasks);
+
 for i=1:1:ntasks
     nowinsec = round(rem(now,1)*24*60*60*1000);
     boundarystr = [' --grid-para-minlong ' num2str(subset_boundaries{i}(1))  ' --grid-para-maxlong ' num2str(subset_boundaries{i}(2))  ' --grid-para-minlat ' num2str(subset_boundaries{i}(3))  ' --grid-para-maxlat ' num2str(subset_boundaries{i}(4))];
@@ -409,6 +439,72 @@ for i = 0:n_rows-1
     end
 end
 
+function subset_boundaries = divide_area_by_cell_size(min_lon, max_lon, min_lat, max_lat, cell_width_lon, cell_height_lat)
+%DIVIDE_AREA_BY_CELL_SIZE Divides a rectangular area into subsets based on desired cell dimensions.
+%
+%   subset_boundaries = DIVIDE_AREA_BY_CELL_SIZE(MIN_LON, MAX_LON, MIN_LAT, MAX_LAT, CELL_WIDTH_LON, CELL_HEIGHT_LAT)
+%
+%   Inputs:
+%       MIN_LON           Minimum longitude of the overall area (in degrees).
+%       MAX_LON           Maximum longitude of the overall area (in degrees).
+%       MIN_LAT           Minimum latitude of the overall area (in degrees).
+%       MAX_LAT           Maximum latitude of the overall area (in degrees).
+%       CELL_WIDTH_LON    Desired longitude span (width) for each individual subset/cell (in degrees).
+%                         Must be a positive value.
+%       CELL_HEIGHT_LAT   Desired latitude span (height) for each individual subset/cell (in degrees).
+%                         Must be a positive value.
+%
+%   Output:
+%       SUBSET_BOUNDARIES A cell array where each cell contains a 1x4
+%                         vector defining the boundaries of a subset in the
+%                         order [min_lon, max_lon, min_lat, max_lat].
+%                         The subsets are ordered row by row (bottom to top),
+%                         then column by column (left to right).
+
+% Validate input cell dimensions
+if cell_width_lon <= 0 || cell_height_lat <= 0
+    error('Cell width (CELL_WIDTH_LON) and height (CELL_HEIGHT_LAT) must be positive values.');
+end
+
+% Calculate total span of the area
+total_lon_span = max_lon - min_lon;
+total_lat_span = max_lat - min_lat;
+
+% Calculate the total number of columns and rows needed to cover the entire area.
+% Use 'ceil' to ensure that even if the span is not perfectly divisible by the
+% cell size, enough cells are created to cover the whole area.
+n_cols_total = ceil(total_lon_span / cell_width_lon);
+n_rows_total = ceil(total_lat_span / cell_height_lat);
+
+% Pre-allocate the cell array for efficiency
+subset_boundaries = cell(1, n_cols_total * n_rows_total);
+count = 0;
+
+% Iterate through rows (latitude divisions) from bottom to top
+for i = 0:n_rows_total-1
+    % Iterate through columns (longitude divisions) from left to right
+    for j = 0:n_cols_total-1
+        count = count + 1;
+
+        % Calculate the min and max longitude for the current cell
+        current_min_lon = min_lon + j * cell_width_lon;
+        current_max_lon = min_lon + (j + 1) * cell_width_lon;
+
+        % Calculate the min and max latitude for the current cell
+        current_min_lat = min_lat + i * cell_height_lat;
+        current_max_lat = min_lat + (i + 1) * cell_height_lat;
+
+        % Important: Cap the maximum longitude/latitude of the last cells
+        % to ensure they don't extend beyond the original overall boundary.
+        % This prevents going slightly over max_lon/max_lat due to ceil.
+        current_max_lon = min(current_max_lon, max_lon);
+        current_max_lat = min(current_max_lat, max_lat);
+
+        % Store the boundaries
+        subset_boundaries{count} = [current_min_lon, current_max_lon, current_min_lat, current_max_lat];
+    end % End of inner (j) for-loop
+end % End of outer (i) for-loop
+
 function helptext
 str={'JobSubmission creates and submits dos batch or pbs scripts to relevant machine to execute certain functions.'
 ' '
@@ -474,7 +570,7 @@ str={'JobSubmission creates and submits dos batch or pbs scripts to relevant mac
 '--output-para-plotsfolder <path_to_folder>             e.g. --output-para-plotsfolder /g/data/dh8/outputs/plots/22-Nov-2024NENSWgg2degTile'
 '--keepawake <logical>                                  e.g. --keepawake true'
 '--memtype <string>                                     e.g. --memtype normal'
-'--ntasks <value>                                       e.g. --ntasks 8'
+'--nsubsets <value>                                     e.g. --nsubsets 8'
 '--walltime <string>                                    e.g. --walltime 48:00:00'
 '--mem <string>                                         e.g. --mem 512GB'
 '--jobfs <string>                                       e.g. --jobfs 400GB'
