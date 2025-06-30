@@ -52,11 +52,6 @@ colormap(jet)
 title(colorbar, '\mu\it{m}/s^2', 'FontSize', 10)
 title('Final Topographic Gravity, 6000 m spatial filter,north')
 
-
-
-
-
-
 % Look at Victoria Data.
 Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
 Vic_Data.data(end,:)=[];
