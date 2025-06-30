@@ -1,36 +1,19 @@
 close all
 clear
 
-% Look at Victoria Data.
-Vic_Data=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/FD012_Grav.csv');
-Vic_Data.data(end,:)=[];
-Vic_LongOtter=round(Vic_Data.data(:,11)*60)/60;
-Vic_LatOtter=round(Vic_Data.data(:,10)*60)/60;
-Vic_HOtter=Vic_Data.data(:,9);
-Vic_Grav_anomOtter=Vic_Data.data(:,36);
-
-figure
-scatter(Vic_LongOtter,Vic_LatOtter,1,Vic_Grav_anomOtter)
-colorbar
-colormap(jet)
-title(colorbar,'mGal','FontSize',10);
-title('Otter')
-
 % Look at Adelaide Data.
-% Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
-% Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
-% Adelaide_Lat=round(Adelaide_Data(:,21)*60)/60;
-% Adelaide_H=Adelaide_Data(:,26);
-% Adelaide_Grav_anom=Adelaide_Data(:,79);
-% Adelaide_Grav_anom(Adelaide_Grav_anom == -9999999.99) = NaN;
-% Adelaide_Grav_anom=Adelaide_Grav_anom/10;
-% 
+Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
+Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
+Adelaide_Lat=round(Adelaide_Data(:,21)*60)/60;
+Adelaide_H=Adelaide_Data(:,26);
+Adelaide_Grav_anom=Adelaide_Data(:,73)/10;
+
 % figure
 % scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom)
 % colorbar
 % colormap(jet)
 % title(colorbar,'mGal','FontSize',10);
-% title('FinalFreeAirGravity,spatialfilter(Geoid),vertical')
+% title('GrvFAL100s_GEO_V')
 % 
 % figure
 % scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_H)
@@ -73,34 +56,96 @@ selectedData = data{1};
 longitude = selectedData(:,1)*60/60;  
 latitude = selectedData(:,2)*60/60; 
 elev_MSL = selectedData(:,3); 
-FA5000_GEO_V = selectedData(:,4);
-FA5000_GEO_V(FA5000_GEO_V == -9999999.99) = NaN;
-FA5000_GEO_V=FA5000_GEO_V/10;
+GrvFAL100s_GEO_V = selectedData(:,4)/10;
 
 disp('Done.');
 
-figure
-scatter(longitude,latitude,1, FA5000_GEO_V)
-colorbar
-colormap(jet)
-title(colorbar,'um/s2','FontSize',10);
-title('FinalFreeAirGravity,spatialfilter(Geoid),vertical')
+% figure
+% scatter(longitude,latitude,1, FA5000_GEO_V)
+% colorbar
+% colormap(jet)
+% title(colorbar,'um/s2','FontSize',10);
+% title('GrvFAL100s_GEO_V')
+
+% figure
+% scatter(longitude,latitude,1,elev_MSL)
+% colorbar
+% colormap(jet)
+% title(colorbar,'m','FontSize',10);
+% title('elevMSL')
+
+% Check by comparing to EGM2008
+GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
+GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
+
+GGM_Gi_interpolatedVIC=GGM_Gi(longitude,-latitude,elev_MSL);
+GGM_Gi_interpolatedAdelaide=GGM_Gi(Adelaide_Long,-Adelaide_Lat,Adelaide_H);
 
 figure
-scatter(longitude,latitude,1,elev_MSL)
+subplot(2, 1, 1) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+hold on
+scatter(longitude,latitude,1, GrvFAL100s_GEO_V)
 colorbar
 colormap(jet)
-title(colorbar,'m','FontSize',10);
-title('elevMSL')
+title(colorbar,'mGal','FontSize',10);
+title('Victoria')
 
+subplot(2, 1, 2) % Create a subplot with 1 row and 2 columns, and set the first subplot as active
+hold on
+scatter(longitude,latitude,1, GrvFAL100s_GEO_V-GGM_Gi_interpolatedVIC)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Victoria-EGM2008')
 
+disp('Mean of Difference GGM and Victoria ')
+mean(GrvFAL100s_GEO_V-GGM_Gi_interpolatedVIC)
 
+figure
+subplot(2, 1, 1) 
+hold on
+scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Adelaide')
 
+subplot(2, 1, 2) 
+hold on
+scatter(Adelaide_Long,Adelaide_Lat,1,Adelaide_Grav_anom-GGM_Gi_interpolatedAdelaide)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('Adelaide-EGM2008')
 
+disp('Mean of Difference GGM and Adelaide')
+mean(Adelaide_Grav_anom-GGM_Gi_interpolatedAdelaide)
 
+% Look at NSW data.
 
+NSW_Data=importdata('Data\GRAVITY\AIRBORNE\18042024victoriaNSW/gravNSW.csv');
+NSW_Data.data(end,:)=[];
+NSW_Long=round(NSW_Data.data(:,65)*60)/60;
+NSW_Lat=round(NSW_Data.data(:,62)*60)/60;
+NSW_H=NSW_Data.data(:,66);
+NSW_Grav_anom=NSW_Data.data(:,36)/10;% its in mico m's per secon ^2 for some reason. i.e. needs dividing by 10 to get into mGal.
 
+% Combine data sets.
+ABGrav=[longitude,latitude,elev_MSL,GrvFAL100s_GEO_V,GrvFAL100s_GEO_V*0+3;...
+        Adelaide_Long,Adelaide_Lat,Adelaide_H,Adelaide_Grav_anom,Adelaide_Grav_anom*0+3;...
+        NSW_Long,NSW_Lat,NSW_H,NSW_Grav_anom,NSW_Grav_anom*0+3];
 
+% % Block mean as other datasets.
+AB_Grav_Long=round(ABGrav(:,1)*60)/60;   
+AB_Grav_Lat=round(ABGrav(:,2)*60)/60;
+[vals, uid, idx]=unique([AB_Grav_Long,AB_Grav_Lat],'rows');
+AB_Grav_BM(:,3) = accumarray(idx,ABGrav(:,3),[],@mean);
+AB_Grav_BM(:,4) = accumarray(idx,ABGrav(:,4),[],@mean);
+AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
+AB_Grav_BM(:,1) = AB_Grav_Long(uid);
+AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
+
+save('Data\processedData\AirborneAll.mat','AB_Grav_BM')
 
 
 

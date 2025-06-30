@@ -58,7 +58,7 @@ Vic_Data.data(end,:)=[];
 Vic_LongOtter=round(Vic_Data.data(:,11)*60)/60;
 Vic_LatOtter=round(Vic_Data.data(:,10)*60)/60;
 Vic_HOtter=Vic_Data.data(:,9);
-Vic_Grav_anomOtter=Vic_Data.data(:,36);
+Vic_Grav_anomOtter=Vic_Data.data(:,36);%FA100s_GEOID
 
 AirborneGravitymat=importdata('Data\GRAVITY\AIRBORNE/23102024victoriaOtter/Airborne_Gravity.mat');
 Vic_LongCaravan=AirborneGravitymat(:,1);
