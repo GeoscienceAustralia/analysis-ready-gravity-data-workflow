@@ -2,7 +2,9 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     GravityGGM_griddedInterpolant,ZetaGGM_griddedInterpolant,LevellingData3D,...
     ZetaRef_griddedInterpolant,GridRef3D,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
     (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA)
-    % importAndFormatData import all different data sets needed for LSC.
+    % importAndFormatDataFocusedDEM imports all necessary datasets required for the LSC process.
+    % It uses a DEM focused on the area of interest, rather than the full input DEM for Australia, 
+    % which is very large.
     %         
     % Input:  GRID_PARA = grid/tiling parameters such as extent (MINLONG,MAXLONG,MINLAT,MAXLAT), buffer, STEP 
     %         DEM_PARA =  DEM data such as filename,num_cols,num_rows

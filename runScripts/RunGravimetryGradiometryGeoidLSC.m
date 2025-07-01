@@ -64,7 +64,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
