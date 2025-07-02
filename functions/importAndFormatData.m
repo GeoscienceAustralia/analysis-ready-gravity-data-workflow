@@ -114,6 +114,7 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
       if any(isnan(GravityGradient5D(:)))
           Nanfilter = createNanFilter(GravityGradient5D(:,4),470,608);%for new NSW file on 22/03/2024
           GravityGradient5D = GravityGradient5D(~isnan(GravityGradient5D(:,4).*Nanfilter), :);
+%            GravityGradient5D(any(isnan(GravityGradient5D), 2), :) = [];%
       else
           disp('The GravityGradient5D matrix does not contain any NaN values.');
       end
