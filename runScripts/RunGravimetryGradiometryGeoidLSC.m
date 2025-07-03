@@ -64,7 +64,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/XcaliburOtway.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
@@ -106,8 +106,8 @@ OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
-OUTPUT_PARA.polygonLon =[141 141 143 143 141];%[144 144 150.5 150.5 144]; %[144.3 144.3 145.2 145.2 144.3];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
-OUTPUT_PARA.polygonLat =[-37 -38.5 -39 -37.5 -37];%[-35.5 -39.5 -39.5 -35.5 -35.5]; %[-37.7 -38.5 -38.5 -37.7 -37.7];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
+OUTPUT_PARA.polygonLon =[144 144 145.5 145.5 144];%[144 144 150.5 150.5 144]; %[144.3 144.3 145.2 145.2 144.3];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
+OUTPUT_PARA.polygonLat =[-37.5 -39 -39 -37.5 -37.5];%[-35.5 -39.5 -39.5 -35.5 -35.5]; %[-37.7 -38.5 -38.5 -37.7 -37.7];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
 
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
