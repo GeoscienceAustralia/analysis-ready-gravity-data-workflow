@@ -323,15 +323,6 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-if OUTPUT_PARA.PLOT_GRIDS
-     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
-end 
-
-if GRAV_PARA.inputGravity_weighting 
-     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-end
-
-
 if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
@@ -348,14 +339,13 @@ else
     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
 
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
+     OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+     longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 end
 
-disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+
 
 function helptext
 str={' RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
