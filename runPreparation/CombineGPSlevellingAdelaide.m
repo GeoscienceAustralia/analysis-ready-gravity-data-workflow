@@ -1,13 +1,3 @@
-% combine gravity gradient data
-Otway=importdata('Data/GRAVITY_GRAD/OtwayMgalm.mat');
-Xcalibur=importdata('Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat');
-
-% Combine data sets.
-all2=[Xcalibur;Otway];
-
-save('Data/GRAVITY_GRAD/XcaliburOtway.mat','all2')
-
-
 % combine GPS-levelling data for greater Adelaide  
 figure
 scatter(Lev2(:,1),Lev2(:,2),10,Lev2(:,3))
