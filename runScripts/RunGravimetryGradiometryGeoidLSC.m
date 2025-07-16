@@ -46,8 +46,8 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %[93 174 -61 -8];
 %vicAdel=[137 154 -40 -33]
 GRID_PARA.MINLONG=137;%140;%110;%140;
-GRID_PARA.MAXLONG=153;%154;%160;%154;
-GRID_PARA.MINLAT=-39;%%-39;%-37.5;
+GRID_PARA.MAXLONG=154;%154;%160;%154;
+GRID_PARA.MINLAT=-40;%%-39;%-37.5;
 GRID_PARA.MAXLAT=-33;%-33;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
@@ -64,7 +64,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data\processedData\XcaliburOtway.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
+GRAV_GRAD_PARA.filename='Data\processedData\OtwayMgalm104.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
 GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
@@ -94,13 +94,13 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev131pointsNEXY.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev3_92pointsSouthNEXY.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=false;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='VIC14jul';%'198GippslandCaravanOtter';
+outputName='VICotway104';%'198GippslandCaravanOtter';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -167,12 +167,12 @@ end
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
-
-fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiff));
-fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiff));
-fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiff));
-fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiff));
-fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiff));
-fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiff));
+geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
+fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
+fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));
+fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiffMeanSubtracted));
+fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiffMeanSubtracted));
+fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiffMeanSubtracted));
+fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiffMeanSubtracted));
 
 diary off
