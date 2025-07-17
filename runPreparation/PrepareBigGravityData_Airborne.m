@@ -234,6 +234,7 @@ AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
 AB_Grav_BM(:,1) = AB_Grav_Long(uid);
 AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
 
+AB_Grav_BM(:,6)=3;% Flag for airborne gravity
 save('Data\processedData\AirborneAllJuly14.mat','AB_Grav_BM')
 
 
