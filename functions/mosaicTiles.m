@@ -81,19 +81,19 @@ end
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
 
-% disp('Save mat files')
-% 
-% save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
-% 
-% save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
-% 
-% save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
-% 
-% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
-% 
-% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',date,'.mat'],'Grid_res_grav_err_w')
-% 
-% save([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',date,'.mat'],'Grid_res_grav_Bouguer_w')
+disp('Save mat files')
+
+save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',date,'.mat'],'Grid_res_grav_err_w')
+
+save([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',date,'.mat'],'Grid_res_grav_Bouguer_w')
 
 disp('Preparing final grids')
 

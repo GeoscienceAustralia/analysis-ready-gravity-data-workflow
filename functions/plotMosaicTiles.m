@@ -30,17 +30,37 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     hold on
     scatter(Lev(:,1),Lev(:,2),15,Vals_Lev-mean(Vals_Lev(~isnan(Vals_Lev))),'filled')
     customizeMap('Geometric and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
-    caxis([-0.25 0.25])
-    %saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.png']) 
+    caxis([-0.1 0.1])
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.fig']) 
+
+    validVals = Vals_Lev(~isnan(Vals_Lev));
+    valDiff = Vals_Lev - mean(validVals);
     
+    fprintf('%f length  GPSlevellingLSC\n',length (valDiff));
+    fprintf('%f min     GPSlevellingLSC\n',min    (valDiff));
+    fprintf('%f max     GPSlevellingLSC\n',max    (valDiff));
+    fprintf('%f mean    GPSlevellingLSC\n',mean   (valDiff));
+    fprintf('%f median  GPSlevellingLSC\n',median (valDiff));
+    fprintf('%f std     GPSlevellingLSC\n',std    (valDiff));
+
     % plot GPSlevelling vs reference AGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
     hold on
     scatter(Lev(:,1),Lev(:,2),15,AGQG_Vals_Lev-mean(AGQG_Vals_Lev(~isnan(AGQG_Vals_Lev))),'filled')
     customizeMap('Geometric and AGQG Difference','m',Coastline,axisLimits)
-    caxis([-0.25 0.25])
-    %saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
+    caxis([-0.1 0.1])
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.fig']) 
+
+    validVals = AGQG_Vals_Lev(~isnan(AGQG_Vals_Lev));
+    valDiff = AGQG_Vals_Lev - mean(validVals);
+    
+    fprintf('%f length  GPSlevellingAGQG\n',length (valDiff));
+    fprintf('%f min     GPSlevellingAGQG\n',min    (valDiff));
+    fprintf('%f max     GPSlevellingAGQG\n',max    (valDiff));
+    fprintf('%f mean    GPSlevellingAGQG\n',mean   (valDiff));
+    fprintf('%f median  GPSlevellingAGQG\n',median (valDiff));
+    fprintf('%f std     GPSlevellingAGQG\n',std    (valDiff));
 
     % plot difference LSC and AGQG at GPSlevelling
     figure('Name','MosaicTiles','NumberTitle','off'); 
@@ -49,8 +69,8 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     scatter(Lev(:,1),Lev(:,2),15,AGQG_Vals_Lev-mean(AGQG_Vals_Lev(~isnan(AGQG_Vals_Lev)))- ...
         Vals_Lev+mean(Vals_Lev(~isnan(Vals_Lev))),'filled')
     customizeMap('AGQG and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
-    caxis([-0.25 0.25])
-    %saveas(gcf,[plotsFolder,'MosaicTiles','AGQGvsLSCdiff','.png']) 
+    caxis([-0.1 0.1])
+    saveas(gcf,[plotsFolder,'MosaicTiles','AGQGvsLSCdiff','.fig']) 
  
     % plot residualGeoidWeighted-residualAGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
