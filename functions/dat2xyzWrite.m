@@ -1,5 +1,6 @@
-% Path to your input dat file
-inputFile ='Data/EXISTING_GEOID_MODELS/AUSGeoid2020_20180201_win.dat';
+% Path to AUSGeoid dat file
+inputFile ='Data/EXISTING_GEOID_MODELS/AUSGeoid2020_20180201_win.dat'; %from GA website 
+% https://www.ga.gov.au/scientific-topics/positioning-navigation/positioning-australia/geodesy/ahdgm/ausgeoid2020
 
 % Open the file for reading
 fid = fopen(inputFile, 'r');
@@ -24,6 +25,15 @@ lon_decimal = lon_deg + lon_min / 60 + lon_sec / 3600;      % East is positive
 % Combine into XYZ matrix
 geoid(geoid == -999) = NaN;
 xyz = [lon_decimal, lat_decimal, geoid];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot to check
+%Coastline data
+COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
+Coastline=importdata(COAST_PARA.filename);
+
+AGQG2D=importdata('Data/EXISTING_GEOID_MODELS/AGQG20221120.mat');
+AGQG1D = Values.AGQG2D(:);
+imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_err_w)
 
 % Write output file
 xyzFile ='AUSGeoid2020_20180201_win.xyz';
