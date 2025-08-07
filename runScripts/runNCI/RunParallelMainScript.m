@@ -329,6 +329,10 @@ disp('importAndFormatData is running ')
      GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
      longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
 
+ disp('4/4 ..........................mosaicTiles is running')
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+
 function helptext
 str={' RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
 '                       The process involves sequence of "remove-predict-restore" operations, where the Global'
