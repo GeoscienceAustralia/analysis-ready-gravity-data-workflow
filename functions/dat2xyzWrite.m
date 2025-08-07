@@ -1,42 +1,32 @@
+
 % Path to AUSGeoid dat file
-inputFile ='Data/EXISTING_GEOID_MODELS/AUSGeoid2020_20180201_win.dat'; %from GA website 
+AUSGeoidFile ='Data/EXISTING_GEOID_MODELS/AUSGeoid2020_20180201_win.dat'; %from GA website 
 % https://www.ga.gov.au/scientific-topics/positioning-navigation/positioning-australia/geodesy/ahdgm/ausgeoid2020
 
-% Open the file for reading
-fid = fopen(inputFile, 'r');
+xyzAUSGeoid = readDatFile(AUSGeoidFile);
 
-% Read lines (skip header)
-data = textscan(fid, 'GEO %f S%d %f %f E%d %f %f %f %f', 'HeaderLines', 1);
-fclose(fid);
+% Path to AGQG dat file
+AGQGFile =    'Data/EXISTING_GEOID_MODELS/AGQG2017_20170907.dat';
 
-% Extract and cast all to double
-geoid      = double(data{1});
-lat_deg    = double(data{2});
-lat_min    = double(data{3});
-lat_sec    = double(data{4});
-lon_deg    = double(data{5});
-lon_min    = double(data{6});
-lon_sec    = double(data{7});
+xyzAGQG = readDatFile(AGQGFile);
 
-% Convert coordinates to decimal degrees
-lat_decimal = -(lat_deg + lat_min / 60 + lat_sec / 3600);   % South is negative
-lon_decimal = lon_deg + lon_min / 60 + lon_sec / 3600;      % East is positive
+%The zero degree term offset between AGQG_20201120 and AGQG_2017 is -0.41 m. 
+% Heights above AGQG_2017 will be 0.41 m smaller than heights above AGQG_20201120.
 
-% Combine into XYZ matrix
-geoid(geoid == -999) = NaN;
-xyz = [lon_decimal, lat_decimal, geoid];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% plot to check
-%Coastline data
-COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
-Coastline=importdata(COAST_PARA.filename);
+xyz = [xyzAUSGeoid(:,1) xyzAUSGeoid(:,2) xyzAUSGeoid(:,3)-xyzAGQG(:,3)+0.41];
 
-AGQG2D=importdata('Data/EXISTING_GEOID_MODELS/AGQG20221120.mat');
-AGQG1D = Values.AGQG2D(:);
-imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_err_w)
+% Plot
+figure;
+scatter(xyz(:,1), xyz(:,2), 1, xyz(:,3), 'filled');
+colorbar;
+colormap(parula);
+xlabel('Longitude');
+ylabel('Latitude');
+title('Geoid in meters');
 
-% Write output file
-xyzFile ='AUSGeoid2020_20180201_win.xyz';
+ 
+%Write output file
+xyzFile ='outputs/diffAUSGeoid2020AGQG2017.xyz';
 writematrix(xyz, xyzFile, 'Delimiter', ' ', 'FileType', 'text');
 
 fprintf('✅ XYZ file written: %s\n', xyzFile);
