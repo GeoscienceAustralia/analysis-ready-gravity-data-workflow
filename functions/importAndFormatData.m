@@ -104,7 +104,7 @@ function [Gravity6D,GravityGradient5D,DEM3D,ZDEM_griddedInterpolant,LongDEMmatri
     % import gravity gradiometry data
     if GRAV_GRAD_PARA.avail
       disp('Gravity Gradiometry')
-      GravityGradient5D=importdata(GRAV_GRAD_PARA.filename);
+      GravityGradient5D = double(importdata(GRAV_GRAD_PARA.filename));
 %     Grav_grad(:,1)=round(Grav_grad(:,1)*60)/60;% make sure we have 1 arc minute data
 %     Grav_grad(:,2)=round(Grav_grad(:,2)*60)/60;% make sure we have 1 arc minute data
 %     Grav_grad(:,4)=Grav_grad(:,4);% Change from Eotvos to mgal/m
