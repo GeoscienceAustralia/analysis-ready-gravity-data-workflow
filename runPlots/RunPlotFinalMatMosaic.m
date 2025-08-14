@@ -45,10 +45,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % NSW=[140 154 -38 -27];
 %[93 174 -61 -8];
 %vicAdel=[137 154 -40 -33]
-GRID_PARA.MINLONG=143;%140;%110;%140;
-GRID_PARA.MAXLONG=143.5;%154;%160;%154;
-GRID_PARA.MINLAT=-33.5;%%-39;%-37.5;
-GRID_PARA.MAXLAT=-33;%-33;%-27.5;
+GRID_PARA.MINLONG=137;%140;%110;%140;
+GRID_PARA.MAXLONG=140;%154;%160;%154;
+GRID_PARA.MINLAT=-36;%%-39;%-37.5;
+GRID_PARA.MAXLAT=-33.5;%-33;%-27.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -100,11 +100,11 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='OtwayFirstDoubleNSW';%'198GippslandCaravanOtter';
+outputName='NSWVICAdelDouble';
+plotName='Adelaide';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
-OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
+OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon =[137.5 137.5 139.5 139.5 137.5];%[144 144 150.5 150.5 144]; %[144.3 144.3 145.2 145.2 144.3];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
 OUTPUT_PARA.polygonLat =[-34 -35.5 -35.5 -34 -34];%[-35.5 -39.5 -39.5 -35.5 -35.5]; %[-37.7 -38.5 -38.5 -37.7 -37.7];%[-33.4 -33.6 -33.6 -33.4 -33.4];%marsden%otway[-37 -38.5 -39 -37.5 -37];
@@ -112,14 +112,6 @@ OUTPUT_PARA.polygonLat =[-34 -35.5 -35.5 -34 -34];%[-35.5 -39.5 -39.5 -35.5 -35.
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
-% Check if the directory exists, if not, create it
-if ~exist(OUTPUT_PARA.Grids_name, 'dir')
-    mkdir(OUTPUT_PARA.Grids_name);
-end
-
-if ~exist(OUTPUT_PARA.Tiles_dir_name, 'dir')
-    mkdir(OUTPUT_PARA.Tiles_dir_name);
-end
 % start recording
 dfile =['outputs/Grids',outputName,'/',date,outputName,'.txt'];
 if exist(dfile, 'file') ; delete(dfile); end
@@ -132,7 +124,7 @@ disp(OUTPUT_PARA)
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
@@ -143,36 +135,41 @@ if GRAV_PARA.inputGravity_weighting
      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
 end
 
-if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
-    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
-    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+dateCreated ='08-Aug-2025';
 
-else
-    disp('2/4 ..........................computeTerrainEffect is running')
-    [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
-        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
-        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
+load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
-    save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
+load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 
-    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-    computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-end
+load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',dateCreated,'.mat'])
 
-disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
-geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
-fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiffMeanSubtracted));
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',dateCreated,'.mat'])
+
+ZDeg=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+
+resAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+AGQG_Vals_Lev=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2));
+
+
+plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, AGQG_Vals_Lev, ...
+Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
+
+
+
+
+% geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+% geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
+% fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiffMeanSubtracted));
 
 diary off
