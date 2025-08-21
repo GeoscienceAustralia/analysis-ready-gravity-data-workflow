@@ -63,7 +63,7 @@ GRAV_PARA.inputGravity_weighting = true;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
 GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -97,7 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelJustTerr';
+outputName='NSWVICAdelDouble';
 plotName='NSW';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -109,10 +109,10 @@ OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 %VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
-%NSWinLon=[141.5 141.5 147 147 141.5];
-%NSWinLat=[-29.5 -34 -34 -29.5 -29.5];
-NSWoutLon=[150.5 148 150.5 152.5 150.5];
-NSWoutLat=[-29.5 -35.5 -35.5 -29.5 -29.5];
+%NSWinLon=[141 141 147 150 141];
+%NSWinLat=[-29 -34 -36 -29 -29];
+NSWoutLon=[150 147.5 150 153.5 150];
+NSWoutLat=[-29 -36.5   -37.5   -29   -29];
 OUTPUT_PARA.polygonLon = NSWoutLon;
 OUTPUT_PARA.polygonLat = NSWoutLat;
 % Keep the computer awake
@@ -143,7 +143,7 @@ end
 
 % read final matfiles
 
-dateCreated ='15-Aug-2025';
+dateCreated ='13-Aug-2025';
 
 load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
