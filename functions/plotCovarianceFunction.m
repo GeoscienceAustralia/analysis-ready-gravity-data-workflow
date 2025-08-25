@@ -5,7 +5,8 @@ function plotCovarianceFunction(gravityData, residuals, outputParameters, gravit
     MINLAT=min(gravityData(:,2));
     MAXLAT=max(gravityData(:,2));
     % for writing covariance parameters on the plots
-    str = {['parameter A ',num2str(round(covarianceParameters.A))],['parameter B ',num2str(round(covarianceParameters.B))]};
+    str = {['parameter A ',num2str(round(covarianceParameters.A))],['parameter B ',num2str(round(covarianceParameters.B))],...
+           ['parameter M ',num2str(round(covarianceParameters.M))],['parameter N ',num2str(round(covarianceParameters.N))]};
 
     % Plot residual gravity anomaly
     figure('Name','computeCovarianceFunction','NumberTitle','off');
