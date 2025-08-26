@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=141;
-GRID_PARA.MAXLONG=153;
-GRID_PARA.MINLAT=-37;
-GRID_PARA.MAXLAT=-29;
+GRID_PARA.MINLONG=137;
+GRID_PARA.MAXLONG=140;
+GRID_PARA.MINLAT=-36;
+GRID_PARA.MAXLAT=-33.5;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -54,7 +54,7 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename ='Data\processedData\Terrestrial_Gravity.mat';%GravityAllTerrestrialAirborneJuly14.mat
+GRAV_PARA.filename ='Data\processedData\GravityAllTerrestrialAirborneJuly14.mat';%GravityAllTerrestrialAirborneJuly14.mat
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
@@ -75,7 +75,7 @@ COV_PARA.width=3;% Size of precomputed cov function in degrees - must be larger 
 COV_PARA.res=30/3600; % Resolution of the covariance function
 COV_PARA.COV_COMPUTED_Tilewise=true;% This recomputes the covariance function for each tile.
 COV_PARA.Airbornedataonly=false;%Only use airborne data in establishing Covariance parameters - good to use if we are using EGM2008 as the references as terrestrial data are not independent.
-COV_PARA.COVPlot=true;% true plots progress, false turns this off.
+COV_PARA.COVPlot=false;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
 Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
@@ -91,30 +91,30 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/CARS2009zeta7506.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
-LEVELLING_PARA.Plot_Stats=false;% If true, the levelling data are compared to the geoid as its computed.
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/CARS2009zeta7301.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
 outputName='NSWVICAdelDouble';
-plotName='NSW';
+plotName='Adelaide';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
-%AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
-%AdelaidLat=[-34 -35.5 -35.5 -34 -34];
+AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
+AdelaidLat=[-34 -35.5 -35.5 -34 -34];
 %VicLon=[144.5 144.5 150 150 144.5];
 %VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
-NSWoutLon=[150 147.5 150 153.5 150];
-NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = NSWoutLon;
-OUTPUT_PARA.polygonLat = NSWoutLat;
+%NSWoutLon=[150 147.5 150 153.5 150];
+%NSWoutLat=[-29 -36.5   -37.5   -29   -29];
+OUTPUT_PARA.polygonLon = AdelaidLon;
+OUTPUT_PARA.polygonLat = AdelaidLat;
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -168,10 +168,9 @@ geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1
     
 geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
     
-AGQG_Vals_Lev=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
+geomRefAGQGDiff=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
 
-
-plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, AGQG_Vals_Lev, ...
+plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
 Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...

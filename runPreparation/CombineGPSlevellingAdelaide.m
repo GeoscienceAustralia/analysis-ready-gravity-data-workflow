@@ -1,12 +1,16 @@
 % Specify file name and sheet (optional)
 filename = 'Data/GPS_LEVELLING/taje_a_1412353_sm4972.xls';
-sheetName = 'CARS2009';%'AHD'; 
+sheetName ='AHD'; % 'CARS2009'; %'AHD'; 
 
 % Read the data
 data = readtable(filename, 'Sheet', sheetName);
 
+% Keep only rows up to 7000 (or the max number of rows if fewer exist)
+maxRow = min(7319, height(data));
+data = data(1:maxRow, :);
+
 % Extract three specific columns by name
-% Replace 'Column1', 'Column2', 'Column3' with your actual column headers
+%col0 = data.IDNO;
 col1 = data.LONDD;
 col2 = data.LATDD;
 col3 = data.Zeta;
@@ -14,8 +18,9 @@ col3 = data.Zeta;
 % Combine into a single array if needed
 selectedData = [col1 col2 col3];
 
-%save('Data/GPS_LEVELLING/AHDzeta7506.mat','selectedData')
-save('Data/GPS_LEVELLING/CARS2009zeta7506.mat','selectedData')
+save('Data/GPS_LEVELLING/AHDzeta7319.mat','selectedData')
+%save('Data/GPS_LEVELLING/CARS2009zeta7301.mat','selectedData')
+
 
 
 
