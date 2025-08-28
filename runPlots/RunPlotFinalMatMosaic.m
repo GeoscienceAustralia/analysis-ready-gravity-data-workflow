@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=137;
-GRID_PARA.MAXLONG=140;
-GRID_PARA.MINLAT=-36;
-GRID_PARA.MAXLAT=-33.5;
+GRID_PARA.MINLONG=141;
+GRID_PARA.MAXLONG=148;
+GRID_PARA.MINLAT=-39;
+GRID_PARA.MAXLAT=-36;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -98,7 +98,7 @@ LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% Fi
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
 outputName='NSWVICAdelDouble';
-plotName='Adelaide';
+plotName='VictoriaCARS';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
@@ -132,6 +132,9 @@ disp('1/4 ..........................importAndFormatData is running ')
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+
+% Remove rows where the 4th column equals 2
+%Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
 
 if OUTPUT_PARA.PLOT_GRIDS
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
@@ -170,11 +173,11 @@ geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));
     
 geomRefAGQGDiff=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
 
-plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
-Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
+% plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
+% Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
+% 
+% DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
+%     Grid_res_geoid_err_w,OUTPUT_PARA)
 
-DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
-    Grid_res_geoid_err_w,OUTPUT_PARA)
-
-
+plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
 diary off
