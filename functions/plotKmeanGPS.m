@@ -7,6 +7,14 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
     axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
 
+    % plot GPSlevelling 
+    figure('Name','MosaicTiles','NumberTitle','off'); 
+    clf
+    hold on
+    scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,GPSlevelling3D(:,3),'filled')
+    customizeMap('GPSlevelling','m',Coastline,axisLimits)
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevelling','.png']) 
+
     % Clean and center the data
     validVals = geomGravDiff(~isnan(geomGravDiff));
     valDiff = geomGravDiff - mean(validVals);
