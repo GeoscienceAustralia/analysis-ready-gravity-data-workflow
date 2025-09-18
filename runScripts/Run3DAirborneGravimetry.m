@@ -132,10 +132,13 @@ if OUTPUT_PARA.PLOT_GRIDS
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
 end 
 
-if GRAV_PARA.inputGravity_weighting 
-     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-end
+plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,7),GRID_PARA,'gravityEast','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,8),GRID_PARA,'gravityNorth','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
+GGM_Gravity = GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Gravity,GRID_PARA,'GGMgravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4)-GGM_Gravity,GRID_PARA,'GGMreferencedGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
 
 diary off
