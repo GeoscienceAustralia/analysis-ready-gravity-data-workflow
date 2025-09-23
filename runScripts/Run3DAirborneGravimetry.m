@@ -39,10 +39,10 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-GRID_PARA.MINLONG=147;
-GRID_PARA.MAXLONG=155;
-GRID_PARA.MINLAT=-38;
-GRID_PARA.MAXLAT=-28;
+GRID_PARA.MINLONG=147;%147;
+GRID_PARA.MAXLONG=155;%155;
+GRID_PARA.MINLAT=-38;%-38;
+GRID_PARA.MAXLAT=-28;%-28;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -128,17 +128,65 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-if OUTPUT_PARA.PLOT_GRIDS
-     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
-end 
+% if OUTPUT_PARA.PLOT_GRIDS
+%      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+% end 
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,7),GRID_PARA,'gravityEast','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,8),GRID_PARA,'gravityNorth','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% 
+% % compute plot GGM
+% 
+% GGM_Gravity = GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Gravity,GRID_PARA,'GGMgravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4)-GGM_Gravity,GRID_PARA,'GGMreferencedGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% 
+% GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
+%                Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))-0.5)-...
+%                GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
+%                Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))+0.5));
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_GravityGradient,GRID_PARA,'GGMgravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+addpath('/farzone4it-main/1_horizontal');
+Nmax=300; % maximum degree
+% Nmin=2;
+GM=3.986004415E+14; % geocentric gravitational constant of GGM
+R=6378136.46; % spherical radius of the mean geocentric sphere
+a=6378136.46; % spherical radius of the mean geocentric sphere+
+load Tongji_GMMG2021S.mat; % CHANGE TO GGM YOU WANT TO USE!!!
+GGM = Tongji_GMMG2021S; % CHANGE THE NAME ACCORDINGLY!!!
+GGM = sortrows(GGM,[2 1]);
 
-plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,7),GRID_PARA,'gravityEast','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-plotCustomScatter(Gravo(:,1),Gravo(:,2),-Gravo(:,8),GRID_PARA,'gravityNorth','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+% radius of the Bjerhammar sphere
+constants                                       % load constants
+phi=deg2rad(mean(Gravo(:,2)));
+RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^2+(EarthMinorAxis*cos(phi)).^2)*10^3;% Pajama sphere radius.
 
-GGM_Gravity = GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+fi = Gravo(:,2); lam = Gravo(:,1); rup_ = Gravo(:,1)*0+RadiusBjerhammar;
 
-plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Gravity,GRID_PARA,'GGMgravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4)-GGM_Gravity,GRID_PARA,'GGMreferencedGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+psi0 = .5; %1; 10; 20;
+fzfTE5=zeros(length(fi),1);
+fzfzTE5=zeros(length(fi),1);
+fzfzzTE5=zeros(length(fi),1);
+fzfzzzTE5=zeros(length(fi),1);
+
+addpath('/farzone4it-main/0_horizontal');
+for i = 1:length(fi)
+
+[~,~,~,fzfTE5(i)]=shs_Tz_0h(fi(i),lam(i),Nmax,R,rup_(i),a,GM,GGM,psi0,0);
+[~,~,~,fzfzTE5(i)]=shs_Tz_0h(fi(i),lam(i),Nmax,R,rup_(i),a,GM,GGM,psi0,1);
+[~,~,~,fzfzzTE5(i)]=shs_Tz_0h(fi(i),lam(i),Nmax,R,rup_(i),a,GM,GGM,psi0,2);
+[~,~,~,fzfzzzTE5(i)]=shs_Tz_0h(fi(i),lam(i),Nmax,R,rup_(i),a,GM,GGM,psi0,3);
+
+end
+
+plotCustomScatter(Gravo(:,1),Gravo(:,2),fzfTE5*10^5,GRID_PARA,'fzfTE5','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),fzfzTE5*10^5,GRID_PARA,'fzfzTE5','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),fzfzzTE5*10^5,GRID_PARA,'fzfzzTE5','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Gravo(:,1),Gravo(:,2),fzfzzzTE5*10^5,GRID_PARA,'fzfzzzTE5','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+
+
 
 
 diary off
