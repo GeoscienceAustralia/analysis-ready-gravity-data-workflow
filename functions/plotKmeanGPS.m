@@ -62,7 +62,8 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     hold on
     scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,valDiff,'filled')
     customizeMap('Geometric and AGQG Difference','m',Coastline,axisLimits)
-   saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
+    caxis([-0.3 0.3])
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
     
     % Plot GPS levelling vs reference AGQG with clustering
     figure('Name','MosaicTiles','NumberTitle','off'); 
