@@ -5,14 +5,14 @@ function plotInputData(Gravo, gravGradFiltered, Coastline, GRID_PARA, OUTPUT_PAR
     % for Perth simulation 
 
     % Plot GravityTopographyHeight
-    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,3), GRID_PARA, 'GravityHeight', 'm', Coastline, [], OUTPUT_PARA.plotsFolder);
+    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,3), GRID_PARA, 'Height', 'm', Coastline, [], OUTPUT_PARA.plotsFolder);
     % If lon and lat are not empty, plot the polygon
     if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
         hold on;
         plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
         hold off; % Release the hold to save the plot with the polygon
         % Save the figure
-        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','GravityHeight','.png'])
+        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','Height','.png'])
     end
 
     % Plot Gravity
@@ -27,22 +27,22 @@ function plotInputData(Gravo, gravGradFiltered, Coastline, GRID_PARA, OUTPUT_PAR
     end
 
     % Plot GravityUncertainty
-    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,5), GRID_PARA, 'GravityUncertainty', 'mGal', Coastline, [], OUTPUT_PARA.plotsFolder);
+    plotCustomScatter(Gravo(:,1), Gravo(:,2), Gravo(:,5), GRID_PARA, 'Uncertainty', 'mGal', Coastline, [], OUTPUT_PARA.plotsFolder);
     % If lon and lat are not empty, plot the polygon
     if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
         hold on;
         plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
         hold off; % Release the hold to save the plot with the polygon
         % Save the figure
-        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','GravityUncertainty','.png'])
+        saveas(gcf,[OUTPUT_PARA.plotsFolder,'scatter','Uncertainty','.png'])
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if ~isempty(gravGradFiltered)
                                                                                                                                                                     
-    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'GravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
-    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,5),GRID_PARA,'GravityGradientUncertainty','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
-    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,3),GRID_PARA,'GravityGradientHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,4),GRID_PARA,'Gravity Gradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,5),GRID_PARA,'Gravity Gradient Uncertainty','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+    plotCustomScatter(gravGradFiltered(:,1),gravGradFiltered(:,2),gravGradFiltered(:,3),GRID_PARA,'Gravity Gradient Height','m',Coastline,[],OUTPUT_PARA.plotsFolder)
     %plotProfiles(gravGradFiltered(1:180,2),gravGradFiltered(1:180,3),gravGradFiltered(1:180,4),gravGradFiltered(1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile1',OUTPUT_PARA.plotsFolder)
     %plotProfiles(gravGradFiltered(180+1:2*180,2),gravGradFiltered(180+1:2*180,3),gravGradFiltered(180+1:2*180,4),gravGradFiltered(180+1,1),'Latitude','GravityGradientFlightAltitude [m]','GravityGradient [mGal/m]','GravityGradientProfile2',OUTPUT_PARA.plotsFolder)
     end

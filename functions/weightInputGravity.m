@@ -8,17 +8,17 @@ function gravity6D = weightInputGravity(gravity6D,Coastline,GRID_PARA,OUTPUT_PAR
 
     if OUTPUT_PARA.PLOT_GRIDS
 
-        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,4),GRID_PARA,'TerrestrialGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,4),GRID_PARA,'AltimetryGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,4),GRID_PARA,'AirborneGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,4),GRID_PARA,'Terrestrial Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,4),GRID_PARA,'Altimetry Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,4),GRID_PARA,'Airborne Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
-        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,5),GRID_PARA,'Terrestrialuncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,5),GRID_PARA,'Altimetryuncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,5),GRID_PARA,'Airborneuncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,5),GRID_PARA,'Terrestrial Uncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,5),GRID_PARA,'Altimetry Uncertainty ','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,5),GRID_PARA,'Airborne Uncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 
-        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,3),GRID_PARA,'TerrestrialHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,3),GRID_PARA,'AltimetryHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,3),GRID_PARA,'AirborneHeight','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagTerrestrial,1),gravity6D(gravFlagTerrestrial,2),gravity6D(gravFlagTerrestrial,3),GRID_PARA,'Terrestrial Height','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAltimetry,1),gravity6D(gravFlagAltimetry,2),gravity6D(gravFlagAltimetry,3),GRID_PARA,'Altimetry Height','m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(gravFlagAirborne,1),gravity6D(gravFlagAirborne,2),gravity6D(gravFlagAirborne,3),GRID_PARA,'Airborne Height','m',Coastline,[],OUTPUT_PARA.plotsFolder)
 
     end
     % mark airborne in altimetry
@@ -49,7 +49,7 @@ function gravity6D = weightInputGravity(gravity6D,Coastline,GRID_PARA,OUTPUT_PAR
     %gravity6D(gravFlagAltimetry==1,:)=[]; %just one data type
 
     if OUTPUT_PARA.PLOT_GRIDS
-        plotCustomScatter(gravity6D(:,1),gravity6D(:,2),gravity6D(:,5),GRID_PARA,'GravityUncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(gravity6D(:,1),gravity6D(:,2),gravity6D(:,5),GRID_PARA,'Uncertainty','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
         plotCustomScatter(gravity6D(:,1),gravity6D(:,2),gravity6D(:,4),GRID_PARA,'Gravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
     end
 end
