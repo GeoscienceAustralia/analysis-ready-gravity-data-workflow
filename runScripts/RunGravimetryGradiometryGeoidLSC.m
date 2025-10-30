@@ -155,6 +155,7 @@ else
         LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
 
     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
+    %save([OUTPUT_PARA.Tiles_dir_name,'/terainEfect',num2str(GRID_PARA.MINLONG),'_',num2str(abs(GRID_PARA.MINLAT)),'.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient')
 
     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
     computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...

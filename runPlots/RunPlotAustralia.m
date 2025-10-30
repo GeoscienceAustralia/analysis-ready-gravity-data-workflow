@@ -39,12 +39,10 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-% VicNSW=[140 154 -38 -27.5];
-% NENSW=[153 154 -29 -28];
-GRID_PARA.MINLONG=105;
-GRID_PARA.MAXLONG=165;
-GRID_PARA.MINLAT=-48;
-GRID_PARA.MAXLAT=-8;
+GRID_PARA.MINLONG=94;
+GRID_PARA.MAXLONG=173;
+GRID_PARA.MINLAT=-60;
+GRID_PARA.MAXLAT=-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -53,14 +51,14 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename='Data\processedData\GravityAllVicNSW.mat';
+GRAV_PARA.filename='Data\processedData\GravityAllTerrestrialAirborneJuly14.mat';
 GRAV_PARA.filename1=[];%'Data\GRAVITY\Xcalibur_Gravity.mat';
 GRAV_PARA.TypeB=1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB=3;
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data\GRAVITY_GRAD\Xcalibur_FVD_GDD.mat';
-GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
+GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';
+GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
@@ -95,10 +93,14 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-OUTPUT_PARA.Grids_name='outputs/Grids_vicNSWgg/';
-OUTPUT_PARA.Tiles_dir_name='outputs/ResidualTilesvicNSWgg/';
+outputName='Australia';
+plotName='-';
+OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/plots/',date,'AUS'];
+OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
+% If there is a region of interest, for plotting purposes
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 %% Run the LSC code
@@ -108,14 +110,62 @@ disp('1/4 ..........................importAndFormatData is running ')
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ min(min(ZDEM_griddedInterpolant.Values))
+ max(max(ZDEM_griddedInterpolant.Values))
 
-figure
-geoscatter(Gravo(:,2),Gravo(:,1), [],Gravo(:,4), 'filled')
-colormap('turbo');
-caxis([-100 100]);
-colorbar('Ticks',(-100:20:100));
+ imagesc(LongDEM(1,:),LatDEM(:,1),ZDEM_griddedInterpolant.Values')
+ colorbar;
+ colormap(jet);
+ title(colorbar,'m','FontSize',10);
+ axis([112 155 -60 -24])
+ %caxis([0  2000])
+ title('DEM grid')
+ saveas(gcf,[OUTPUT_PARA.plotsFolder,'ZDEM_griddedInterpolant','.png']) 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ min(min(fullTopo_griddedInterpolant.Values))
+ max(max(fullTopo_griddedInterpolant.Values))
+
+ imagesc(LongDEM(1,:),LatDEM(:,1),fullTopo_griddedInterpolant.Values')
+ colorbar;
+ colormap(jet);
+ title(colorbar,'mGal','FontSize',10);
+ axis([112 155 -60 -24])
+ caxis([-20 20])
+ title('Full topo correction grid')
+ saveas(gcf,[OUTPUT_PARA.plotsFolder,'fullTopo_griddedInterpolant','.png']) 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+min(min(longwaveTopo_griddedInterpolant.Values))
+max(max(longwaveTopo_griddedInterpolant.Values))
+
+imagesc(LongDEM(1,:),LatDEM(:,1),longwaveTopo_griddedInterpolant.Values')
+colorbar;
+colormap(jet);
 title(colorbar,'mGal','FontSize',10);
-geolimits([GRID_PARA.MINLAT GRID_PARA.MAXLAT ],[GRID_PARA.MINLONG GRID_PARA.MAXLONG])
+axis([112 155 -60 -24])
+%caxis([0 100])
+title('Long wavelength topo correction grid')
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'longwaveTopo_griddedInterpolant','.png']) 
+
+
+
+% figure
+% geoscatter(Gravo(:,2),Gravo(:,1), [],Gravo(:,4), 'filled')
+% colormap('turbo');
+% caxis([-100 100]);
+% colorbar('Ticks',(-100:20:100));
+% title(colorbar,'mGal','FontSize',10);
+% geolimits([GRID_PARA.MINLAT GRID_PARA.MAXLAT ],[GRID_PARA.MINLONG GRID_PARA.MAXLONG])
+
+
+
+
+
+
+
+
+
+
 
 
 

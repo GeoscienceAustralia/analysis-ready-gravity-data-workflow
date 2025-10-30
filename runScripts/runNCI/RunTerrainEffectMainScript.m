@@ -1,22 +1,22 @@
-function RunParallelMainScript(varargin)
-% RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
-%                       The process involves sequence of "remove-predict-restore" operations, where the Global
-%                       Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
-%                       and then the effects are restored to obtain the final geoid model. The functions folder
-%                       provides all the MATLAB functions to perform these three steps for geoid calculations.
-%                       The primary goal is to create a platform for analysis-ready gravity data,
-%                       featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly
-%                       observations.
+function RunMainScript(varargin)
+% RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
+%               The process involves sequence of "remove-predict-restore" operations, where the Global
+%               Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
+%               and then the effects are restored to obtain the final geoid model. The functions folder
+%               provides all the MATLAB functions to perform these three steps for geoid calculations.
+%               The primary goal is to create a platform for analysis-ready gravity data,
+%               featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly
+%               observations.
 %
-% Usage: RunParallelMainScript('flag',value)
-%    or: RunParallelMainScript flag value
+% Usage: RunMainScript('flag',value)
+%    or: RunMainScript flag value
 %
 %e.g.
 %Within Matlab
-%             RunParallelMainScript('--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz','--grav-grad-para-avail',true);
+%             RunMainScript('--grid-para-buffer',1,'--dem-para-filename','/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz','--grav-grad-para-avail',true);
 %
 %Compiled
-%             RunParallelMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true
+%             RunMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true
 %
 %Available options:
 %--grid-para-buffer <value>                             e.g. --grid-para-buffer 1
@@ -143,7 +143,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.Grids_name='/g/data/dg9/nd2979/outputs/GridsNENSWgg2degTile/';
 OUTPUT_PARA.Tiles_dir_name='/g/data/dg9/nd2979/outputs/ResidualTilesNENSWgg2degTile/';
 OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder='/g/data/dg9/nd2979/outputs/plots/22-Nov-2024NENSWgg2degTile';
+OUTPUT_PARA.plotsFolder='/g/data/dg9/nd2979/outputs/plots/';
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [115.4333, 116.0500, 116.2500, 116.2500, 115.6167, 115.6167, 115.4333 ];
 OUTPUT_PARA.polygonLat = [-31.4500, -31.4500, -32.0000, -32.5833, -32.5833, -32.0000,-31.4500];
@@ -309,49 +309,46 @@ if ~isfolder(OUTPUT_PARA.plotsFolder)
 end
 
 %temporary breakpoint to check
-%disp(GRID_PARA)
-%disp(GRAV_GRAD_PARA)
-%disp(OUTPUT_PARA)
+disp(GRID_PARA)
+disp(COV_PARA)
+disp(GRAV_PARA)
+disp(GRAV_GRAD_PARA)
+disp(OUTPUT_PARA)
 %return
 
 %computation
-disp('importAndFormatData is running ')
+disp('1/2 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
- load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+disp('2/2 ..........................computeTerrainEffect is running')
+[fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
+        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
+        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
 
- disp('computeGravimetryGradiometryLSC is running')
- computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA, ...
-     OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-     longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-
- disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+save([OUTPUT_PARA.Tiles_dir_name,'/TerainEfect',num2str(GRID_PARA.MINLONG),'_',num2str(abs(GRID_PARA.MINLAT)),'.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient')
 
 function helptext
-str={' RunParallelMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
-'                       The process involves sequence of "remove-predict-restore" operations, where the Global'
-'                       Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),'
-'                       and then the effects are restored to obtain the final geoid model. The functions folder'
-'                       provides all the MATLAB functions to perform these three steps for geoid calculations.'
-'                       The primary goal is to create a platform for analysis-ready gravity data,'
-'                       featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly'
-'                       observations.'
+str={' RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'
+'               The process involves sequence of "remove-predict-restore" operations, where the Global '
+'               Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC), '
+'               and then the effects are restored to obtain the final geoid model. The functions folder '
+'               provides all the MATLAB functions to perform these three steps for geoid calculations. '
+'               The primary goal is to create a platform for analysis-ready gravity data, '
+'               featuring a tile-wise least-squares collocation (LSC) method based on gravity anomaly '
+'               observations.'
 ' '
-' Usage: RunParallelMainScript(''flag'',value)'
-'    or: RunParallelMainScript flag value'
+' Usage: RunMainScript(''flag'',value)'
+'    or: RunMainScript flag value'
 ' '
 'e.g.'
 'Within Matlab'
-'             RunParallelMainScript(''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz'',''--grav-grad-para-avail'',true);'
+'             RunMainScript(''--grid-para-buffer'',1,''--dem-para-filename'',''/g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz'',''--grav-grad-para-avail'',true);'
 ' '
 'Compiled'
-'             RunParallelMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true'
+'             RunMainScript --grid-para-buffer 1 --dem-para-filename /g/data/dg9/nd2979/Data/DEM/AUSDEM1min.xyz --grav-grad-para-avail true'
 ' '
 'Available options:'
 '--grid-para-buffer <value>                             e.g. --grid-para-buffer 1'

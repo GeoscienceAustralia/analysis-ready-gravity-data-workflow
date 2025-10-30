@@ -101,7 +101,7 @@ GRAV_PARA.inputGravity_weighting=0;
 
 % Gravity Gradiometry data
 GRAV_GRAD_PARA.filename='/g/data/dg9/nd2979/Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat';
-GRAV_GRAD_PARA.TypeB=10^(-5); % This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
+GRAV_GRAD_PARA.TypeB=10^(-4); % This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=true;
 
 % Covariance function parameters
