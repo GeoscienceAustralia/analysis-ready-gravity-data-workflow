@@ -96,6 +96,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 outputName='Australia';
 plotName='-';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
+OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
@@ -110,45 +111,48 @@ disp('1/4 ..........................importAndFormatData is running ')
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+
+disp('4/4 ..........................mosaicTiles is running')
+geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- min(min(ZDEM_griddedInterpolant.Values))
- max(max(ZDEM_griddedInterpolant.Values))
-
- imagesc(LongDEM(1,:),LatDEM(:,1),ZDEM_griddedInterpolant.Values')
- colorbar;
- colormap(jet);
- title(colorbar,'m','FontSize',10);
- axis([112 155 -60 -24])
- %caxis([0  2000])
- title('DEM grid')
- saveas(gcf,[OUTPUT_PARA.plotsFolder,'ZDEM_griddedInterpolant','.png']) 
+%  min(min(ZDEM_griddedInterpolant.Values))
+%  max(max(ZDEM_griddedInterpolant.Values))
+% 
+%  imagesc(LongDEM(1,:),LatDEM(:,1),ZDEM_griddedInterpolant.Values')
+%  colorbar;
+%  colormap(jet);
+%  title(colorbar,'m','FontSize',10);
+%  axis([112 155 -60 -24])
+%  %caxis([0  2000])
+%  title('DEM grid')
+%  saveas(gcf,[OUTPUT_PARA.plotsFolder,'ZDEM_griddedInterpolant','.png']) 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  min(min(fullTopo_griddedInterpolant.Values))
+%  max(max(fullTopo_griddedInterpolant.Values))
+% 
+%  imagesc(LongDEM(1,:),LatDEM(:,1),fullTopo_griddedInterpolant.Values')
+%  colorbar;
+%  colormap(jet);
+%  title(colorbar,'mGal','FontSize',10);
+%  axis([112 155 -60 -24])
+%  caxis([-20 20])
+%  title('Full topo correction grid')
+%  saveas(gcf,[OUTPUT_PARA.plotsFolder,'fullTopo_griddedInterpolant','.png']) 
+% 
+% min(min(longwaveTopo_griddedInterpolant.Values))
+% max(max(longwaveTopo_griddedInterpolant.Values))
+% 
+% imagesc(LongDEM(1,:),LatDEM(:,1),longwaveTopo_griddedInterpolant.Values')
+% colorbar;
+% colormap(jet);
+% title(colorbar,'mGal','FontSize',10);
+% axis([112 155 -60 -24])
+% %caxis([0 100])
+% title('Long wavelength topo correction grid')
+% saveas(gcf,[OUTPUT_PARA.plotsFolder,'longwaveTopo_griddedInterpolant','.png']) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- min(min(fullTopo_griddedInterpolant.Values))
- max(max(fullTopo_griddedInterpolant.Values))
-
- imagesc(LongDEM(1,:),LatDEM(:,1),fullTopo_griddedInterpolant.Values')
- colorbar;
- colormap(jet);
- title(colorbar,'mGal','FontSize',10);
- axis([112 155 -60 -24])
- caxis([-20 20])
- title('Full topo correction grid')
- saveas(gcf,[OUTPUT_PARA.plotsFolder,'fullTopo_griddedInterpolant','.png']) 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-min(min(longwaveTopo_griddedInterpolant.Values))
-max(max(longwaveTopo_griddedInterpolant.Values))
-
-imagesc(LongDEM(1,:),LatDEM(:,1),longwaveTopo_griddedInterpolant.Values')
-colorbar;
-colormap(jet);
-title(colorbar,'mGal','FontSize',10);
-axis([112 155 -60 -24])
-%caxis([0 100])
-title('Long wavelength topo correction grid')
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'longwaveTopo_griddedInterpolant','.png']) 
-
-
-
 % figure
 % geoscatter(Gravo(:,2),Gravo(:,1), [],Gravo(:,4), 'filled')
 % colormap('turbo');

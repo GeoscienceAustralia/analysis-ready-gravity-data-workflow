@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=137;
-GRID_PARA.MAXLONG=140;
-GRID_PARA.MINLAT=-36;
-GRID_PARA.MAXLAT=-33.5;
+GRID_PARA.MINLONG=94;
+GRID_PARA.MAXLONG=173;
+GRID_PARA.MINLAT=-60;
+GRID_PARA.MAXLAT=-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -97,8 +97,8 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelDouble';
-plotName='Adelaide';
+outputName='Australia';
+plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
