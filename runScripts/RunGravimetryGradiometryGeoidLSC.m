@@ -41,10 +41,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Boundary for computation
 % VicNSW=[140 154 -37.5 -27.5];% NENSW=[153 154 -29 -28];% vic=[140 154 -39 -33];% NSW=[140 154 -38 -27];
 % AUstralia=[93 174 -61 -8];%vicAdel=[137 154 -40 -33]
-GRID_PARA.MINLONG=143;
-GRID_PARA.MAXLONG=150;
-GRID_PARA.MINLAT=-39;
-GRID_PARA.MAXLAT=-35;
+GRID_PARA.MINLONG=127;%143;
+GRID_PARA.MAXLONG=128.5;%150;
+GRID_PARA.MINLAT=-29;%-39;
+GRID_PARA.MAXLAT=-28.5;%-35;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -96,7 +96,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelJustTerr';
+outputName='problematicTiles';%'NSWVICAdelJustTerr';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
