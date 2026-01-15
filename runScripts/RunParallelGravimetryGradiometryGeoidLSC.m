@@ -43,10 +43,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % NENSW=[153 154 -29 -28];
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
-GRID_PARA.MINLONG=140;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-39;
-GRID_PARA.MAXLAT=-33;
+GRID_PARA.MINLONG=127;%143;
+GRID_PARA.MAXLONG=128.5;%150;
+GRID_PARA.MINLAT=-29;%-39;
+GRID_PARA.MAXLAT=-28.5;%-35;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -55,16 +55,16 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename ='Data/processedData/GravityAllGippslandCaravanOtterNSW.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
+GRAV_PARA.filename ='Data/processedData/GravityAllTerrestrialAirborneJuly14.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
-GRAV_GRAD_PARA.TypeB=10^(-5);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=true;
+GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayXcalibur.mat ';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
+GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
+GRAV_GRAD_PARA.avail=false;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -98,10 +98,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='ParallelGippslandCaravanOtter';
+outputName='problematicTiles';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];
@@ -126,34 +126,34 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-% if OUTPUT_PARA.PLOT_GRIDS
-%      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
-% end 
-% 
-% if GRAV_PARA.inputGravity_weighting 
-%      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-% end
-% 
-% if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
-%     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
-%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-%     computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-% 
-% else
-%     disp('2/4 ..........................computeTerrainEffect is running')
-%     [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
-%         computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
-%         LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
-% 
-%     save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
-% 
-%     disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
-%     computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
-%         GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
-%         longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
-% end
+if OUTPUT_PARA.PLOT_GRIDS
+     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA)
+end 
+
+if GRAV_PARA.inputGravity_weighting 
+     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
+end
+
+if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
+    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+
+else
+    disp('2/4 ..........................computeTerrainEffect is running')
+    [fullTopoCorrectedGravityPoint, longwaveTopo_griddedInterpolant, fullTopo_griddedInterpolant, fullTopoCorrectedGravityGradient] = ...
+        computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
+        LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
+
+    save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
+
+    disp('3/4 ..........................computeGravimetryGradiometryLSC is running')
+    computeParallelGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,fullTopoCorrectedGravityPoint,fullTopoCorrectedGravityGradient, ...
+        GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,fullTopo_griddedInterpolant, ...
+        longwaveTopo_griddedInterpolant,Topo_PARA.Density,Coastline)
+end
 
 disp('4/4 ..........................mosaicTiles is running')
 geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...

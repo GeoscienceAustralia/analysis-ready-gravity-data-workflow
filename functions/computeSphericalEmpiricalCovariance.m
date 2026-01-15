@@ -19,6 +19,10 @@ function covarianceInfo = computeSphericalEmpiricalCovariance(Long, Lat, Gravity
     % Written by Jack McCubbine
     % Last updated by Neda Darbeheshti
     % Geoscience Australia, 2023-11.
+
+    if length(Gravity) < 120
+    DecimationFactor = 2;
+    end
     
     maxSphericalDistance = deg2rad(1);
     ds = deg2rad(2/60);

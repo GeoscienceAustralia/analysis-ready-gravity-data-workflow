@@ -60,7 +60,7 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
+GRAV_GRAD_PARA.filename='Data/processedData/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
 GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
 GRAV_GRAD_PARA.avail=false;
 %% Covariance function parameters
@@ -99,7 +99,7 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 outputName='problematicTiles';%'NSWVICAdelJustTerr';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
@@ -130,7 +130,7 @@ disp(OUTPUT_PARA)
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS
