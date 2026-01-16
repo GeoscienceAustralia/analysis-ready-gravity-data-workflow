@@ -20,10 +20,10 @@ function covarianceInfo = computeSphericalEmpiricalCovariance(Long, Lat, Gravity
     % Last updated by Neda Darbeheshti
     % Geoscience Australia, 2023-11.
 
-    if length(Gravity) < 120
+    if length(Gravity) <= 621
     DecimationFactor = 2;
     end
-    
+         
     maxSphericalDistance = deg2rad(1);
     ds = deg2rad(2/60);
     covariance = zeros(round(maxSphericalDistance/ds) + 2, 1);
@@ -43,7 +43,7 @@ function covarianceInfo = computeSphericalEmpiricalCovariance(Long, Lat, Gravity
     % Convert degrees to radians
     Dataset.Lat = deg2rad (Dataset.Lat);
     Dataset.Long = deg2rad (Dataset.Long);
-    
+
     % Computes the empirical covariance
     for i = 1:length(gravityAnomalies)
         haversineDist = haversine(Dataset.Lat(i), Dataset.Long(i), Dataset.Lat(:), Dataset.Long(:));
