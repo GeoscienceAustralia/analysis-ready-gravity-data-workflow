@@ -14,24 +14,25 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     subplot(1,2,1);
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
-    customizeMap('Residual Geoid','m',Coastline,axisLimits)
+    customizeMap('Residual LSC AGQG','m',Coastline,axisLimits)
     caxis([-0.5 0.5])
      
     subplot(1,2,2);
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),resAGQG-ZDeg)
-    customizeMap('Residual AGQG','m',Coastline,axisLimits) 
+    customizeMap('Residual 2022 AGQG','m',Coastline,axisLimits) 
     caxis([-0.5 0.5])
-    saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidvsAGQG','.png']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','residualLSCvs2022AGQG','.png']) 
 
     % plot GPSlevelling vs LSC
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
     hold on
     scatter(Lev(:,1),Lev(:,2),15,geoGravGeoidDiff-mean(geoGravGeoidDiff(~isnan(geoGravGeoidDiff))),'filled')
-    customizeMap('Geometric and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
-    caxis([-0.1 0.1])
-    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.fig']) 
+    customizeMap('Geometric and LSC AGQG Difference','m',Coastline,axisLimits)
+    caxis([-0.3 0.3])
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSCAGQG','.fig']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSCAGQG','.png']) 
 
     validVals = geoGravGeoidDiff(~isnan(geoGravGeoidDiff));
     valDiff = geoGravGeoidDiff - mean(validVals);
@@ -48,9 +49,10 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     clf
     hold on
     scatter(Lev(:,1),Lev(:,2),15,geoRefGravGeoidDiff-mean(geoRefGravGeoidDiff(~isnan(geoRefGravGeoidDiff))),'filled')
-    customizeMap('Geometric and AGQG Difference','m',Coastline,axisLimits)
-    caxis([-0.1 0.1])
-    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.fig']) 
+    customizeMap('Geometric and 2022 AGQG Difference','m',Coastline,axisLimits)
+    caxis([-0.3 0.3])
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevelling2022AGQG','.fig']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevelling2022AGQG','.png'])
 
     validVals = geoRefGravGeoidDiff(~isnan(geoRefGravGeoidDiff));
     valDiff = geoRefGravGeoidDiff - mean(validVals);
@@ -68,26 +70,27 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     hold on
     scatter(Lev(:,1),Lev(:,2),15,geoRefGravGeoidDiff-mean(geoRefGravGeoidDiff(~isnan(geoRefGravGeoidDiff)))- ...
         geoGravGeoidDiff+mean(geoGravGeoidDiff(~isnan(geoGravGeoidDiff))),'filled')
-    customizeMap('AGQG and LSC Gravimetric Geoid Difference','m',Coastline,axisLimits)
+    customizeMap('2022 AGQG and LSC AGQG Difference','m',Coastline,axisLimits)
     caxis([-0.1 0.1])
-    saveas(gcf,[plotsFolder,'MosaicTiles','AGQGvsLSCdiff','.fig']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','oldVSnewAGQGdiffGPSpoints','.fig']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','oldVSnewAGQGdiffGPSpoints','.png']) 
  
     % plot residualGeoidWeighted-residualAGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
     hold on
-    imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w-(resAGQG-ZDeg))
-    customizeMap('Residual Diff Geoid and AGQG','m',Coastline,axisLimits)
-    caxis([-1 1])
-    saveas(gcf,[plotsFolder,'MosaicTiles','ResidualDiffGeoidAndAGQG','.png'])
+    imagesc(LongDEM(1,:),LatDEM(:,1),(resAGQG-ZDeg-Grid_res_geoid_w))
+    customizeMap('2022 AGQG and LSC AGQG Difference','m',Coastline,axisLimits)
+    caxis([-0.1 0.1])
+    saveas(gcf,[plotsFolder,'MosaicTiles','DiffResidualLSC2022AGQG','.png'])
  
     % plot residualGeoidSigmaError
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
-    customizeMap('Residual Geoid Sigma Error','m',Coastline,axisLimits)
-    %caxis([0 0.075])%caxis([0 0.03])%caxis([0 0.09])
+    customizeMap('Residual AGQG Sigma Error','m',Coastline,axisLimits)
+    caxis([0 0.03])%caxis([0 0.09])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidSigmaError','.png'])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGeoidSigmaError','.fig'])
     
@@ -115,7 +118,7 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_grav_err_w)
     customizeMap('Residual Gravity Sigma Error','mGal',Coastline,axisLimits)
-    %caxis([0 55])
+    caxis([0 10])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGravitySigmaError','.png'])
     saveas(gcf,[plotsFolder,'MosaicTiles','residualGravitySigmaError','.fig'])
 end
