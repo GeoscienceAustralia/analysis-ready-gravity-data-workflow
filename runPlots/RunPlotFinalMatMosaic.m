@@ -91,13 +91,13 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_AHD7499pointsAUS.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia';
+outputName='Australia18jan';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -179,23 +179,12 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
 % 
-% plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
-% diary off
 
-% common variables for plotting
-% axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-% axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-% axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-% axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-% axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-% 
-% 
-% scatter(Lev131(:,1),Lev131(:,2),15,Lev131(:,3)*0+1,'filled')
-% hold on 
-% scatter(Lev2(:,1),Lev2(:,2),15,Lev2(:,3)*0+2,'filled')
-% hold on 
-% scatter(Lev3(:,1),Lev3(:,2),15,Lev3(:,3)*0+3,'filled')
-% customizeMap('GPS levelling points',' ',Coastline,axisLimits)
+plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+
+diary off
+
+
 
 
 

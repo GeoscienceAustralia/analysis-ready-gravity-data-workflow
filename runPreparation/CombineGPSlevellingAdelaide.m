@@ -27,12 +27,20 @@ save('Data/GPS_LEVELLING/AHDzeta7319.mat','selectedData')
 
 
 
-
-
-
-
-
-
+% common variables for plotting
+% axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+% axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+% axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+% axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+% axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+% 
+% 
+% scatter(Lev131(:,1),Lev131(:,2),15,Lev131(:,3)*0+1,'filled')
+% hold on 
+% scatter(Lev2(:,1),Lev2(:,2),15,Lev2(:,3)*0+2,'filled')
+% hold on 
+% scatter(Lev3(:,1),Lev3(:,2),15,Lev3(:,3)*0+3,'filled')
+% customizeMap('GPS levelling points',' ',Coastline,axisLimits)
 
 % % combine GPS-levelling data for greater Adelaide  
 % figure
