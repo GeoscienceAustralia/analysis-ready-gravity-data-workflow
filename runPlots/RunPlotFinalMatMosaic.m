@@ -97,7 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia18jan';
+outputName='NSWVICAdelJustTerr';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -107,14 +107,14 @@ OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
 %VicLon=[144.5 144.5 150 150 144.5];
 %VicLat=[-36.5 -39 -39 -36.5 -36.5];
-%otwayLon=[141 141 143 143 141];
-%otwayLat=[-37 -38.5 -39 -37.5 -37];
+otwayLon=[141 141 143 143 141];
+otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = [];
-OUTPUT_PARA.polygonLat = [];
+OUTPUT_PARA.polygonLon = otwayLon;
+OUTPUT_PARA.polygonLat = otwayLat;
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -146,7 +146,7 @@ end
 
 % read final matfiles
 
-dateCreated ='18-Jan-2026';
+dateCreated ='15-Aug-2025';
 
 load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
@@ -178,9 +178,8 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
-% 
 
-plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+%plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
 
 diary off
 

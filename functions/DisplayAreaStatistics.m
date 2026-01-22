@@ -2,39 +2,37 @@ function DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid
     Grid_res_geoid_err_w,OUTPUT_PARA)
 
     % common variables for plotting
-    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-    axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-    axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-    axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-    axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+    axisLimits.latMeanCosine=abs(cos(deg2rad(mean([min(OUTPUT_PARA.polygonLat) max(OUTPUT_PARA.polygonLat)]))));
+    axisLimits.lonMinLimit=min(OUTPUT_PARA.polygonLon)-GRID_PARA.buffer;
+    axisLimits.lonMaxLimit=max(OUTPUT_PARA.polygonLon)+GRID_PARA.buffer;
+    axisLimits.latMinLimit=min(OUTPUT_PARA.polygonLat)-GRID_PARA.buffer;
+    axisLimits.latMaxLimit=max(OUTPUT_PARA.polygonLat)+GRID_PARA.buffer;
 
     if ~isempty(OUTPUT_PARA.polygonLon) && ~isempty(OUTPUT_PARA.polygonLat)
 
        areaIn=inpolygon(LongDEM,LatDEM,OUTPUT_PARA.polygonLon,OUTPUT_PARA.polygonLat);
        Grid_res_geoid_err_w(areaIn==0)=nan;
        Grid_res_geoid_w(areaIn==0)=nan;
+       nanMask = ~isnan(Grid_res_geoid_err_w);% true where data are valid
 
        if OUTPUT_PARA.PLOT_GRIDS
+
             figure('Name','MosaicTiles','NumberTitle','off'); 
             clf
+            subplot(1,2,1);
             hold on
-            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w)
-            hold on;
-            plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
-            customizeMap('residualGeoidSigmaError','m',Coastline,axisLimits)
-            %caxis([0 0.05])
-            caxis([0 0.02])
-            saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidSigmaErrorFocused','.png'])
-        
-            figure('Name','MosaicTiles','NumberTitle','off'); 
-            clf
-            hold on
-            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
-            hold on;
-            plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
-            customizeMap('residualGeoid','m',Coastline,axisLimits)
+            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w,'AlphaData', nanMask)
+            customizeMap('Residual LSC AGQG','m',Coastline,axisLimits)
             caxis([-0.5 0.5])
+           
+            subplot(1,2,2);
+            hold on
+            imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w,'AlphaData', nanMask)
+            %plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
+            customizeMap('Residual AGQG Sigma Error','m',Coastline,axisLimits)
+            caxis([0 0.02])
             saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidFocused','.png'])
+
         end
 
     end
