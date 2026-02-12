@@ -40,12 +40,12 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
 % NSW=[139.5 154 -38 -27.5];
-GRID_PARA.MINLONG=139.5;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-40;
-GRID_PARA.MAXLAT=-27.5;
+GRID_PARA.MINLONG=113;%94;
+GRID_PARA.MAXLONG=154;%173;
+GRID_PARA.MINLAT=-44;%-60;
+GRID_PARA.MAXLAT=-10;%-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
-DEM_PARA.filename='Data\DEM\AUSDEM1m.xyz';
+DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
 DEM_PARA.num_rows=3181;
 %% Gravity data
@@ -101,9 +101,41 @@ keepawake=true;% Setting this to true wiggles the mouse every so often so the co
 
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
- GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
+ GOCE_Gravity_griddedInterpolant,GOCE_Zeta_griddedInterpolant,Lev,...
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+
+GOCE_Zeta=GOCE_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+
+GGM_PARA.filename='Data\GGM\EGM2008_For_Gridded_Int.mat';
+
+disp('1/4 ..........................importAndFormatData is running ')
+[Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
+ EGM_Gravity_griddedInterpolant,EGM_Zeta_griddedInterpolant,Lev,...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
+ (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
+
+   
+EGM_Zeta=EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+% common variables for plotting
+axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+
+
+figure
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),EGM_Zeta-GOCE_Zeta)
+customizeMap('EMG2008-GOCE2014','m',Coastline,axisLimits)
+caxis([-0.5 0.5])
+
+
+
 
 
 %writematrix(Lev(1:900,:),'GPSlevellingNSW.txt','Delimiter','tab');
@@ -117,75 +149,75 @@ disp('1/4 ..........................importAndFormatData is running ')
 % plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,4),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Gravity','mGal',OUTPUT_PARA.plotsFolder)
 % 
 % plotCustomScatter(Gravo(:,1),Gravo(:,2),Gravo(:,6),GRID_PARA,Topo_PARA.Rad+GRID_PARA.buffer,'Flag','',OUTPUT_PARA.plotsFolder)
-Table=GOCONSGCF2DIRR6ICGEMNSWGPSlevelling;
-
-GGM_Zeta_GPSlevelling = GGM_Zeta_griddedInterpolant(GPSlevellingNSW_icgem(:,2),-GPSlevellingNSW_icgem(:,3),GPSlevellingNSW_icgem(:,4));
-% GGM plot testing
-
-GGM_Zeta = GGM_Zeta_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,1)*0);
-
-GGM_Gravity = GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
-
-GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
-               Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))-0.5)-...
-               GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
-               Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))+0.5));
-
-% plot 
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Zeta,GRID_PARA,2*GRID_PARA.buffer,'EGM2008Zeta','m',OUTPUT_PARA.plotsFolder)
-mean(GGM_Zeta),min(GGM_Zeta),max(GGM_Zeta)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Gravity,GRID_PARA,2*GRID_PARA.buffer,'EGM2008Gravity','mGal',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_GravityGradient,GRID_PARA,2*GRID_PARA.buffer,'EGM2008GravityGradient','E',OUTPUT_PARA.plotsFolder)
-
-% Import new GGM reference
-   
-% GOCE300=importdata('Data/processedData/GOCE_N300_For_Gridded_Int24.mat');
+% Table=GOCONSGCF2DIRR6ICGEMNSWGPSlevelling;
 % 
-% GOCE300_griddedInterpolant=griddedInterpolant(GOCE300.x,GOCE300.y,GOCE300.z,GOCE300.g);
+% GGM_Zeta_GPSlevelling = GGM_Zeta_griddedInterpolant(GPSlevellingNSW_icgem(:,2),-GPSlevellingNSW_icgem(:,3),GPSlevellingNSW_icgem(:,4));
+% % GGM plot testing
 % 
-% GOCE300_Gravity = GOCE300_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% GGM_Zeta = GGM_Zeta_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,1)*0);
 % 
-% TrrGOCE300_griddedInterpolant=griddedInterpolant(GOCE300.x,GOCE300.y,GOCE300.z,GOCE300.trr);
+% GGM_Gravity = GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
 % 
-% GOCE300_Trr = TrrGOCE300_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% GGM_GravityGradient=(GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
+%                Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))-0.5)-...
+%                GGM_Gravity_griddedInterpolant(Gravo(:,1),-Gravo(:,2), ...
+%                Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2))+0.5));
 % 
 % % plot 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),GOCE300_Gravity,GRID_PARA,2*GRID_PARA.buffer,'GOCE300Gravity','mGal',OUTPUT_PARA.plotsFolder)
 % 
-% plotCustomScatter(Gravo(:,1),Gravo(:,2),GOCE300_Trr*10^(-4),GRID_PARA,2*GRID_PARA.buffer,'GOCE300Trr','E',OUTPUT_PARA.plotsFolder)
-
-
-% Import new GGM reference
-   
-EGM200824=importdata('Data/processedData/EGM2008_For_Gridded_Int24.mat');
-
-EGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.g);
-
-EGM200824_Gravity = EGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
-
-TrrEGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.trr);
-
-EGM200824_Trr = TrrEGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
-
-zetaEGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.zeta);
-
-EGM200824_zeta = zetaEGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
-
-
-
-% plot 
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_zeta,GRID_PARA,2*GRID_PARA.buffer,'EGM200824Zeta','m',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_Gravity,GRID_PARA,2*GRID_PARA.buffer,'EGM200824Gravity','mGal',OUTPUT_PARA.plotsFolder)
-
-plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_Trr*10^(-4),GRID_PARA,2*GRID_PARA.buffer,'EGM200824Trr','E',OUTPUT_PARA.plotsFolder)
-
-
-
-
-
-
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Zeta,GRID_PARA,2*GRID_PARA.buffer,'EGM2008Zeta','m',OUTPUT_PARA.plotsFolder)
+% mean(GGM_Zeta),min(GGM_Zeta),max(GGM_Zeta)
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_Gravity,GRID_PARA,2*GRID_PARA.buffer,'EGM2008Gravity','mGal',OUTPUT_PARA.plotsFolder)
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),GGM_GravityGradient,GRID_PARA,2*GRID_PARA.buffer,'EGM2008GravityGradient','E',OUTPUT_PARA.plotsFolder)
+% 
+% % Import new GGM reference
+%    
+% % GOCE300=importdata('Data/processedData/GOCE_N300_For_Gridded_Int24.mat');
+% % 
+% % GOCE300_griddedInterpolant=griddedInterpolant(GOCE300.x,GOCE300.y,GOCE300.z,GOCE300.g);
+% % 
+% % GOCE300_Gravity = GOCE300_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% % 
+% % TrrGOCE300_griddedInterpolant=griddedInterpolant(GOCE300.x,GOCE300.y,GOCE300.z,GOCE300.trr);
+% % 
+% % GOCE300_Trr = TrrGOCE300_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% % 
+% % % plot 
+% % plotCustomScatter(Gravo(:,1),Gravo(:,2),GOCE300_Gravity,GRID_PARA,2*GRID_PARA.buffer,'GOCE300Gravity','mGal',OUTPUT_PARA.plotsFolder)
+% % 
+% % plotCustomScatter(Gravo(:,1),Gravo(:,2),GOCE300_Trr*10^(-4),GRID_PARA,2*GRID_PARA.buffer,'GOCE300Trr','E',OUTPUT_PARA.plotsFolder)
+% 
+% 
+% % Import new GGM reference
+%    
+% EGM200824=importdata('Data/processedData/EGM2008_For_Gridded_Int24.mat');
+% 
+% EGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.g);
+% 
+% EGM200824_Gravity = EGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% 
+% TrrEGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.trr);
+% 
+% EGM200824_Trr = TrrEGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% 
+% zetaEGM200824_griddedInterpolant=griddedInterpolant(EGM200824.x,EGM200824.y,EGM200824.z,EGM200824.zeta);
+% 
+% EGM200824_zeta = zetaEGM200824_griddedInterpolant(Gravo(:,1),-Gravo(:,2),Gravo(:,3)-ZDEM_griddedInterpolant(Gravo(:,1),Gravo(:,2)));
+% 
+% 
+% 
+% % plot 
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_zeta,GRID_PARA,2*GRID_PARA.buffer,'EGM200824Zeta','m',OUTPUT_PARA.plotsFolder)
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_Gravity,GRID_PARA,2*GRID_PARA.buffer,'EGM200824Gravity','mGal',OUTPUT_PARA.plotsFolder)
+% 
+% plotCustomScatter(Gravo(:,1),Gravo(:,2),EGM200824_Trr*10^(-4),GRID_PARA,2*GRID_PARA.buffer,'EGM200824Trr','E',OUTPUT_PARA.plotsFolder)
+% 
+% 
+% 
+% 
+% 
+% 
