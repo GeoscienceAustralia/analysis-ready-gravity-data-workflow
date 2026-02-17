@@ -97,7 +97,13 @@ LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 OUTPUT_PARA.plotsFolder=['Outputs/plots/',date];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
-%% Run the LSC code
+
+% common variables for plotting
+axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
 
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
@@ -105,8 +111,31 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-GOCE_Zeta=GOCE_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+existAGQG = REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM);
 
+GOCE_Zeta = GOCE_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+ZDegGOCE=mean(mean(existAGQG-GOCE_Zeta));
+
+figure
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),existAGQG)
+customizeMap('2022AGQG','m',Coastline,axisLimits) 
+%caxis([-0.5 0.5])
+
+fprintf('%f min     Zeta2022\n',min (min (existAGQG)));
+fprintf('%f max     Zeta2022\n',max (max (existAGQG)));
+fprintf('%f mean    Zeta2022\n',mean(mean(existAGQG)));
+fprintf('%f std     Zeta2022\n',std (std (existAGQG)));
+
+
+
+figure
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),existAGQG-GOCE_Zeta)
+customizeMap('2022AGQG-GOCE2014','m',Coastline,axisLimits) 
+%caxis([-0.10 0.10])
 
 GGM_PARA.filename='Data\GGM\EGM2008_For_Gridded_Int.mat';
 
@@ -116,23 +145,40 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-   
 EGM_Zeta=EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
-
-% common variables for plotting
-axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-
+ZDegEGM=mean(mean(existAGQG-EGM_Zeta));
 
 figure
 clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),EGM_Zeta-GOCE_Zeta)
 customizeMap('EMG2008-GOCE2014','m',Coastline,axisLimits)
-caxis([-0.5 0.5])
+%caxis([-0.5 0.5])
+%saveas(gcf,[OUTPUT_PARA.plotsFolder,'EMG2008-GOCE2014','.png']) 
+
+
+figure
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),existAGQG-EGM_Zeta)
+customizeMap('2022AGQG-EGM2008','m',Coastline,axisLimits)
+%caxis([-0.10 0.10])
+
+figure
+clf
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),existAGQG-EGM_Zeta-ZDegEGM)
+customizeMap('2022AGQG-EGM2008-zeroDegree','m',Coastline,axisLimits)
+%saveas(gcf,[OUTPUT_PARA.plotsFolder,'2022AGQG-EGM2008-zeroDegree','.png'])
+
+
+deltaZeta2022=existAGQG-EGM_Zeta;
+fprintf('%f min     deltaZeta2022\n',min (min (deltaZeta2022)));
+fprintf('%f max     deltaZeta2022\n',max (max (deltaZeta2022)));
+fprintf('%f mean    deltaZeta2022\n',mean(mean(deltaZeta2022)));
+fprintf('%f std     deltaZeta2022\n',std (std (deltaZeta2022)));
+
+
 
 
 
