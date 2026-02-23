@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=137;%94;
-GRID_PARA.MAXLONG=140;%173;
-GRID_PARA.MINLAT=-36;%-60;
-GRID_PARA.MAXLAT=-33.5;%-9;
+GRID_PARA.MINLONG=115;%137;%94;
+GRID_PARA.MAXLONG=155;%140;%173;
+GRID_PARA.MINLAT=-45;%-36;%-60;
+GRID_PARA.MAXLAT=-10;%-33.5;%-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -91,20 +91,20 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_Adelaide.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelJustTerr';
+outputName='Australia';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
-AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
-AdelaidLat=[-34 -35.5 -35.5 -34 -34];
+%AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
+%AdelaidLat=[-34 -35.5 -35.5 -34 -34];
 %VicLon=[144.5 144.5 150 150 144.5];
 %VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
@@ -113,8 +113,8 @@ AdelaidLat=[-34 -35.5 -35.5 -34 -34];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = AdelaidLon;
-OUTPUT_PARA.polygonLat = AdelaidLat;
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -146,7 +146,7 @@ end
 
 % read final matfiles
 
-dateCreated ='15-Aug-2025';
+dateCreated ='18-Jan-2026';
 
 load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
@@ -180,6 +180,33 @@ DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
 
 plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+
+
+EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
+
+EGM=importdata(EGM_PARA.filename);
+ZetaEGM_griddedInterpolant=griddedInterpolant(EGM.x,EGM.y,EGM.z,EGM.zeta);
+
+ZDegEGM=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+
+EGMresAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+
+% plot residualGeoidvsAGQG
+figure('Name','MosaicTiles','NumberTitle','off'); 
+clf
+subplot(1,2,1);
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
+customizeMap('ResidualEGM2008 LSC AGQG','m',Coastline,axisLimits)
+caxis([-0.1 0.1])
+ 
+subplot(1,2,2);
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),EGMresAGQG-ZDegEGM)
+customizeMap('ResidualEGM2008 2022 AGQG','m',Coastline,axisLimits) 
+caxis([-0.1 0.1])
+saveas(gcf,[plotsFolder,'MosaicTiles','residualLSCvs2022AGQG','.png']) 
 
 diary off
 
