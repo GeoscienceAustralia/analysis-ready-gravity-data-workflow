@@ -6,7 +6,7 @@ function customizeMap(quantityName,colorbarUnit,Coastline,axisLimits)
     end
 
     colorbar;
-    colormap(jet);
+    colormap(gmt_haxby(256));
     title(colorbar,colorbarUnit,'FontSize',10);
     axis([axisLimits.lonMinLimit axisLimits.lonMaxLimit axisLimits.latMinLimit axisLimits.latMaxLimit])
     ax = gca;
