@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=140;%94;
-GRID_PARA.MAXLONG=155;%173;
-GRID_PARA.MINLAT=-30;%-60;
-GRID_PARA.MAXLAT=-25;%-9;
+GRID_PARA.MINLONG=115;%137;%94;
+GRID_PARA.MAXLONG=155;%140;%173;
+GRID_PARA.MINLAT=-45;%-36;%-60;
+GRID_PARA.MAXLAT=-10;%-33.5;%-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -91,13 +91,17 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_AHD7499pointsAUS.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
+<<<<<<< HEAD
 outputName='NQueen2degNew';
+=======
+outputName='Australia';
+>>>>>>> e61f17cde1d3c3080d38a380d83b6a99da8a9707
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -134,7 +138,7 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 % Remove rows where the 4th column equals 2
-%Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
+Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
 
 if GRAV_PARA.inputGravity_weighting 
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
@@ -179,7 +183,34 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
 
-%plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+
+
+EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
+
+EGM=importdata(EGM_PARA.filename);
+ZetaEGM_griddedInterpolant=griddedInterpolant(EGM.x,EGM.y,EGM.z,EGM.zeta);
+
+ZDegEGM=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+
+EGMresAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+
+% plot residualGeoidvsAGQG
+figure('Name','MosaicTiles','NumberTitle','off'); 
+clf
+subplot(1,2,1);
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
+customizeMap('ResidualEGM2008 LSC AGQG','m',Coastline,axisLimits)
+caxis([-0.1 0.1])
+ 
+subplot(1,2,2);
+hold on
+imagesc(LongDEM(1,:),LatDEM(:,1),EGMresAGQG-ZDegEGM)
+customizeMap('ResidualEGM2008 2022 AGQG','m',Coastline,axisLimits) 
+caxis([-0.1 0.1])
+saveas(gcf,[plotsFolder,'MosaicTiles','residualLSCvs2022AGQG','.png']) 
 
 diary off
 
