@@ -32,9 +32,9 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
-GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
-GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
+GRID_PARA.buffer=2;% 1 degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer2=1;% degs. The x/y tile extents that are kept - where the good data are.
+GRID_PARA.STEP=1;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=113;%94;
-GRID_PARA.MAXLONG=154;%173;
-GRID_PARA.MINLAT=-44;%-60;
-GRID_PARA.MAXLAT=-10;%-9;
+GRID_PARA.MINLONG=140;%94;
+GRID_PARA.MAXLONG=155;%173;
+GRID_PARA.MINLAT=-30;%-60;
+GRID_PARA.MAXLAT=-25;%-9;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -97,7 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelJustTerr';
+outputName='NQueen2degNew';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -107,14 +107,14 @@ OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
 %VicLon=[144.5 144.5 150 150 144.5];
 %VicLat=[-36.5 -39 -39 -36.5 -36.5];
-otwayLon=[141 141 143 143 141];
-otwayLat=[-37 -38.5 -39 -37.5 -37];
+%otwayLon=[141 141 143 143 141];
+%otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = otwayLon;
-OUTPUT_PARA.polygonLat = otwayLat;
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -146,7 +146,7 @@ end
 
 % read final matfiles
 
-dateCreated ='15-Aug-2025';
+dateCreated ='19-Feb-2026';
 
 load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
