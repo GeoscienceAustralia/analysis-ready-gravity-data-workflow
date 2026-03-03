@@ -97,11 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-<<<<<<< HEAD
-outputName='NQueen2degNew';
-=======
 outputName='Australia';
->>>>>>> e61f17cde1d3c3080d38a380d83b6a99da8a9707
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -138,7 +134,7 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 % Remove rows where the 4th column equals 2
-Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
+%Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
 
 if GRAV_PARA.inputGravity_weighting 
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
@@ -150,7 +146,7 @@ end
 
 % read final matfiles
 
-dateCreated ='19-Feb-2026';
+dateCreated ='18-Jan-2026';
 
 load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
@@ -183,34 +179,48 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA)
 
-plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
+%plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder)
 
 
 EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
 
 EGM=importdata(EGM_PARA.filename);
-ZetaEGM_griddedInterpolant=griddedInterpolant(EGM.x,EGM.y,EGM.z,EGM.zeta);
 
-ZDegEGM=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+EGM_Zeta_griddedInterpolant=griddedInterpolant(EGM.x,EGM.y,EGM.z,EGM.zeta);
 
-EGMresAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+EGM_ZetaonDEM=EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
 
+ZDegEGM=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_ZetaonDEM));
+
+EGMresAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_ZetaonDEM;
+
+ZDegEGMLSCAGQG=mean(mean(Grid_res_geoid_w-EGM_ZetaonDEM));
+
+EGMresLSCAGQG=Grid_res_geoid_w-EGM_ZetaonDEM;
+
+% common variables for plotting
+axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
 
 % plot residualGeoidvsAGQG
 figure('Name','MosaicTiles','NumberTitle','off'); 
 clf
 subplot(1,2,1);
 hold on
-imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
-customizeMap('ResidualEGM2008 LSC AGQG','m',Coastline,axisLimits)
-caxis([-0.1 0.1])
+imagesc(LongDEM(1,:),LatDEM(:,1),EGMresLSCAGQG-ZDegEGMLSCAGQG)
+customizeMap('ResEGM2008 LSC AGQG','m',Coastline,axisLimits)
+%caxis([0 0.2])
  
 subplot(1,2,2);
+%figure
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),EGMresAGQG-ZDegEGM)
-customizeMap('ResidualEGM2008 2022 AGQG','m',Coastline,axisLimits) 
+customizeMap('ResEGM2008 2022 AGQG','m',Coastline,axisLimits) 
 caxis([-0.1 0.1])
-saveas(gcf,[plotsFolder,'MosaicTiles','residualLSCvs2022AGQG','.png']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','EGM2008residualLSCvs2022AGQG','.png']) 
 
 diary off
 

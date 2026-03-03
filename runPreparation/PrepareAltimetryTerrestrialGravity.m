@@ -1,85 +1,121 @@
 %% Clean start
 close all; clear; clc;
-warning('off','all');  % (optional) avoid blanket warning off if you prefer
+warning('off','all');
 
 addpath('functions');
-% Coastline data
-COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
+
+%% Coastline data
+COAST_PARA.filename = 'Data/COASTLINE/CoastAus.mat';
+Coastline = importdata(COAST_PARA.filename);
+
 %% ------------------------------------------------------------------------
-%  Load Sandwell & Smith altimetry free-air gravity + uncertainty
-%  Files appear to be [lon lat value] columns
+%  File definitions (TWO datasets)
 % -------------------------------------------------------------------------
-%gravFile = fullfile('Data','GRAVITY','ALTIMETRY','sand311ausgrav.llf');
-%errFile  = fullfile('Data','GRAVITY','ALTIMETRY','sand311ausgrav.lle');
+data(1).gravFile = fullfile('Data','GRAVITY','ALTIMETRY','sand311ausgrav.llf');
+data(1).errFile  = fullfile('Data','GRAVITY','ALTIMETRY','sand311ausgrav.lle');
+data(1).label    = 'Sandwell 311';
 
- gravFile = fullfile('Data','GRAVITY','ALTIMETRY','sand331ausgrav.llf');
- errFile  = fullfile('Data','GRAVITY','ALTIMETRY','sand331ausgrav.lle');
+data(2).gravFile = fullfile('Data','GRAVITY','ALTIMETRY','sand331ausgrav.llf');
+data(2).errFile  = fullfile('Data','GRAVITY','ALTIMETRY','sand331ausgrav.lle');
+data(2).label    = 'Sandwell 331';
 
-gravLLV = importdata(gravFile);   % [lon lat freeAir]
-errLLV  = importdata(errFile);    % [lon lat freeAirError]
-
-% Grid dimensions used in your reshape
+%% Grid dimensions
 nLon = 4860;
 nLat = 3180;
 
-% Reshape into 2-D grids (lat x lon) — matches your transpose pattern
-lonGrid      = reshape(gravLLV(:,1), nLon, nLat).';
-latGrid      = reshape(gravLLV(:,2), nLon, nLat).';
-freeAir_mGal = reshape(gravLLV(:,3), nLon, nLat).';
-
-freeAirErr_mGal = reshape(errLLV(:,3), nLon, nLat).';
-
 %% ------------------------------------------------------------------------
-%  Choose region of interest: South Australia (adjust as needed)
+%  Region of interest
 % -------------------------------------------------------------------------
-% Broad South Australia-ish bounding box (degrees)
 roi.lon = [144 145];
 roi.lat = [-38.5 -37.5];
 
-% If you want a tighter "Greater Adelaide" view, use instead:
-% roi.lon = [137.5 139.5];
-% roi.lat = [-35.8 -34.2];
+GRID_PARA.buffer = 0;
+GRID_PARA.MINLAT = roi.lat(1);
+GRID_PARA.MAXLAT = roi.lat(2);
 
-% Build mask / index ranges using the grids
-lonVec = lonGrid(1,:);   % longitudes along columns
-latVec = latGrid(:,1);   % latitudes along rows
+axisLimits.latMeanCosine = abs(cos(deg2rad(mean(roi.lat))));
+axisLimits.lonMinLimit  = roi.lon(1);
+axisLimits.lonMaxLimit  = roi.lon(2);
+axisLimits.latMinLimit  = roi.lat(1);
+axisLimits.latMaxLimit  = roi.lat(2);
 
-iLon = lonVec >= roi.lon(1) & lonVec <= roi.lon(2);
-iLat = latVec >= roi.lat(1) & latVec <= roi.lat(2);
+%% ------------------------------------------------------------------------
+%  Load, reshape, and subset both datasets
+% -------------------------------------------------------------------------
+for k = 1:2
 
-lonSub = lonVec(iLon);
-latSub = latVec(iLat);
-errSub = freeAirErr_mGal(iLat, iLon);
-gravSub = freeAir_mGal(iLat, iLon);
+    gravLLV = importdata(data(k).gravFile);
+    errLLV  = importdata(data(k).errFile);
 
-% common variables for plotting
-Coastline=importdata(COAST_PARA.filename);
-GRID_PARA.buffer=0;
-GRID_PARA.MINLAT=roi.lat(1);
-GRID_PARA.MAXLAT=roi.lat(2);
+    lonGrid = reshape(gravLLV(:,1), nLon, nLat).';
+    latGrid = reshape(gravLLV(:,2), nLon, nLat).';
+    grav    = reshape(gravLLV(:,3), nLon, nLat).';
+    err     = reshape(errLLV(:,3),  nLon, nLat).';
 
-axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-axisLimits.lonMinLimit=roi.lon(1)-GRID_PARA.buffer;
-axisLimits.lonMaxLimit=roi.lon(2)+GRID_PARA.buffer;
-axisLimits.latMinLimit=roi.lat(1)-GRID_PARA.buffer;
-axisLimits.latMaxLimit=roi.lat(2)+GRID_PARA.buffer;
+    lonVec = lonGrid(1,:);
+    latVec = latGrid(:,1);
 
+    iLon = lonVec >= roi.lon(1) & lonVec <= roi.lon(2);
+    iLat = latVec >= roi.lat(1) & latVec <= roi.lat(2);
 
+    data(k).lon  = lonVec(iLon);
+    data(k).lat  = latVec(iLat);
+    data(k).grav = grav(iLat,iLon);
+    data(k).err  = err(iLat,iLon);
+
+end
+
+%% ------------------------------------------------------------------------
+%  PLOT 1–4: gravity + uncertainty for both datasets
+% -------------------------------------------------------------------------
+for k = 1:2
+
+    % ---- Uncertainty ----
+    figure('Color','w');
+    imagesc(data(k).lon, data(k).lat, data(k).err);
+    set(gca,'YDir','normal')
+    hold on
+    customizeMap([data(k).label ' gravity uncertainty'], ...
+                 'mGal', Coastline, axisLimits)
+    saveas(gcf,[data(k).errFile,'.png'])
+
+    % ---- Gravity ----
+    figure('Color','w');
+    imagesc(data(k).lon, data(k).lat, data(k).grav);
+    set(gca,'YDir','normal')
+    caxis([-100 100])
+    hold on
+    customizeMap([data(k).label ' gravity'], ...
+                 'mGal', Coastline, axisLimits)
+    saveas(gcf,[data(k).gravFile,'.png'])
+
+end
+
+%% ------------------------------------------------------------------------
+%  PLOT 5–6: Differences (331 − 311)
+% -------------------------------------------------------------------------
+dGrav = data(2).grav - data(1).grav;
+dErr  = data(2).err  - data(1).err;
+
+% ---- Gravity difference ----
 figure('Color','w');
-imagesc(lonSub, latSub, errSub);
+imagesc(data(1).lon, data(1).lat, dGrav);
 set(gca,'YDir','normal')
+%caxis([-5 5])
 hold on
-customizeMap('gravity uncertainty','mGal',Coastline,axisLimits)
-saveas(gcf,[errFile,'.png'])
+customizeMap('Gravity difference (331 − 311)', ...
+             'mGal', Coastline, axisLimits)
+saveas(gcf,'gravity_difference_331_minus_311.png')
 
+% ---- Uncertainty difference ----
 figure('Color','w');
-imagesc(lonSub, latSub, gravSub);
+imagesc(data(1).lon, data(1).lat, dErr);
 set(gca,'YDir','normal')
-caxis([-100 100]);
+%caxis([-1 1])
 hold on
-customizeMap('gravity','mGal',Coastline,axisLimits)
-saveas(gcf,[gravFile,'.png'])
-
+customizeMap('Uncertainty difference (331 − 311)', ...
+             'mGal', Coastline, axisLimits)
+saveas(gcf,'uncertainty_difference_331_minus_311.png')
 
 
 
