@@ -26,8 +26,8 @@ nLat = 3180;
 %% ------------------------------------------------------------------------
 %  Region of interest
 % -------------------------------------------------------------------------
-roi.lon = [144 145];
-roi.lat = [-38.5 -37.5];
+roi.lon = [115 150];
+roi.lat = [-20 -10];
 
 GRID_PARA.buffer = 0;
 GRID_PARA.MINLAT = roi.lat(1);
@@ -77,7 +77,7 @@ for k = 1:2
     hold on
     customizeMap([data(k).label ' gravity uncertainty'], ...
                  'mGal', Coastline, axisLimits)
-    saveas(gcf,[data(k).errFile,'.png'])
+    saveas(gcf,[data(k).errFile,num2str(roi.lon(1)),'.png'])
 
     % ---- Gravity ----
     figure('Color','w');
@@ -87,7 +87,7 @@ for k = 1:2
     hold on
     customizeMap([data(k).label ' gravity'], ...
                  'mGal', Coastline, axisLimits)
-    saveas(gcf,[data(k).gravFile,'.png'])
+    saveas(gcf,[data(k).gravFile,num2str(roi.lon(1)),'.png'])
 
 end
 
@@ -97,6 +97,8 @@ end
 dGrav = data(2).grav - data(1).grav;
 dErr  = data(2).err  - data(1).err;
 
+
+folder = fileparts(data(k).gravFile);
 % ---- Gravity difference ----
 figure('Color','w');
 imagesc(data(1).lon, data(1).lat, dGrav);
@@ -105,8 +107,7 @@ set(gca,'YDir','normal')
 hold on
 customizeMap('Gravity difference (331 − 311)', ...
              'mGal', Coastline, axisLimits)
-saveas(gcf,'gravity_difference_331_minus_311.png')
-
+saveas(gcf,[folder,'\gravity_difference_331_minus_311',num2str(roi.lon(1)),'.png'])
 % ---- Uncertainty difference ----
 figure('Color','w');
 imagesc(data(1).lon, data(1).lat, dErr);
@@ -115,7 +116,7 @@ set(gca,'YDir','normal')
 hold on
 customizeMap('Uncertainty difference (331 − 311)', ...
              'mGal', Coastline, axisLimits)
-saveas(gcf,'uncertainty_difference_331_minus_311.png')
+saveas(gcf,[folder,'\uncertainty_difference_331_minus_311',num2str(roi.lon(1)),'.png'])
 
 
 

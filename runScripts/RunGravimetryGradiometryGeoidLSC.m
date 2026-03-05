@@ -96,7 +96,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NQueenfrom16000';%'NSWVICAdelJustTerr';
+outputName='NQueen10from16000';%'NSWVICAdelJustTerr';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -164,8 +164,12 @@ end
 % end
 
 disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+% geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+%     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+
+geomGravGeoidDiff = mosaicTilesParallel(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
+
 geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
 fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
 fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));

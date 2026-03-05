@@ -147,20 +147,3 @@ geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Bouguer_Anomaly_',formattedDate,'.tif
 geotiffwrite([OUTPUT_PARA.Grids_name,'AGQG_Gravity_1SigUncert_',formattedDate,'.tif'],bbox, resamplegravity_err, bit_depth, option);
 
 end
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
