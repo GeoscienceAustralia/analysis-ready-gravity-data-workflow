@@ -32,9 +32,9 @@ warning off
 addpath('functions');
 %% Grid/Tiling Parameters
 % Tiling Parameters - fixed for each computation
-GRID_PARA.buffer=2;% 1 degs. The x/y extent to extract data around the tile centre. .75
-GRID_PARA.buffer2=1;% degs. The x/y tile extents that are kept - where the good data are.
-GRID_PARA.STEP=1;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
+GRID_PARA.buffer=1;% 1 degs. The x/y extent to extract data around the tile centre. .75
+GRID_PARA.buffer2=0.5;% degs. The x/y tile extents that are kept - where the good data are.
+GRID_PARA.STEP=0.5;% The step size. This must be less than buffer2 to avoid gaps in the final grid.
 GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is from experiment for tiles of one degree
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=115;%137;%94;
-GRID_PARA.MAXLONG=155;%140;%173;
-GRID_PARA.MINLAT=-45;%-36;%-60;
-GRID_PARA.MAXLAT=-10;%-33.5;%-9;
+GRID_PARA.MINLONG=144.25;%150;
+GRID_PARA.MAXLONG=144.75;%151;
+GRID_PARA.MINLAT=-38.25;%-28;
+GRID_PARA.MAXLAT=-37.75;%-27;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -58,7 +58,7 @@ GRAV_PARA.filename ='Data\processedData\GravityAllTerrestrialAirborneJuly14.mat'
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
-GRAV_PARA.inputGravity_weighting = false; 
+GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
@@ -97,7 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia';
+outputName='AustraliaParallel';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -146,9 +146,9 @@ end
 
 % read final matfiles
 
-dateCreated ='18-Jan-2026';
+dateCreated ='10-Mar-2026';
 
-load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
+%load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 
 load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 
@@ -212,7 +212,7 @@ subplot(1,2,1);
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),EGMresLSCAGQG-ZDegEGMLSCAGQG)
 customizeMap('ResEGM2008 LSC AGQG','m',Coastline,axisLimits)
-%caxis([0 0.2])
+caxis([-0.1 0.1])
  
 subplot(1,2,2);
 %figure
