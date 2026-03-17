@@ -23,14 +23,14 @@ function DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid
             hold on
             imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w,'AlphaData', nanMask)
             customizeMap('Residual LSC AGQG','m',Coastline,axisLimits)
-            caxis([-0.5 0.5])
+            %caxis([-0.5 0.5])
            
             subplot(1,2,2);
             hold on
             imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w,'AlphaData', nanMask)
             %plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
             customizeMap('Residual AGQG Sigma Error','m',Coastline,axisLimits)
-            caxis([0 0.02])
+            %caxis([0 0.02])
             saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidFocused','.png'])
 
         end

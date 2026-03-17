@@ -6,8 +6,8 @@ function customizeMap(quantityName,colorbarUnit,Coastline,axisLimits)
     end
 
     colorbar;
-    %colormap(gmt_haxby(256));
-    colormap
+    %colormap(gmt_haxby(256));% this is compatible with GMT plots
+    colormap(jet);
     title(colorbar,colorbarUnit,'FontSize',10);
     axis([axisLimits.lonMinLimit axisLimits.lonMaxLimit axisLimits.latMinLimit axisLimits.latMaxLimit])
     ax = gca;

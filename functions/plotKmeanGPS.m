@@ -44,7 +44,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     % Initialize statistics containers
     for i = 1:k
         clusterVals = valDiff(idx == i);
-        fprintf('Cluster Geometric and LSC Gravimetric Geoid Difference %d Statistics:\n', i);
+        fprintf('Cluster %d Geometric and LSC Gravimetric Geoid Difference Statistics:\n', i);
         fprintf('  Count: %d\n', numel(clusterVals));
         fprintf('  Mean: %.4f\n', mean(clusterVals));
         fprintf('  Std Dev: %.4f\n', std(clusterVals));
@@ -79,7 +79,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     % Initialize statistics containers
     for i = 1:k
         clusterVals = valDiff(idx == i);
-        fprintf('Cluster Geometric and AGQG Difference %d Statistics:\n', i);
+        fprintf('Cluster %d Geometric and AGQG Difference Statistics:\n', i);
         fprintf('  Count: %d\n', numel(clusterVals));
         fprintf('  Mean: %.4f\n', mean(clusterVals));
         fprintf('  Std Dev: %.4f\n', std(clusterVals));
