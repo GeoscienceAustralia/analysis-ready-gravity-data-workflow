@@ -19,9 +19,7 @@ function [bestFitCoeff_A, bestFitCoeff_B, fittedCovariance] = fitEmpiricalCovari
     % Geoscience Australia, 2023-11.
 
     constants                                       % load constants
-    % Constants
-    %EarthRadius = 6371000; % is this from Tscherning 1974 abstract?
-    maxIterations = 250;
+    maxIterations = 500; %change to 500 from 250 on 16032026
 
     % Set coefficients
     bestFitCoeff_A = 1;
@@ -59,9 +57,10 @@ function [bestFitCoeff_A, bestFitCoeff_B, fittedCovariance] = fitEmpiricalCovari
         if iteration == 1
             bestFitCoeff_A = C2_da \ empiricalCovariance;
         else
+            % update to small values from 0.1 and 0.2 to 0.01 and 0.02 16032026
             Sol = [C2_da, C2_db] \ (empiricalCovariance - fittedCovariance);
-            bestFitCoeff_A = abs(bestFitCoeff_A + 0.1 * Sol(1));
-            bestFitCoeff_B = bestFitCoeff_B + 0.2 * Sol(2);
+            bestFitCoeff_A = abs(bestFitCoeff_A + 0.01 * Sol(1));
+            bestFitCoeff_B = bestFitCoeff_B + 0.02 * Sol(2);
         end
     end
     fittedCovariance = fittedCovariance / bestFitCoeff_A;
