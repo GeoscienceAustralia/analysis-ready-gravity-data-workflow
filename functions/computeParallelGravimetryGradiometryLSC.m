@@ -341,7 +341,7 @@ parfor block_counter = 1:n_total
 
         % Construct the file path
         file_names{block_counter} = fullfile(OUTPUT_PARA.Tiles_dir_name, ['Tile', num2str(LONGsi), '_', num2str(abs(LATsi)), '.mat']);
-        parsave(file_names{block_counter},Dataset_save,'-v7.3');
+        parsave(file_names{block_counter},Dataset_save);
     
     else
     disp(('No data in block'))
