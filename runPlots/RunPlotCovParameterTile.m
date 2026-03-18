@@ -59,7 +59,13 @@ for k=1:length(Files)
     COV_PARA_RTM_A(k)=Tile_Data.COV_PARA_RTM.A;
     COV_PARA_RTM_B(k)=Tile_Data.COV_PARA_RTM.B;
     COV_PARA_RTM_M(k)=Tile_Data.COV_PARA_RTM.M;
+    COV_PARA_Faye_A(k)=Tile_Data.COV_PARA_Faye.A;
+    COV_PARA_Faye_B(k)=Tile_Data.COV_PARA_Faye.B;
+    COV_PARA_Faye_M(k)=Tile_Data.COV_PARA_Faye.M;
 end
+
+
+
 
 % common variables for plotting
 axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
@@ -87,8 +93,10 @@ customizeMap('COV PARA RTM M','',Coastline,axisLimits)
 %caxis([0 220])
 
 
+save(['covParameters',date,'.mat'],'COV_PARA_RTM_A','COV_PARA_RTM_B','COV_PARA_RTM_M',...,
+                                   'COV_PARA_Faye_A','COV_PARA_Faye_B','COV_PARA_Faye_M',...,
+                                   'filenameLong','filenameLat')
 
 
-
-
+ 
 

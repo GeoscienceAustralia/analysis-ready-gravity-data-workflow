@@ -289,31 +289,59 @@ parfor block_counter = 1:n_total
 
     % Save the data to a tile 
 
-        weights=filterWeights;
+    weights=sparse(filterWeights);
     
-        res_geoid=INOUT*0;
-        res_geoid(INOUT==1)=LSCResidualGeoid;
+%         res_geoid=INOUT*0;
+%         res_geoid(INOUT==1)=LSCResidualGeoid;
+%     
+%         pot_error=INOUT*0;
+%         pot_error(INOUT==1)=abs(errorMatrixGeoid);
+%         
+%         res_grav=INOUT*0;
+%         res_grav(INOUT==1)=residualFreeAirGravityAnomaly;
+%     
+%         res_grav_Bouguer=INOUT*0;
+%         res_grav_Bouguer(INOUT==1)=residualBouguerGravityAnomaly;
+%     
+%         grav_error=INOUT*0;
+%         grav_error(INOUT==1)=abs(errorMatrixGravity);
+
+    % Ensure column vectors
+    INOUT = INOUT(:);
     
-        pot_error=INOUT*0;
-        pot_error(INOUT==1)=abs(errorMatrixGeoid);
-        
-        res_grav=INOUT*0;
-        res_grav(INOUT==1)=residualFreeAirGravityAnomaly;
+    N   = numel(INOUT);
+    idx = find(INOUT);   % indices where data exist
     
-        res_grav_Bouguer=INOUT*0;
-        res_grav_Bouguer(INOUT==1)=residualBouguerGravityAnomaly;
+    % (Optional but recommended sanity checks)
+    assert(numel(LSCResidualGeoid)              == numel(idx))
+    assert(numel(errorMatrixGeoid)              == numel(idx))
+    assert(numel(residualFreeAirGravityAnomaly) == numel(idx))
+    assert(numel(residualBouguerGravityAnomaly) == numel(idx))
+    assert(numel(errorMatrixGravity)            == numel(idx))
     
-        grav_error=INOUT*0;
-        grav_error(INOUT==1)=abs(errorMatrixGravity);
+    % Build sparse vectors directly (most efficient)
+    res_geoid = sparse( ...
+        idx, 1, LSCResidualGeoid(:), N, 1);
     
-        Dataset_save = struct('weights',weights,'res_geoid',res_geoid,'pot_error',pot_error,...
+    pot_error = sparse( ...
+        idx, 1, abs(errorMatrixGeoid(:)), N, 1);
+    
+    res_grav = sparse( ...
+        idx, 1, residualFreeAirGravityAnomaly(:), N, 1);
+    
+    res_grav_Bouguer = sparse( ...
+        idx, 1, residualBouguerGravityAnomaly(:), N, 1);
+    
+    grav_error = sparse( ...
+        idx, 1, abs(errorMatrixGravity(:)), N, 1);
+
+    Dataset_save = struct('weights',weights,'res_geoid',res_geoid,'pot_error',pot_error,...
         'res_grav',res_grav,'res_grav_Bouguer',res_grav_Bouguer,'grav_error',grav_error,...
         'COV_PARA_RTM', COV_PARA_RTM,'COV_PARA_Faye',COV_PARA_Faye);
 
         % Construct the file path
         file_names{block_counter} = fullfile(OUTPUT_PARA.Tiles_dir_name, ['Tile', num2str(LONGsi), '_', num2str(abs(LATsi)), '.mat']);
-     
-        parsave(file_names{block_counter},Dataset_save);
+        parsave(file_names{block_counter},Dataset_save,'-v7.3');
     
     else
     disp(('No data in block'))

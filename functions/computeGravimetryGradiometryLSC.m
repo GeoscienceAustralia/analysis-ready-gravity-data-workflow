@@ -1,4 +1,4 @@
-function computeGravimetryGradiometryLSC(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,Grav,Grav_grad, ...
+function computeGravimetryGradiometryLSCtest(GRID_PARA,COV_PARA,DEM_PARA,GRAV_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,GRID_REF,Grav,Grav_grad, ...
     GGM_Gravity_griddedInterpolant,ZDEM_griddedInterpolant,RTM_Correction_function, ...
     LWLBouguer_Slab_Function,density,Coastline)
 % computeGravimetryGradiometryLSC runs the least squares collocation in blocks. 
@@ -279,27 +279,41 @@ for LONGsi=GRID_PARA.MINLONG:GRID_PARA.STEP:GRID_PARA.MAXLONG
 
     % Save the data to a tile 
 
-    Dataset_save.weights=filterWeights;
+    Dataset_save.weights = sparse(filterWeights);
 
-    Dataset_save.res_geoid=INOUT*0;
-    Dataset_save.res_geoid(INOUT==1)=LSCResidualGeoid;
-
-    Dataset_save.pot_error=INOUT*0;
-    Dataset_save.pot_error(INOUT==1)=abs(errorMatrixGeoid);
+    % Ensure column vectors
+    INOUT = INOUT(:);
     
-    Dataset_save.res_grav=INOUT*0;
-    Dataset_save.res_grav(INOUT==1)=residualFreeAirGravityAnomaly;
-
-    Dataset_save.res_grav_Bouguer=INOUT*0;
-    Dataset_save.res_grav_Bouguer(INOUT==1)=residualBouguerGravityAnomaly;
-
-    Dataset_save.grav_error=INOUT*0;
-    Dataset_save.grav_error(INOUT==1)=abs(errorMatrixGravity);
+    N   = numel(INOUT);
+    idx = find(INOUT);   % indices where data exist
+    
+    % (Optional but recommended sanity checks)
+    assert(numel(LSCResidualGeoid)              == numel(idx))
+    assert(numel(errorMatrixGeoid)              == numel(idx))
+    assert(numel(residualFreeAirGravityAnomaly) == numel(idx))
+    assert(numel(residualBouguerGravityAnomaly) == numel(idx))
+    assert(numel(errorMatrixGravity)            == numel(idx))
+    
+    % Build sparse vectors directly (most efficient)
+    Dataset_save.res_geoid = sparse( ...
+        idx, 1, LSCResidualGeoid(:), N, 1);
+    
+    Dataset_save.pot_error = sparse( ...
+        idx, 1, abs(errorMatrixGeoid(:)), N, 1);
+    
+    Dataset_save.res_grav = sparse( ...
+        idx, 1, residualFreeAirGravityAnomaly(:), N, 1);
+    
+    Dataset_save.res_grav_Bouguer = sparse( ...
+        idx, 1, residualBouguerGravityAnomaly(:), N, 1);
+    
+    Dataset_save.grav_error = sparse( ...
+        idx, 1, abs(errorMatrixGravity(:)), N, 1);
 
     Dataset_save.COV_PARA_RTM=COV_PARA_RTM;
     Dataset_save.COV_PARA_Faye=COV_PARA_Faye;
 
-    save([OUTPUT_PARA.Tiles_dir_name,'/Tile',num2str(LONGsi),'_',num2str(abs(LATsi)),'.mat'],'Dataset_save')
+    save([OUTPUT_PARA.Tiles_dir_name,'/Tile',num2str(LONGsi),'_',num2str(abs(LATsi)),'.mat'],'Dataset_save','-v7.3')
     
     else
     disp(('No data in block'))

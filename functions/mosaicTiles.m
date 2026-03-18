@@ -50,6 +50,23 @@ resAGQG=REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zetai(LongDEM,-LatDEM,LatDEM*0
 
     Tile_Data=importdata([OUTPUT_PARA.Tiles_dir_name,Files(k).name]);
     Wf=Tile_Data.weights;
+
+    % Access the name of the file from the struct
+    filename = Files(k).name;
+    % Find the index of the first underscore
+    underscore_index = strfind(filename, '_');
+    m_index = strfind(filename, 'm');
+    % Extract characters from the fourth position to the underscore
+    filenameLong(k) = str2double(filename(5:underscore_index - 1));
+    filenameLat(k) =str2double(filename(underscore_index+1:m_index-2));
+
+    COV_PARA_RTM_A(k)=Tile_Data.COV_PARA_RTM.A;
+    COV_PARA_RTM_B(k)=Tile_Data.COV_PARA_RTM.B;
+    COV_PARA_RTM_M(k)=Tile_Data.COV_PARA_RTM.M;
+    COV_PARA_Faye_A(k)=Tile_Data.COV_PARA_Faye.A;
+    COV_PARA_Faye_B(k)=Tile_Data.COV_PARA_Faye.B;
+    COV_PARA_Faye_M(k)=Tile_Data.COV_PARA_Faye.M;
+
     Grid_res_geoid=Grid_res_geoid+(Wf).*reshape(Tile_Data.res_geoid,DEMpara.num_rows,DEMpara.num_cols);
     Grid_res_geoid_err=Grid_res_geoid_err+(Wf).*reshape(Tile_Data.pot_error,DEMpara.num_rows,DEMpara.num_cols);  
     Grid_res_grav=Grid_res_grav+(Wf).*reshape(Tile_Data.res_grav,DEMpara.num_rows,DEMpara.num_cols);  
@@ -83,7 +100,9 @@ DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
 
 disp('Save mat files')
 
-save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
+save([OUTPUT_PARA.Grids_name,'covParameters',date,'.mat'],'COV_PARA_RTM_A','COV_PARA_RTM_B','COV_PARA_RTM_M',...,
+                                   'COV_PARA_Faye_A','COV_PARA_Faye_B','COV_PARA_Faye_M',...,
+                                   'filenameLong','filenameLat')
 
 save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
 

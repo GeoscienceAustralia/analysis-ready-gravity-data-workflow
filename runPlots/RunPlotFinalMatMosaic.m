@@ -148,7 +148,7 @@ end
 
 dateCreated ='13-Aug-2025';
 
-%load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
+load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat'])
 
 load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 

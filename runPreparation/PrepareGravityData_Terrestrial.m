@@ -75,7 +75,7 @@ SecondOrderFreeAirCorrection = computeSecondOrderFreeAirCorrection (phi,data(:,3
 atmosphericCorrection=computeAtmosphericGravityCorrection (data(:,3));
 
 % Compute anomaly
-
+% Feathersone and hackney 2001, geodtic and gepshical gravity anomaly
 FREE_AIR_Anomaly = data(:,6)- NormalGravity + SecondOrderFreeAirCorrection + atmosphericCorrection;
 
 FREE_AIR_Anomaly_Error1=sqrt(data(:,9).^2+(data(:,7).^2).*(0.000812*sin(2*phi)).^2+((0.3086-0.1119).^2).*((data(:,8).^2)));

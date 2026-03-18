@@ -28,6 +28,22 @@ parfor k = 1:nFiles
     Tile_Data = importdata(fullfile(tilesDir, Files(k).name));
     Wf = Tile_Data.weights;
 
+    % Access the name of the file from the struct
+    filename = Files(k).name;
+    % Find the index of the first underscore
+    underscore_index = strfind(filename, '_');
+    m_index = strfind(filename, 'm');
+    % Extract characters from the fourth position to the underscore
+    filenameLong(k) = str2double(filename(5:underscore_index - 1));
+    filenameLat(k) =str2double(filename(underscore_index+1:m_index-2));
+
+    COV_PARA_RTM_A(k)=Tile_Data.COV_PARA_RTM.A;
+    COV_PARA_RTM_B(k)=Tile_Data.COV_PARA_RTM.B;
+    COV_PARA_RTM_M(k)=Tile_Data.COV_PARA_RTM.M;
+    COV_PARA_Faye_A(k)=Tile_Data.COV_PARA_Faye.A;
+    COV_PARA_Faye_B(k)=Tile_Data.COV_PARA_Faye.B;
+    COV_PARA_Faye_M(k)=Tile_Data.COV_PARA_Faye.M;
+
     sum_geoid      = sum_geoid      + Wf .* reshape(Tile_Data.res_geoid,        nR, nC);
     sum_geoid_err  = sum_geoid_err  + Wf .* reshape(Tile_Data.pot_error,        nR, nC);
     sum_grav       = sum_grav       + Wf .* reshape(Tile_Data.res_grav,         nR, nC);
@@ -88,7 +104,9 @@ DisplayAreaStatistics( ...
 
 disp('Save mat files')
 
-save([OUTPUT_PARA.Grids_name,'geomGravDiff',date,'.mat'],'geomGravDiff')
+save([OUTPUT_PARA.Grids_name,'covParameters',date,'.mat'],'COV_PARA_RTM_A','COV_PARA_RTM_B','COV_PARA_RTM_M',...,
+                                   'COV_PARA_Faye_A','COV_PARA_Faye_B','COV_PARA_Faye_M',...,
+                                   'filenameLong','filenameLat')
 save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',date,'.mat'],'Grid_res_geoid_w')
 save([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',date,'.mat'],'Grid_res_geoid_err_w')
 save([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',date,'.mat'],'Grid_res_grav_w')
