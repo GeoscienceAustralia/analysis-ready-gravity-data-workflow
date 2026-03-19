@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=141;%144.25;%150;
-GRID_PARA.MAXLONG=150;%144.75;%151;
-GRID_PARA.MINLAT=-39;%-38.25;%-28;
-GRID_PARA.MAXLAT=-34;%-37.75;%-27;
+GRID_PARA.MINLONG=141;
+GRID_PARA.MAXLONG=150;
+GRID_PARA.MINLAT=-39;
+GRID_PARA.MAXLAT=-34;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -97,7 +97,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NSWVICAdelDouble';
+outputName='NQueen150longPar';
 plotName='vic';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -146,9 +146,9 @@ end
 
 % read final matfiles
 
-dateCreated ='13-Aug-2025';
+dateCreated ='19-Mar-2026';
 
-load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat'])
+covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
 
 load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 
@@ -164,7 +164,6 @@ ZDeg=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_gridde
 
 resAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
 
-% from each tile?
 Geoid_temp=double(Grid_res_geoid_w+GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0));
        
 geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1:1,:)',Geoid_temp(end:-1:1,:)');
@@ -181,6 +180,7 @@ DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
 
 % plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
+plotCovParameters(covParameters,GRID_PARA,Coastline);
 
 % EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
 % 

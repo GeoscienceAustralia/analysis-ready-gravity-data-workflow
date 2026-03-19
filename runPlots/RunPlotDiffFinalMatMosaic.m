@@ -42,10 +42,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=141;%144.25;%150;
-GRID_PARA.MAXLONG=150;%144.75;%151;
-GRID_PARA.MINLAT=-39;%-38.25;%-28;
-GRID_PARA.MAXLAT=-34;%-37.75;%-27;
+GRID_PARA.MINLONG=137;%144.25;%150;
+GRID_PARA.MAXLONG=140;%144.75;%151;
+GRID_PARA.MINLAT=-36;%-38.25;%-28;
+GRID_PARA.MAXLAT=-33.5;%-37.75;%-27;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -101,24 +101,24 @@ outputName1='NSWVICAdelDouble';
 dateCreated1 ='13-Aug-2025';
 outputName2='NSWVICAdelJustTerr';
 dateCreated2 ='15-Aug-2025';
-plotName='vic';
+plotName='adelaide';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName1,'/'];
 OUTPUT_PARA.Grids_name2=['outputs/Grids',outputName2,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName1,'/',plotName];
 % If there is a region of interest, for plotting purposes
-%AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
-%AdelaidLat=[-34 -35.5 -35.5 -34 -34];
-VicLon=[144.5 144.5 150 150 144.5];
-VicLat=[-36.5 -39 -39 -36.5 -36.5];
+AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
+AdelaidLat=[-34 -35.5 -35.5 -34 -34];
+%VicLon=[144.5 144.5 150 150 144.5];
+%VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = VicLon;
-OUTPUT_PARA.polygonLat = VicLat;
+OUTPUT_PARA.polygonLon = AdelaidLon;
+OUTPUT_PARA.polygonLat = AdelaidLat;
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -136,8 +136,8 @@ Grid_res_geoid_w2 = load([OUTPUT_PARA.Grids_name2,'Grid_res_geoid_w',dateCreated
 Grid_res_geoid_err_w1 = load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',dateCreated1,'.mat']);
 Grid_res_geoid_err_w2 = load([OUTPUT_PARA.Grids_name2,'Grid_res_geoid_err_w',dateCreated2,'.mat']);
 
-diffGrid_res_geoid_w = Grid_res_geoid_w1.Grid_res_geoid_w - Grid_res_geoid_w2.Grid_res_geoid_w;
-diffGrid_res_geoid_err_w = Grid_res_geoid_err_w1.Grid_res_geoid_err_w - Grid_res_geoid_err_w2.Grid_res_geoid_err_w;
+diffGrid_res_geoid_w = Grid_res_geoid_w2.Grid_res_geoid_w - Grid_res_geoid_w1.Grid_res_geoid_w;
+diffGrid_res_geoid_err_w = Grid_res_geoid_err_w2.Grid_res_geoid_err_w - Grid_res_geoid_err_w1.Grid_res_geoid_err_w;
 
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,diffGrid_res_geoid_w, ...
     diffGrid_res_geoid_err_w,OUTPUT_PARA);
