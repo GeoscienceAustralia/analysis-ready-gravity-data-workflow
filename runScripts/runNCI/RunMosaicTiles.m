@@ -1,4 +1,4 @@
-function RunMainScript(varargin)
+function RunMosaicTiles(varargin)
 % RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
 %               The process involves sequence of "remove-predict-restore" operations, where the Global
 %               Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
@@ -324,7 +324,7 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 disp('4/4 ..........................mosaicTiles is running')
-geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
+geomGravGeoidDiff = mosaicTilesParallel(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
 function helptext
