@@ -42,10 +42,12 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
-GRID_PARA.MINLONG=141;
-GRID_PARA.MAXLONG=150;
-GRID_PARA.MINLAT=-39;
-GRID_PARA.MAXLAT=-34;
+%Aus=[93 173 -59 -9];
+%Aus=[114 154 -44 -10];
+GRID_PARA.MINLONG=114;
+GRID_PARA.MAXLONG=154;
+GRID_PARA.MINLAT=-44;
+GRID_PARA.MAXLAT=-10;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -97,24 +99,24 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='NQueen150longPar';
-plotName='vic';
+outputName='AustraliaSparse';
+plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
 %AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
-VicLon=[144.5 144.5 150 150 144.5];
-VicLat=[-36.5 -39 -39 -36.5 -36.5];
+%VicLon=[144.5 144.5 150 150 144.5];
+%VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = VicLon;
-OUTPUT_PARA.polygonLat = VicLat;
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -146,7 +148,7 @@ end
 
 % read final matfiles
 
-dateCreated ='19-Mar-2026';
+dateCreated ='23-Mar-2026';
 
 covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
 
@@ -172,8 +174,8 @@ geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));
     
 geomRefAGQGDiff=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
 
-% plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
-% Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
+plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
+Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
 
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA);
