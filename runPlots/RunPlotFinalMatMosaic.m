@@ -180,9 +180,11 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA);
 
-% plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
+plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
 
-plotCovParameters(covParameters,GRID_PARA,Coastline);
+
+
+% plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
 % EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
 % 
