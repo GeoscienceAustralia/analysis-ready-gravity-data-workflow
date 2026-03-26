@@ -44,10 +44,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %NSW=[141 153 -37 -29]
 %Aus=[93 173 -59 -9];
 %Aus=[114 154 -44 -10];
-GRID_PARA.MINLONG=114;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-44;
-GRID_PARA.MAXLAT=-10;
+GRID_PARA.MINLONG=141;
+GRID_PARA.MAXLONG=150;
+GRID_PARA.MINLAT=-39;
+GRID_PARA.MAXLAT=-34;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -99,7 +99,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='AustraliaSparse';
+outputName='Australia';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -107,16 +107,16 @@ OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
 %AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
-%VicLon=[144.5 144.5 150 150 144.5];
-%VicLat=[-36.5 -39 -39 -36.5 -36.5];
+VicLon=[144.5 144.5 150 150 144.5];
+VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = [];
-OUTPUT_PARA.polygonLat = [];
+OUTPUT_PARA.polygonLon = VicLon;
+OUTPUT_PARA.polygonLat = VicLat;
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -136,10 +136,19 @@ disp('1/4 ..........................importAndFormatData is running ')
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 % Remove rows where the 4th column equals 2
-%Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131 %to 121
+% Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131
+% to 121, elimination smiley face outlier data
 
 if GRAV_PARA.inputGravity_weighting 
+
+     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+
      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+
+     plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
+
+     plotCustomScatter(fullTopoCorrectedGravityGradient(:,1),fullTopoCorrectedGravityGradient(:,2),fullTopoCorrectedGravityGradient(:,4), GRID_PARA,'Prism Gravity Gradient Effect','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder);
+
 end 
 
 if GRAV_PARA.inputGravity_weighting 
@@ -148,7 +157,7 @@ end
 
 % read final matfiles
 
-dateCreated ='23-Mar-2026';
+dateCreated ='18-Jan-2026';
 
 covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
 
@@ -180,11 +189,11 @@ Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w
 DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
     Grid_res_geoid_err_w,OUTPUT_PARA);
 
-plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
+%plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
+
+plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
 
-
-% plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
 % EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
 % 
