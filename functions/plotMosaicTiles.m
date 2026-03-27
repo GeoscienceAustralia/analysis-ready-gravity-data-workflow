@@ -36,13 +36,14 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
 
     validVals = geoGravGeoidDiff(~isnan(geoGravGeoidDiff));
     valDiff = geoGravGeoidDiff - mean(validVals);
-    
-    fprintf('%f length  GPSlevellingLSC\n',length (valDiff));
-    fprintf('%f min     GPSlevellingLSC\n',min    (valDiff));
-    fprintf('%f max     GPSlevellingLSC\n',max    (valDiff));
-    fprintf('%f mean    GPSlevellingLSC\n',mean   (valDiff));
-    fprintf('%f median  GPSlevellingLSC\n',median (valDiff));
-    fprintf('%f std     GPSlevellingLSC\n',std    (valDiff));
+
+    fprintf('Geometric and LSC AGQG Difference Statistics:\n');
+    fprintf('  Count: %d\n',     numel(valDiff));
+    fprintf('  Mean: %.4f\n',    mean(valDiff));
+    fprintf('  Median: %.4f\n',  median(valDiff));
+    fprintf('  Std Dev: %.4f\n', std(valDiff));
+    fprintf('  Min: %.4f\n',     min(valDiff));
+    fprintf('  Max: %.4f\n\n',   max(valDiff));
 
     % plot GPSlevelling vs reference AGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
@@ -54,15 +55,16 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevelling2022AGQG','.fig']) 
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevelling2022AGQG','.png'])
 
-    validVals = geoRefGravGeoidDiff(~isnan(geoRefGravGeoidDiff));
-    valDiff = geoRefGravGeoidDiff - mean(validVals);
+    validValsRef = geoRefGravGeoidDiff(~isnan(geoRefGravGeoidDiff));
+    valDiffRef = geoRefGravGeoidDiff - mean(validValsRef);
     
-    fprintf('%f length  GPSlevellingAGQG\n',length (valDiff));
-    fprintf('%f min     GPSlevellingAGQG\n',min    (valDiff));
-    fprintf('%f max     GPSlevellingAGQG\n',max    (valDiff));
-    fprintf('%f mean    GPSlevellingAGQG\n',mean   (valDiff));
-    fprintf('%f median  GPSlevellingAGQG\n',median (valDiff));
-    fprintf('%f std     GPSlevellingAGQG\n',std    (valDiff));
+    fprintf('Geometric and 2022 AGQG Difference Statistics:\n');
+    fprintf('  Count: %d\n',     numel(valDiffRef));
+    fprintf('  Mean: %.4f\n',    mean(valDiffRef));
+    fprintf('  Median: %.4f\n',  median(valDiffRef));
+    fprintf('  Std Dev: %.4f\n', std(valDiffRef));
+    fprintf('  Min: %.4f\n',     min(valDiffRef));
+    fprintf('  Max: %.4f\n\n',   max(valDiffRef));
 
     % plot difference LSC and AGQG at GPSlevelling
     figure('Name','MosaicTiles','NumberTitle','off'); 

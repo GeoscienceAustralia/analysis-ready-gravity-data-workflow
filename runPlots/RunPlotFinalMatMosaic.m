@@ -47,7 +47,7 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 GRID_PARA.MINLONG=141;
 GRID_PARA.MAXLONG=150;
 GRID_PARA.MINLAT=-39;
-GRID_PARA.MAXLAT=-34;
+GRID_PARA.MAXLAT=-36;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -93,13 +93,13 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/CARS2009zeta7301.mat';%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia';
+outputName='AustraliaParallel';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -157,9 +157,9 @@ end
 
 % read final matfiles
 
-dateCreated ='18-Jan-2026';
+dateCreated ='10-Mar-2026';
 
-covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
+%covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
 
 load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 
@@ -191,7 +191,7 @@ DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
 
 %plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
 
-plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
+%plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
 
 

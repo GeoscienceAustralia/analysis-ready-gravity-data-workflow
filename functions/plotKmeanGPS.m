@@ -8,7 +8,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
 
     % plot GPSlevelling 
-    figure('Name','MosaicTiles','NumberTitle','off'); 
+    figure('Name','KmeanGPS','NumberTitle','off'); 
     clf
     hold on
     scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,GPSlevelling3D(:,3),'filled')
@@ -24,7 +24,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     [idx, ~] = kmeans(valDiff, k);
 
     % plot GPSlevelling vs LSC
-    figure('Name','MosaicTiles','NumberTitle','off'); 
+    figure('Name','KmeanGPS','NumberTitle','off'); 
     clf
     hold on
     scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,valDiff,'filled')
@@ -33,7 +33,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingLSC','.png']) 
     
     % Plot GPS levelling vs LSC with clustering
-%     figure('Name','MosaicTiles','NumberTitle','off'); 
+%     figure('Name','KmeanGPS','NumberTitle','off'); 
 %     clf
 %     hold on
 %     scatter(GPSlevelling3D(:,1), GPSlevelling3D(:,2), 15, idx, 'filled');
@@ -58,7 +58,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     valDiff = geomRefAGQGDiff - mean(validVals);
 
     % plot GPSlevelling vs reference AGQG
-    figure('Name','MosaicTiles','NumberTitle','off'); 
+    figure('Name','KmeanGPS','NumberTitle','off'); 
     clf
     hold on
     scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,valDiff,'filled')
@@ -67,7 +67,7 @@ function plotKmeanGPS(GPSlevelling3D,geomGravDiff,geomRefAGQGDiff,Coastline,GRID
     saveas(gcf,[plotsFolder,'MosaicTiles','GPSlevellingAGQG','.png']) 
     
     % Plot GPS levelling vs reference AGQG with clustering
-%     figure('Name','MosaicTiles','NumberTitle','off'); 
+%     figure('Name','KmeanGPS','NumberTitle','off'); 
 %     clf
 %     hold on
 %     scatter(GPSlevelling3D(:,1), GPSlevelling3D(:,2), 15, idx, 'filled');
@@ -102,7 +102,7 @@ geomGravDiffDetrended2022 = geomRefAGQGDiff - trendMatrix * trendCoefficients202
 
 % plot differences between geometric and gravimetric geoid at GPS leveling points 
 
-figure('Name','MosaicTiles','NumberTitle','off'); 
+figure('Name','KmeanGPS','NumberTitle','off'); 
 clf
 hold on
 scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,geomGravDiffDetrended,'filled')
@@ -110,7 +110,7 @@ customizeMap('Geometric and LSC AGQG Difference Detrended','m',Coastline,axisLim
 caxis([-0.3 0.3])
 saveas(gcf,[plotsFolder,'MosaicTiles','geomGravDiffDetrended','.png']) 
 
-figure('Name','MosaicTiles','NumberTitle','off'); 
+figure('Name','KmeanGPS','NumberTitle','off'); 
 clf
 hold on
 scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,geomGravDiffDetrended2022,'filled')
@@ -118,19 +118,19 @@ customizeMap('Geometric and 2022 AGQG Difference Detrended','m',Coastline,axisLi
 caxis([-0.3 0.3])
 saveas(gcf,[plotsFolder,'MosaicTiles','geomGravDiffDetrended2022','.png']) 
 
-figure('Name','MosaicTiles','NumberTitle','off'); 
+figure('Name','KmeanGPS','NumberTitle','off'); 
 clf
 hold on
 scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,geomGravDiff,'filled')
 customizeMap('Geometric and LSC AGQG Difference','m',Coastline,axisLimits)
 saveas(gcf,[plotsFolder,'MosaicTiles','geomGravDiff','.png']) 
 
-figure('Name','MosaicTiles','NumberTitle','off'); 
+figure('Name','KmeanGPS','NumberTitle','off'); 
 clf
 hold on
 scatter(GPSlevelling3D(:,1),GPSlevelling3D(:,2),15,geomRefAGQGDiff,'filled')
 customizeMap('Geometric and 2022 AGQG Difference','m',Coastline,axisLimits)
-saveas(gcf,[plotsFolder,'MosaicTiles','geomGravDiff','.png'])
+saveas(gcf,[plotsFolder,'KmeanGPS','geomGravDiff','.png'])
 
 fprintf('%f length  Geometric and LSC AGQG Difference Detrended\n',length (geomGravDiffDetrended));
 fprintf('%f min     Geometric and LSC AGQG Difference Detrended\n',min    (geomGravDiffDetrended));
