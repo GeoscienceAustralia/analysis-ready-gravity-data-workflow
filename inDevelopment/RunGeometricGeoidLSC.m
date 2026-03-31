@@ -39,10 +39,11 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
-GRID_PARA.MINLONG=94;
-GRID_PARA.MAXLONG=173;
-GRID_PARA.MINLAT=-60;
-GRID_PARA.MAXLAT=-9;
+%Aus=[114 154 -44 -10];
+GRID_PARA.MINLONG=114;
+GRID_PARA.MAXLONG=154;
+GRID_PARA.MINLAT=-44;
+GRID_PARA.MAXLAT=-10;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data\DEM\AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -93,11 +94,11 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia18Jan';%'NSWVICAdelJustTerr';
+outputName='Australia18Jan';
+plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
-OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
-OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
+OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -111,7 +112,17 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 dateCreated ='18-Jan-2026';
 
-load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
+load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
+
+ZDeg=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+
+resAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+Geoid_temp=double(Grid_res_geoid_w+GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0));
+       
+geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1:1,:)',Geoid_temp(end:-1:1,:)');
+    
+geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
 
 % Remove a tiled plane so the signal is zero mean for the LSC
 
@@ -119,23 +130,23 @@ load([OUTPUT_PARA.Grids_name,'geomGravDiff',dateCreated,'.mat'])
 trendMatrix = [Lev(:,1) - mean(Lev(:,1)), Lev(:,2) - mean(Lev(:,2)), ones(size(Lev(:,2)))];
 
 % Calculate the coefficients of the best-fit plane
-trendCoefficients = trendMatrix \ geomGravGeoidDiff;
+trendCoefficients = trendMatrix \ geomGravDiff;
 
 % Remove the planar trend to obtain zero-mean data
-geomGravGeoidDiffDetrended = geomGravGeoidDiff - trendMatrix * trendCoefficients;
+geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
 
 % plot differences between geometric and gravimetric geoid at GPS leveling points 
 plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,'geomGravGeoidDiffDetrended','m',Coastline,OUTPUT_PARA.plotsFolder)
 
 plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,'geomGravGeoidDiff','m', Coastline,OUTPUT_PARA.plotsFolder)
 
-fprintf('%f length  geomGravGeoidDiffDetrended\n',length (geomGravGeoidDiffDetrended));
-fprintf('%f min     geomGravGeoidDiffDetrended\n',min    (geomGravGeoidDiffDetrended));
-fprintf('%f max     geomGravGeoidDiffDetrended\n',max    (geomGravGeoidDiffDetrended));
-fprintf('%f mean    geomGravGeoidDiffDetrended\n',mean   (geomGravGeoidDiffDetrended));
-fprintf('%f median  geomGravGeoidDiffDetrended\n',median (geomGravGeoidDiffDetrended));
-fprintf('%f std     geomGravGeoidDiffDetrended\n',std    (geomGravGeoidDiffDetrended));
-
+fprintf('Geometric and AGQG Difference Detrended Statistics:\n');
+fprintf('  Count: %d\n', numel(geomGravGeoidDiffDetrended));
+fprintf('  Mean: %.4f\n', mean(geomGravGeoidDiffDetrended));
+fprintf('  Std Dev: %.4f\n', std(geomGravGeoidDiffDetrended));
+fprintf('  Min: %.4f\n', min(geomGravGeoidDiffDetrended));
+fprintf('  Max: %.4f\n\n', max(geomGravGeoidDiffDetrended));
+    
 disp('computing covariance functions')
 
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);

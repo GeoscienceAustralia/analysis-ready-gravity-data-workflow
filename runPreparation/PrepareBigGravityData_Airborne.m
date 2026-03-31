@@ -218,24 +218,63 @@ NSW_Lat=round(NSW_Data.data(:,62)*60)/60;
 NSW_H=NSW_Data.data(:,66);
 NSW_Grav_anom=NSW_Data.data(:,36)/10;% its in mico m's per secon ^2 for some reason. i.e. needs dividing by 10 to get into mGal.
 
+GGM_Gi_interpolatedNSW=GGM_Gi(NSW_Long,-NSW_Lat,NSW_H);
+
+
+figure
+
+% ---------- Sub‑plot 1 ----------
+subplot(2,1,1)
+hold on
+scatter(NSW_Long, NSW_Lat, 1, NSW_Grav_anom)
+colormap(jet)
+cb1 = colorbar;                       % capture handle so we can title it
+title(cb1,'mGal','FontSize',10)
+title('NSW')
+
+% ---------- Sub‑plot 2 ----------
+subplot(2,1,2)
+hold on
+diffVals = NSW_Grav_anom-GGM_Gi_interpolatedNSW;
+scatter(NSW_Long, NSW_Lat, 1, diffVals)
+colormap(jet)
+cb2 = colorbar;
+title(cb2,'mGal','FontSize',10)
+title('NSW - EGM2008')
+
+% ---------- Compute & display mean ----------
+meanDiff = mean(diffVals);
+% ---------- Add mean as figure text ----------
+% Place it near the bottom of the figure; adjust position to taste
+annotation('textbox',[0.15 0.02 0.7 0.05], ...
+           'String',sprintf('Mean difference (GGM – NSW): %.4f mGal',meanDiff), ...
+           'EdgeColor','none', ...
+           'HorizontalAlignment','center', ...
+           'FontSize',10, ...
+           'FontWeight','bold');
+
+% ---------- Save ----------
+saveas(gcf,'outputs/plots/EGM2008NSW.png');
+
+
 % Combine data sets.
-ABGrav=[longitude,latitude,elev_MSL,GrvFAL100s_GEO_V,GrvFAL100s_GEO_V*0+3;...
-        Gippsland_Long,Gippsland_Lat,Gippsland_H,Gippsland_Grav_anom,Gippsland_Grav_anom*0+3;...
-        Adelaide_Long,Adelaide_Lat,Adelaide_H,Adelaide_Grav_anom,Adelaide_Grav_anom*0+3;...
-        NSW_Long,NSW_Lat,NSW_H,NSW_Grav_anom,NSW_Grav_anom*0+3];
-
-% % Block mean as other datasets.
-AB_Grav_Long=round(ABGrav(:,1)*60)/60;   
-AB_Grav_Lat=round(ABGrav(:,2)*60)/60;
-[vals, uid, idx]=unique([AB_Grav_Long,AB_Grav_Lat],'rows');
-AB_Grav_BM(:,3) = accumarray(idx,ABGrav(:,3),[],@mean);
-AB_Grav_BM(:,4) = accumarray(idx,ABGrav(:,4),[],@mean);
-AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
-AB_Grav_BM(:,1) = AB_Grav_Long(uid);
-AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
-
-AB_Grav_BM(:,6)=3;% Flag for airborne gravity
-save('Data\processedData\AirborneAllJuly14.mat','AB_Grav_BM')
+% ABGrav=[longitude,latitude,elev_MSL,GrvFAL100s_GEO_V,GrvFAL100s_GEO_V*0+3;...
+%         Gippsland_Long,Gippsland_Lat,Gippsland_H,Gippsland_Grav_anom,Gippsland_Grav_anom*0+3;...
+%         Adelaide_Long,Adelaide_Lat,Adelaide_H,Adelaide_Grav_anom,Adelaide_Grav_anom*0+3;...
+%         NSW_Long,NSW_Lat,NSW_H,NSW_Grav_anom,NSW_Grav_anom*0+3];
+% 
+% % % Block mean as other datasets.
+% AB_Grav_Long=round(ABGrav(:,1)*60)/60;   
+% AB_Grav_Lat=round(ABGrav(:,2)*60)/60;
+% [vals, uid, idx]=unique([AB_Grav_Long,AB_Grav_Lat],'rows');
+% AB_Grav_BM(:,3) = accumarray(idx,ABGrav(:,3),[],@mean);
+% AB_Grav_BM(:,4) = accumarray(idx,ABGrav(:,4),[],@mean);
+% AB_Grav_BM(:,5) = accumarray(idx,ABGrav(:,5),[],@mean);
+% AB_Grav_BM(:,1) = AB_Grav_Long(uid);
+% AB_Grav_BM(:,2) = AB_Grav_Lat(uid);
+% 
+% AB_Grav_BM(:,6)=3;% Flag for airborne gravity
+% %save('Data\processedData\AirborneAllJuly14.mat','AB_Grav_BM')
 
 
 

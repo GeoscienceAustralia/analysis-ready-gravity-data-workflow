@@ -40,11 +40,11 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
 % VicNSW=[140 154 -37.5 -27.5];% NENSW=[153 154 -29 -28];% vic=[140 154 -39 -33];% NSW=[140 154 -38 -27];
-% AUstralia=[93 174 -61 -8];%vicAdel=[137 154 -40 -33]
-GRID_PARA.MINLONG=93;%150;
-GRID_PARA.MAXLONG=173;%151;
-GRID_PARA.MINLAT=-59;%-28;
-GRID_PARA.MAXLAT=-9;%-27;
+% Australia=[93 173 -59 -9];%vicAdel=[137 154 -40 -33]
+GRID_PARA.MINLONG=145;%150;
+GRID_PARA.MAXLONG=150;%151;
+GRID_PARA.MINLAT=-38;%-28;
+GRID_PARA.MAXLAT=-37;%-27;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -53,7 +53,7 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename ='Data\processedData\GravityAllTerrestrialAirborneJuly14.mat';%'Data/processedData/GravityAllTerrestrialAirborneJuly14.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
+GRAV_PARA.filename ='Data\processedData\AirborneAllJuly14.mat';%'Data/processedData/GravityAllTerrestrialAirborneJuly14.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;
@@ -62,7 +62,7 @@ GRAV_PARA.inputGravity_weighting = false;
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
 GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=true;
+GRAV_GRAD_PARA.avail=false;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -133,13 +133,13 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
-% if OUTPUT_PARA.PLOT_GRIDS
-%      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data);
-% end 
-% 
-% if GRAV_PARA.inputGravity_weighting 
-%      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-% end
+if OUTPUT_PARA.PLOT_GRIDS
+     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data);
+end 
+
+if GRAV_PARA.inputGravity_weighting 
+     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
+end
 % 
 % if exist([OUTPUT_PARA.Grids_name,'terrainEffects.mat'], 'file')
 %     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
@@ -167,15 +167,12 @@ disp('1/4 ..........................importAndFormatData is running ')
 % geomGravGeoidDiff = mosaicTiles(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
 %     REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
 
-geomGravGeoidDiff = mosaicTilesParallel(GRID_PARA,DEM_PARA,OUTPUT_PARA,Lev,LongDEM,LatDEM, ...
-    REFERENCE_Zeta_griddedInterpolant,GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Coastline);
-
-geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
-fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiffMeanSubtracted));
-fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiffMeanSubtracted));
-
-diary off
+% geomGravGeoidDiffMeanSubtracted=geomGravGeoidDiff-mean(geomGravGeoidDiff);
+% fprintf('%f length  geomGravGeoidDiff\n',length (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f min     geomGravGeoidDiff\n',min    (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f max     geomGravGeoidDiff\n',max    (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f mean    geomGravGeoidDiff\n',mean   (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f median  geomGravGeoidDiff\n',median (geomGravGeoidDiffMeanSubtracted));
+% fprintf('%f std     geomGravGeoidDiff\n',std    (geomGravGeoidDiffMeanSubtracted));
+% 
+% diary off
