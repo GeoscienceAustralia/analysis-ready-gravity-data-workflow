@@ -30,39 +30,27 @@ function DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid
             imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_err_w,'AlphaData', nanMask)
             %plot(OUTPUT_PARA.polygonLon, OUTPUT_PARA.polygonLat, 'magenta-', 'LineWidth', 2); % Plot the polygon
             customizeMap('Residual AGQG Sigma Error','m',Coastline,axisLimits)
-            %caxis([0 0.02])
+            caxis([0 0.01])
             saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','residualGeoidFocused','.png'])
 
         end
 
     end
 
-    disp('Display statistics')
+    Grid_res_geoid_w(isnan(Grid_res_geoid_w)) = [];
+    fprintf('Residual LSC AGQG Statistics:\n');
+    fprintf('  Count: %d\n', numel(Grid_res_geoid_w));
+    fprintf('  Mean: %.4f\n', mean(Grid_res_geoid_w));
+    fprintf('  Std Dev: %.4f\n', std(Grid_res_geoid_w));
+    fprintf('  Min: %.4f\n', min(Grid_res_geoid_w));
+    fprintf('  Max: %.4f\n\n', max(Grid_res_geoid_w));
 
     Grid_res_geoid_err_w(isnan(Grid_res_geoid_err_w)) = [];
+    fprintf('Residual LSC AGQG Sigma Error Statistics:\n');
+    fprintf('  Count: %d\n', numel(Grid_res_geoid_err_w));
+    fprintf('  Mean: %.4f\n', mean(Grid_res_geoid_err_w));
+    fprintf('  Std Dev: %.4f\n', std(Grid_res_geoid_err_w));
+    fprintf('  Min: %.4f\n', min(Grid_res_geoid_err_w));
+    fprintf('  Max: %.4f\n\n', max(Grid_res_geoid_err_w));
 
-    fprintf('%f length  res_geoid_err_w\n',length (Grid_res_geoid_err_w));
-    fprintf('%f min     res_geoid_err_w\n',min    (Grid_res_geoid_err_w));
-    fprintf('%f max     res_geoid_err_w\n',max    (Grid_res_geoid_err_w));
-    fprintf('%f mean    res_geoid_err_w\n',mean   (Grid_res_geoid_err_w));
-    fprintf('%f median  res_geoid_err_w\n',median (Grid_res_geoid_err_w));
-    fprintf('%f std     res_geoid_err_w\n',std    (Grid_res_geoid_err_w));
-
-    Grid_res_geoid_w(isnan(Grid_res_geoid_w)) = [];
-
-    fprintf('%f length  res_geoid_w\n',length (Grid_res_geoid_w));
-    fprintf('%f min     res_geoid_w\n',min    (Grid_res_geoid_w));
-    fprintf('%f max     res_geoid_w\n',max    (Grid_res_geoid_w));
-    fprintf('%f mean    res_geoid_w\n',mean   (Grid_res_geoid_w));
-    fprintf('%f median  res_geoid_w\n',median (Grid_res_geoid_w));
-    fprintf('%f std     res_geoid_w\n',std    (Grid_res_geoid_w));
-
-    
-%     fprintf('%f length  GridResGravErrW\n',length (GridResGravErrW));
-%     fprintf('%f min     GridResGravErrW\n',min    (GridResGravErrW));
-%     fprintf('%f max     GridResGravErrW\n',max    (GridResGravErrW));
-%     fprintf('%f mean    GridResGravErrW\n',mean   (GridResGravErrW));
-%     fprintf('%f median  GridResGravErrW\n',median (GridResGravErrW));
-%     fprintf('%f std     GridResGravErrW\n',std    (GridResGravErrW));
-    
 end

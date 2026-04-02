@@ -72,7 +72,7 @@ COV_PARA.width=3;% Size of precomputed cov function in degrees - must be larger 
 COV_PARA.res=30/3600; % Resolution of the covariance function
 COV_PARA.COV_COMPUTED_Tilewise=true; %false% This recomputes the covariance function for each tile.
 COV_PARA.Airbornedataonly=false;%Only use airborne data in establishing Covariance parameters - good to use if we are using EGM2008 as the references as terrestrial data are not independent.
-COV_PARA.COVPlot=false;% true plots progress, false turns this off.
+COV_PARA.COVPlot=true;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
 Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
@@ -136,9 +136,9 @@ trendCoefficients = trendMatrix \ geomGravDiff;
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
 
 % plot differences between geometric and gravimetric geoid at GPS leveling points 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,'geomGravGeoidDiffDetrended','m',Coastline,OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,'geomGravDiffDetrended','m',Coastline,[-0.3 0.3],OUTPUT_PARA.plotsFolder)
 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiff,GRID_PARA,'geomGravGeoidDiff','m', Coastline,OUTPUT_PARA.plotsFolder)
+plotCustomScatter(Lev(:,1),Lev(:,2),geomGravDiff,GRID_PARA,'geomGravDiff','m', Coastline,[-0.3 0.3],OUTPUT_PARA.plotsFolder)
 
 fprintf('Geometric and AGQG Difference Detrended Statistics:\n');
 fprintf('  Count: %d\n', numel(geomGravGeoidDiffDetrended));
@@ -183,55 +183,107 @@ end
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
  
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
-%%%%%%%%%%%%% this block trimmes and cut the DEM
-disp('DEM')
-DEM3D=importdata(DEM_PARA.filename);
-disp('Extracting DEM subset') 
-%make sure DEM is bigger than gravity
-Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
-CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
 
-DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
-DEM3D(DEMin==0,:)=[];
-%Computing grid dimensions for one-minute spatial resolution
-DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
-DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
-%Set the computational grid nodes
-LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% new way to make the covariance matrix
+% radius of the Bjerhammar sphere
+% constants                                       % load constants
+% phi=deg2rad(mean(GRID_REF(:,2)));
+% RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^2+(EarthMinorAxis*cos(phi)).^2)*10^3;% Pajama sphere radius.
+% 
+% CCov_tt_int_fun_RTM=precomputeCovarianceFunction('cov_tt',RadiusBjerhammar,COV_PARA.width,COV_PARA.res,sigma2,bestFitCoeff,COV_PARA.N,COV_PARA.M);
+% % Auto-covariance of potential at DEM points
+% GRID_REF_dat(:,1)=round(GRID_REF(:,1)*60)/60;
+% GRID_REF_dat(:,2)=round(GRID_REF(:,2)*60)/60;
+% 
+% % Auto-covariance of potential at DEM points
+% ACOVttRTM_dem = interpolateCovarianceFunction(...
+% GRID_REF_dat(:,1), GRID_REF_dat(:,2), ...
+% RadiusBjerhammar + ZDEM_griddedInterpolant(GRID_REF_dat(:,1), GRID_REF_dat(:,2)), ...
+% Lev(:,1), Lev(:,2), ...
+% RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttRTMDEM m^4/s^4',1);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % doing the multiplication one row of latitude at a time.
 % Convert degrees to radians
+% longitudeLongDEMRadian = deg2rad (LongDEM);
+% latitudeLatDEMRadian = deg2rad (LatDEM);
+% 
+% ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
+%    
+% LSC_sol=LongDEM*0;
+% LSC_solrt=LSC_sol;
+% 
+% for latCounter=1:length(LongDEM(:,1))
+% 
+%     ACOV_tt_dem=[];
+% 
+%     for lonCounter=1:length(Lev(:,1))
+% 
+%     haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
+%     ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
+%     
+%     end
+%     
+%     ACOV_tt_dem=ACOV_tt_dem';     
+%     LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
+%     disp(latCounter)
+%     % Add code to restore the tilt
+%     LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
+%     
+% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
 
 ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-
+   
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
 
-for latCounter=1:length(LongDEM(:,1))
 
-    ACOV_tt_dem=[];
+nLat = size(LongDEM, 1);
 
-    for lonCounter=1:length(Lev(:,1))
+% for latCounter = 1:nLat
+%     % Vectorized haversine over all Lev points at once (if haversine supports it)
+%     D = haversine( ...
+%         latitudeLevRadian(:), longitudeLevRadian(:), ...
+%         latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
+% 
+%     % Build covariance in one go
+%     ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
+% 
+%     % Ensure correct orientation (depends on haversine output shape)
+%     LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
+% 
+%     disp(latCounter)
+% end
 
-    haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
-    ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
-    
-    end
-    
-    ACOV_tt_dem=ACOV_tt_dem';     
-    LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
-    disp(latCounter)
-    % Add code to restore the tilt
-    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
-    
+
+parfor latCounter = 1:nLat
+
+    % Vectorised haversine over all Lev points
+    D = haversine( ...
+        latitudeLevRadian(:), longitudeLevRadian(:), ...
+        latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
+
+    % Build covariance
+    ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
+
+    % Store result (sliced output – parfor safe)
+    LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
+
 end
+
+
+
+
+
+
+LSC_solrt = LSC_sol(:) + ...
+    [LongDEM(:) - mean(Lev(:,1)), ...
+     LatDEM(:)  - mean(Lev(:,2)), ...
+     ones(size(LongDEM(:)))] * trendCoefficients;
+
+
 
 save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LongDEM','LatDEM','LSC_solrt','LSC_sol')
 
@@ -254,6 +306,7 @@ clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
 customizeMap('geomGravGeoidDiffDetrended','m',Coastline,axisLimits)
+caxis([-.1 .1])
 saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiffDetrended','.png'])
 
 figure('Name','Grid','NumberTitle','off'); 
