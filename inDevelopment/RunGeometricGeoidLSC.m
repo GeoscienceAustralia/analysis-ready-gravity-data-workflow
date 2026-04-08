@@ -152,6 +152,7 @@ disp('computing covariance functions')
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
 
 [sigma2,bestFitCoeff,fittedCovariance]=fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2));
+%N=1080,  20 arc mintues
 
 % Plot covariance function
 figure('Name','computeCovarianceFunction','NumberTitle','off');
@@ -272,11 +273,6 @@ parfor latCounter = 1:nLat
     LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
 
 end
-
-
-
-
-
 
 LSC_solrt = LSC_sol(:) + ...
     [LongDEM(:) - mean(Lev(:,1)), ...
