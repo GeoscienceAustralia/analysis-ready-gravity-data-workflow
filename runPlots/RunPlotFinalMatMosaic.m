@@ -44,10 +44,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %NSW=[141 153 -37 -29]
 %Aus=[93 173 -59 -9];
 %Aus=[114 154 -44 -10];
-GRID_PARA.MINLONG=145;
-GRID_PARA.MAXLONG=150;
-GRID_PARA.MINLAT=-39;
-GRID_PARA.MAXLAT=-37;
+GRID_PARA.MINLONG=141;
+GRID_PARA.MAXLONG=153;
+GRID_PARA.MINLAT=-37;
+GRID_PARA.MAXLAT=-29;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -93,30 +93,30 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%CARS2009zeta7301.mat%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/Lev_NSW_NG.mat';%CARS2009zeta7301.mat%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
 outputName='AustraliaSparse';
-plotName='ahd';
+plotName='NSWNG';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
 %AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
-VicLon=[144.5 144.5 150 150 144.5];
-VicLat=[-36.5 -39 -39 -36.5 -36.5];
+%VicLon=[144.5 144.5 150 150 144.5];
+%VicLat=[-36.5 -39 -39 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = VicLon;
-OUTPUT_PARA.polygonLat = VicLat;
+OUTPUT_PARA.polygonLon = [];
+OUTPUT_PARA.polygonLat = [];
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 

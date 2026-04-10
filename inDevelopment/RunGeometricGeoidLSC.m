@@ -94,8 +94,8 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='Australia18Jan';
-plotName='';
+outputName='AustraliaSparse';
+plotName='ahd';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
@@ -110,7 +110,7 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 % read final matfiles
 
-dateCreated ='18-Jan-2026';
+dateCreated ='23-Mar-2026';
 
 load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
 
@@ -124,6 +124,70 @@ geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1
     
 geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
 
+geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
+
+% plots
+% common variables for plotting
+axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
+axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
+axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
+axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
+axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
+
+% plot GPSlevelling vs LSC
+validVals = geomGravDiff(~isnan(geomGravDiff));
+valDiff = geomGravDiff - mean(validVals);
+
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,valDiff,'filled')
+customizeMap('Geometric and LSC AGQG Difference','m',Coastline,axisLimits)
+caxis([-0.3 0.3])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQG','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQG','.png']) 
+
+fprintf('Geometric and LSC AGQG Difference Statistics:\n');
+fprintf('  Count: %d\n',     numel(valDiff));
+fprintf('  Mean: %.4f\n',    mean(valDiff));
+fprintf('  Median: %.4f\n',  median(valDiff));
+fprintf('  Std Dev: %.4f\n', std(valDiff));
+fprintf('  Min: %.4f\n',     min(valDiff));
+fprintf('  Max: %.4f\n\n',   max(valDiff));
+
+% plot GPSlevelling vs reference AGQG
+
+validValsRef = geomGravDiff2022(~isnan(geomGravDiff2022));
+valDiffRef = geomGravDiff2022 - mean(validValsRef);
+
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,valDiffRef,'filled')
+customizeMap('Geometric and 2022 AGQG Difference','m',Coastline,axisLimits)
+caxis([-0.3 0.3])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQG','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQG','.png'])
+
+fprintf('Geometric and 2022 AGQG Difference Statistics:\n');
+fprintf('  Count: %d\n',     numel(valDiffRef));
+fprintf('  Mean: %.4f\n',    mean(valDiffRef));
+fprintf('  Median: %.4f\n',  median(valDiffRef));
+fprintf('  Std Dev: %.4f\n', std(valDiffRef));
+fprintf('  Min: %.4f\n',     min(valDiffRef));
+fprintf('  Max: %.4f\n\n',   max(valDiffRef));
+
+% plot difference LSC and AGQG at GPSlevelling
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,geomGravDiff2022-mean(geomGravDiff2022(~isnan(geomGravDiff2022)))- ...
+    geomGravDiff+mean(geomGravDiff(~isnan(geomGravDiff))),'filled')
+customizeMap('2022 AGQG and LSC AGQG Difference','m',Coastline,axisLimits)
+caxis([-0.1 0.1])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpoints','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpoints','.png']) 
+
 % Remove a tiled plane so the signal is zero mean for the LSC
 
 % Construct the matrix for linear trend removal
@@ -131,28 +195,74 @@ trendMatrix = [Lev(:,1) - mean(Lev(:,1)), Lev(:,2) - mean(Lev(:,2)), ones(size(L
 
 % Calculate the coefficients of the best-fit plane
 trendCoefficients = trendMatrix \ geomGravDiff;
+trendCoefficients2022 = trendMatrix \ geomGravDiff2022;
 
 % Remove the planar trend to obtain zero-mean data
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
+geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
 
-% plot differences between geometric and gravimetric geoid at GPS leveling points 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,GRID_PARA,'geomGravDiffDetrended','m',Coastline,[-0.3 0.3],OUTPUT_PARA.plotsFolder)
+% plots
+% plot GPSlevelling vs LSC
 
-plotCustomScatter(Lev(:,1),Lev(:,2),geomGravDiff,GRID_PARA,'geomGravDiff','m', Coastline,[-0.3 0.3],OUTPUT_PARA.plotsFolder)
+validVals = geomGravGeoidDiffDetrended(~isnan(geomGravGeoidDiffDetrended));
+valDiff = geomGravGeoidDiffDetrended - mean(validVals);
 
-fprintf('Geometric and AGQG Difference Detrended Statistics:\n');
-fprintf('  Count: %d\n', numel(geomGravGeoidDiffDetrended));
-fprintf('  Mean: %.4f\n', mean(geomGravGeoidDiffDetrended));
-fprintf('  Std Dev: %.4f\n', std(geomGravGeoidDiffDetrended));
-fprintf('  Min: %.4f\n', min(geomGravGeoidDiffDetrended));
-fprintf('  Max: %.4f\n\n', max(geomGravGeoidDiffDetrended));
-    
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,valDiff,'filled')
+customizeMap('Geometric and LSC AGQG Difference Detrended','m',Coastline,axisLimits)
+caxis([-0.3 0.3])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQGDetrended','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQGDetrended','.png']) 
+
+fprintf('Geometric and LSC AGQG Difference Detrended Statistics:\n');
+fprintf('  Count: %d\n',     numel(valDiff));
+fprintf('  Mean: %.4f\n',    mean(valDiff));
+fprintf('  Median: %.4f\n',  median(valDiff));
+fprintf('  Std Dev: %.4f\n', std(valDiff));
+fprintf('  Min: %.4f\n',     min(valDiff));
+fprintf('  Max: %.4f\n\n',   max(valDiff));
+
+% plot GPSlevelling vs reference AGQG
+
+validVals = geomGravGeoidDiff2022Detrended(~isnan(geomGravGeoidDiff2022Detrended));
+valDiff = geomGravGeoidDiff2022Detrended - mean(validVals);
+
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,valDiffRef,'filled')
+customizeMap('Geometric and 2022 AGQG Difference Detrended','m',Coastline,axisLimits)
+caxis([-0.3 0.3])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQGDetrended','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQGDetrended','.png'])
+
+fprintf('Geometric and 2022 AGQG Difference Detrended Statistics:\n');
+fprintf('  Count: %d\n',     numel(valDiffRef));
+fprintf('  Mean: %.4f\n',    mean(valDiffRef));
+fprintf('  Median: %.4f\n',  median(valDiffRef));
+fprintf('  Std Dev: %.4f\n', std(valDiffRef));
+fprintf('  Min: %.4f\n',     min(valDiffRef));
+fprintf('  Max: %.4f\n\n',   max(valDiffRef));
+
+% plot difference LSC and AGQG at GPSlevelling
+figure('Name','geometric','NumberTitle','off'); 
+clf
+hold on
+scatter(Lev(:,1),Lev(:,2),5,geomGravGeoidDiff2022Detrended-mean(geomGravGeoidDiff2022Detrended(~isnan(geomGravGeoidDiff2022Detrended)))- ...
+    geomGravGeoidDiffDetrended+mean(geomGravGeoidDiffDetrended(~isnan(geomGravGeoidDiffDetrended))),'filled')
+customizeMap('2022 AGQG and LSC AGQG Difference Detrended','m',Coastline,axisLimits)
+caxis([-0.1 0.1])
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpointsDetrended','.fig']) 
+saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpointsDetrended','.png']) 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
 
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
 
 [sigma2,bestFitCoeff,fittedCovariance]=fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2));
-%N=1080,  20 arc mintues
 
 % Plot covariance function
 figure('Name','computeCovarianceFunction','NumberTitle','off');
@@ -179,58 +289,102 @@ for lonCounter=1:length(Lev(:,1))
 haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLevRadian(:), longitudeLevRadian(:));
 ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
 end
+
+% Plot covariance function
+figure('Name','CovarianceFunction','NumberTitle','off');
+clf
+hold on
+plot(rad2deg(haversineDistance),ACOVtt(lonCounter, :),'r.')
+plot(rad2deg(haversineDistance),0*rad2deg(haversineDistance),'b')
+xlim([0 3]);
+drawnow
+xlabel('Spherical distance in degrees')
+ylabel('Covariance', 'interpreter', 'latex')
+title('Gaussian')
+saveas(gcf, [OUTPUT_PARA.plotsFolder,'Gaussian.png'])
+
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
  
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
+%%%%%%%%%%%%% this block trimmes and cut the DEM
+disp('DEM')
+DEM3D=importdata(DEM_PARA.filename);
+disp('Extracting DEM subset') 
+%make sure DEM is bigger than gravity
+Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
+CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
 
+DEMin=inpolygon(DEM3D(:,1),DEM3D(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2));
+DEM3D(DEMin==0,:)=[];
+%Computing grid dimensions for one-minute spatial resolution
+DEM_PARA.num_cols=(max(DEM3D(:,1))-min(DEM3D(:,1)))*60+1;
+DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
+%Set the computational grid nodes
+LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+disp('Extract the datasets over the tile region')
+Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
+CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
+          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
+          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
+
+
+INOUT=inpolygon(GRID_REF(:,1),GRID_REF(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2)); % Whole tile zone mask - n.b. data on edges of tile are unreliable
+GRID_REF_dat=GRID_REF(INOUT==1,:);
+GRID_REF_dat(:,1)=round(GRID_REF_dat(:,1)*60)/60;
+GRID_REF_dat(:,2)=round(GRID_REF_dat(:,2)*60)/60;
 %%%%%%%%%%%%%%%%%%%%%%%% new way to make the covariance matrix
-% radius of the Bjerhammar sphere
-% constants                                       % load constants
-% phi=deg2rad(mean(GRID_REF(:,2)));
-% RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^2+(EarthMinorAxis*cos(phi)).^2)*10^3;% Pajama sphere radius.
-% 
-% CCov_tt_int_fun_RTM=precomputeCovarianceFunction('cov_tt',RadiusBjerhammar,COV_PARA.width,COV_PARA.res,sigma2,bestFitCoeff,COV_PARA.N,COV_PARA.M);
-% % Auto-covariance of potential at DEM points
-% GRID_REF_dat(:,1)=round(GRID_REF(:,1)*60)/60;
-% GRID_REF_dat(:,2)=round(GRID_REF(:,2)*60)/60;
-% 
-% % Auto-covariance of potential at DEM points
-% ACOVttRTM_dem = interpolateCovarianceFunction(...
-% GRID_REF_dat(:,1), GRID_REF_dat(:,2), ...
-% RadiusBjerhammar + ZDEM_griddedInterpolant(GRID_REF_dat(:,1), GRID_REF_dat(:,2)), ...
-% Lev(:,1), Lev(:,2), ...
-% RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttRTMDEM m^4/s^4',1);
+constants                                       % load constants
+phi=deg2rad(mean(GRID_REF(:,2)));
+RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^2+(EarthMinorAxis*cos(phi)).^2)*10^3;% Pajama sphere radius.
+
+CCov_tt_int_fun_RTM=precomputeCovarianceFunction('cov_tt',RadiusBjerhammar,COV_PARA.width,COV_PARA.res,sigma2,bestFitCoeff,COV_PARA.N,COV_PARA.M);
+
+% Auto-covariance of potential at DEM points
+ACOVttRTM_dem = interpolateCovarianceFunction(...
+Lev(:,1), Lev(:,2), ...
+RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), ...
+Lev(:,1), Lev(:,2), ...
+RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttGPSlevelling m^4/s^4',1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% doing the multiplication one row of latitude at a time.
-% Convert degrees to radians
-% longitudeLongDEMRadian = deg2rad (LongDEM);
-% latitudeLatDEMRadian = deg2rad (LatDEM);
-% 
-% ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-%    
-% LSC_sol=LongDEM*0;
-% LSC_solrt=LSC_sol;
-% 
-% for latCounter=1:length(LongDEM(:,1))
-% 
-%     ACOV_tt_dem=[];
-% 
-%     for lonCounter=1:length(Lev(:,1))
-% 
-%     haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
-%     ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
-%     
-%     end
-%     
-%     ACOV_tt_dem=ACOV_tt_dem';     
-%     LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
-%     disp(latCounter)
-%     % Add code to restore the tilt
-%     LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
-%     
-% end
+doing the multiplication one row of latitude at a time.
+Convert degrees to radians
+longitudeLongDEMRadian = deg2rad (LongDEM);
+latitudeLatDEMRadian = deg2rad (LatDEM);
+
+ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
+   
+LSC_sol=LongDEM*0;
+LSC_solrt=LSC_sol;
+
+%for latCounter=1:length(LongDEM(:,1))
+ for latCounter=1:1
+
+    ACOV_tt_dem=[];
+
+    for lonCounter=1:length(Lev(:,1))
+
+    haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
+    ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
+    
+    end
+
+    ACOV_tt_dem=ACOV_tt_dem';     
+    LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
+    disp(latCounter)
+    % Add code to restore the tilt
+    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
+    
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
@@ -243,20 +397,20 @@ LSC_solrt=LSC_sol;
 
 nLat = size(LongDEM, 1);
 
-% for latCounter = 1:nLat
-%     % Vectorized haversine over all Lev points at once (if haversine supports it)
-%     D = haversine( ...
-%         latitudeLevRadian(:), longitudeLevRadian(:), ...
-%         latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
-% 
-%     % Build covariance in one go
-%     ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
-% 
-%     % Ensure correct orientation (depends on haversine output shape)
-%     LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
-% 
-%     disp(latCounter)
-% end
+for latCounter = 1:1
+    % Vectorized haversine over all Lev points at once (if haversine supports it)
+    D = haversine( ...
+        latitudeLevRadian(:), longitudeLevRadian(:), ...
+        latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
+
+    % Build covariance in one go
+    ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
+
+    % Ensure correct orientation (depends on haversine output shape)
+    LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
+
+    disp(latCounter)
+end
 
 
 parfor latCounter = 1:nLat
