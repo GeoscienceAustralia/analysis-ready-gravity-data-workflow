@@ -2,7 +2,7 @@ function customizeMap(quantityName,colorbarUnit,Coastline,axisLimits)
 % Function to customize each plot
    
     for jj = 1:9
-        plot(Coastline.long{jj}, Coastline.lat{jj}, 'k')
+        plot(Coastline.long{jj}, Coastline.lat{jj}, 'k','LineWidth',2)
     end
 
     colorbar;

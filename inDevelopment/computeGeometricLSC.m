@@ -126,67 +126,8 @@ geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));
 
 geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
 
-% plots
-% common variables for plotting
-axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-
-% plot GPSlevelling vs LSC
-validVals = geomGravDiff(~isnan(geomGravDiff));
-valDiff = geomGravDiff - mean(validVals);
-
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,valDiff,'filled')
-customizeMap('Geometric and LSC AGQG Difference','m',Coastline,axisLimits)
-caxis([-0.3 0.3])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQG','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQG','.png']) 
-
-fprintf('Geometric and LSC AGQG Difference Statistics:\n');
-fprintf('  Count: %d\n',     numel(valDiff));
-fprintf('  Mean: %.4f\n',    mean(valDiff));
-fprintf('  Median: %.4f\n',  median(valDiff));
-fprintf('  Std Dev: %.4f\n', std(valDiff));
-fprintf('  Min: %.4f\n',     min(valDiff));
-fprintf('  Max: %.4f\n\n',   max(valDiff));
-
-% plot GPSlevelling vs reference AGQG
-
-validValsRef = geomGravDiff2022(~isnan(geomGravDiff2022));
-valDiffRef = geomGravDiff2022 - mean(validValsRef);
-
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,valDiffRef,'filled')
-customizeMap('Geometric and 2022 AGQG Difference','m',Coastline,axisLimits)
-caxis([-0.3 0.3])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQG','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQG','.png'])
-
-fprintf('Geometric and 2022 AGQG Difference Statistics:\n');
-fprintf('  Count: %d\n',     numel(valDiffRef));
-fprintf('  Mean: %.4f\n',    mean(valDiffRef));
-fprintf('  Median: %.4f\n',  median(valDiffRef));
-fprintf('  Std Dev: %.4f\n', std(valDiffRef));
-fprintf('  Min: %.4f\n',     min(valDiffRef));
-fprintf('  Max: %.4f\n\n',   max(valDiffRef));
-
-% plot difference LSC and AGQG at GPSlevelling
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,geomGravDiff2022-mean(geomGravDiff2022(~isnan(geomGravDiff2022)))- ...
-    geomGravDiff+mean(geomGravDiff(~isnan(geomGravDiff))),'filled')
-customizeMap('2022 AGQG and LSC AGQG Difference','m',Coastline,axisLimits)
-caxis([-0.1 0.1])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpoints','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpoints','.png']) 
+% plot
+plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravDiff,geomGravDiff2022,OUTPUT_PARA.plotsFolder)
 
 % Remove a tiled plane so the signal is zero mean for the LSC
 
@@ -201,61 +142,8 @@ trendCoefficients2022 = trendMatrix \ geomGravDiff2022;
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
 geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
 
-% plots
-% plot GPSlevelling vs LSC
-
-validVals = geomGravGeoidDiffDetrended(~isnan(geomGravGeoidDiffDetrended));
-valDiff = geomGravGeoidDiffDetrended - mean(validVals);
-
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,valDiff,'filled')
-customizeMap('Geometric and LSC AGQG Difference Detrended','m',Coastline,axisLimits)
-caxis([-0.3 0.3])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQGDetrended','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevellingLSCAGQGDetrended','.png']) 
-
-fprintf('Geometric and LSC AGQG Difference Detrended Statistics:\n');
-fprintf('  Count: %d\n',     numel(valDiff));
-fprintf('  Mean: %.4f\n',    mean(valDiff));
-fprintf('  Median: %.4f\n',  median(valDiff));
-fprintf('  Std Dev: %.4f\n', std(valDiff));
-fprintf('  Min: %.4f\n',     min(valDiff));
-fprintf('  Max: %.4f\n\n',   max(valDiff));
-
-% plot GPSlevelling vs reference AGQG
-
-validVals = geomGravGeoidDiff2022Detrended(~isnan(geomGravGeoidDiff2022Detrended));
-valDiff = geomGravGeoidDiff2022Detrended - mean(validVals);
-
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,valDiffRef,'filled')
-customizeMap('Geometric and 2022 AGQG Difference Detrended','m',Coastline,axisLimits)
-caxis([-0.3 0.3])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQGDetrended','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','GPSlevelling2022AGQGDetrended','.png'])
-
-fprintf('Geometric and 2022 AGQG Difference Detrended Statistics:\n');
-fprintf('  Count: %d\n',     numel(valDiffRef));
-fprintf('  Mean: %.4f\n',    mean(valDiffRef));
-fprintf('  Median: %.4f\n',  median(valDiffRef));
-fprintf('  Std Dev: %.4f\n', std(valDiffRef));
-fprintf('  Min: %.4f\n',     min(valDiffRef));
-fprintf('  Max: %.4f\n\n',   max(valDiffRef));
-
-% plot difference LSC and AGQG at GPSlevelling
-figure('Name','geometric','NumberTitle','off'); 
-clf
-hold on
-scatter(Lev(:,1),Lev(:,2),5,geomGravGeoidDiff2022Detrended-mean(geomGravGeoidDiff2022Detrended(~isnan(geomGravGeoidDiff2022Detrended)))- ...
-    geomGravGeoidDiffDetrended+mean(geomGravGeoidDiffDetrended(~isnan(geomGravGeoidDiffDetrended))),'filled')
-customizeMap('2022 AGQG and LSC AGQG Difference Detrended','m',Coastline,axisLimits)
-caxis([-0.1 0.1])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpointsDetrended','.fig']) 
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'geometric','oldVSnewAGQGdiffGPSpointsDetrended','.png']) 
+% plot
+plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravGeoidDiffDetrended,geomGravGeoidDiff2022Detrended,OUTPUT_PARA.plotsFolder)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
@@ -265,19 +153,7 @@ covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeo
 [sigma2,bestFitCoeff,fittedCovariance]=fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2));
 
 % Plot covariance function
-figure('Name','computeCovarianceFunction','NumberTitle','off');
-clf
-hold on
-plot(rad2deg ( covarianceInfo(:,1) ), covarianceInfo(:,2), '*')
-plot(rad2deg ( covarianceInfo(:,1) ), fittedCovariance, '-')
-drawnow
-legend('Empirical data', 'Fitted function')
-xlabel('Spherical distance in degrees')
-ylabel('Covariance$(m^2)$', 'interpreter', 'latex')
-title('auto-covariance')    
-str = {['sigma2',num2str(sigma2)],['parameter',num2str(bestFitCoeff)]};
-text(0.6,40, str,'Color','g')
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'covarianceGaussian.png'])
+plotSphericalCovarianceFunction(covarianceInfo(:,1), covarianceInfo(:,2), fittedCovariance,'m^2','global Gaussian Covariance', OUTPUT_PARA.plotsFolder)
 
 % Convert degrees to radians
 longitudeLevRadian = deg2rad (Lev(:,1));
@@ -291,17 +167,7 @@ ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
 end
 
 % Plot covariance function
-figure('Name','CovarianceFunction','NumberTitle','off');
-clf
-hold on
-plot(rad2deg(haversineDistance),ACOVtt(lonCounter, :),'r.')
-plot(rad2deg(haversineDistance),0*rad2deg(haversineDistance),'b')
-xlim([0 3]);
-drawnow
-xlabel('Spherical distance in degrees')
-ylabel('Covariance', 'interpreter', 'latex')
-title('Gaussian')
-saveas(gcf, [OUTPUT_PARA.plotsFolder,'Gaussian.png'])
+plotSphericalCovarianceFunction(haversineDistance, ACOVtt(lonCounter, :), 0*rad2deg(haversineDistance),'m^2','ACOVtt', OUTPUT_PARA.plotsFolder)
 
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
@@ -356,8 +222,8 @@ RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), ...
 Lev(:,1), Lev(:,2), ...
 RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttGPSlevelling m^4/s^4',1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-doing the multiplication one row of latitude at a time.
-Convert degrees to radians
+%doing the multiplication one row of latitude at a time.
+%Convert degrees to radians
 longitudeLongDEMRadian = deg2rad (LongDEM);
 latitudeLatDEMRadian = deg2rad (LatDEM);
 
