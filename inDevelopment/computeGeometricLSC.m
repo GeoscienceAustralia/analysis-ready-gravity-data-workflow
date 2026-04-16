@@ -89,7 +89,7 @@ COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
-LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
+LEVELLING_PARA.Plot_Stats=false;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
@@ -126,8 +126,9 @@ geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));
 
 geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
 
-% plot
-plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravDiff,geomGravDiff2022,OUTPUT_PARA.plotsFolder)
+if LEVELLING_PARA.Plot_Stats
+   plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravDiff,geomGravDiff2022,OUTPUT_PARA.plotsFolder)
+end 
 
 % Remove a tiled plane so the signal is zero mean for the LSC
 
@@ -142,8 +143,9 @@ trendCoefficients2022 = trendMatrix \ geomGravDiff2022;
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
 geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
 
-% plot
-plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravGeoidDiffDetrended,geomGravGeoidDiff2022Detrended,OUTPUT_PARA.plotsFolder)
+if LEVELLING_PARA.Plot_Stats
+   plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravGeoidDiffDetrended,geomGravGeoidDiff2022Detrended,OUTPUT_PARA.plotsFolder)
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
@@ -167,12 +169,14 @@ ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
 end
 
 % Plot covariance function
-plotSphericalCovarianceFunction(haversineDistance, ACOVtt(lonCounter, :), 0*rad2deg(haversineDistance),'m^2','ACOVtt', OUTPUT_PARA.plotsFolder)
-
+plotSphericalCovarianceFunction(haversineDistance, ACOVtt(7252, :), 0*rad2deg(haversineDistance),'m^2','Gaussian Covariance', OUTPUT_PARA.plotsFolder)
+figure(1)
+imagesc(ACOVtt)
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
- 
+figure(2)
+imagesc(inverseCovarianceMatrix)
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
 %%%%%%%%%%%%% this block trimmes and cut the DEM
 disp('DEM')
@@ -194,20 +198,6 @@ DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
 %Set the computational grid nodes
 LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('Extract the datasets over the tile region')
-Topo_buffer=Topo_PARA.Rad+GRID_PARA.buffer; 
-CoordsMM_topo=[GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MAXLAT+Topo_buffer;...
-          GRID_PARA.MAXLONG+Topo_buffer,GRID_PARA.MINLAT-Topo_buffer;...
-          GRID_PARA.MINLONG-Topo_buffer,GRID_PARA.MINLAT-Topo_buffer];
-
-
-INOUT=inpolygon(GRID_REF(:,1),GRID_REF(:,2),CoordsMM_topo(:,1),CoordsMM_topo(:,2)); % Whole tile zone mask - n.b. data on edges of tile are unreliable
-GRID_REF_dat=GRID_REF(INOUT==1,:);
-GRID_REF_dat(:,1)=round(GRID_REF_dat(:,1)*60)/60;
-GRID_REF_dat(:,2)=round(GRID_REF_dat(:,2)*60)/60;
 %%%%%%%%%%%%%%%%%%%%%%%% new way to make the covariance matrix
 constants                                       % load constants
 phi=deg2rad(mean(GRID_REF(:,2)));
@@ -216,11 +206,13 @@ RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^
 CCov_tt_int_fun_RTM=precomputeCovarianceFunction('cov_tt',RadiusBjerhammar,COV_PARA.width,COV_PARA.res,sigma2,bestFitCoeff,COV_PARA.N,COV_PARA.M);
 
 % Auto-covariance of potential at DEM points
-ACOVttRTM_dem = interpolateCovarianceFunction(...
+ACOVttRTM_lev = interpolateCovarianceFunction(...
 Lev(:,1), Lev(:,2), ...
 RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), ...
 Lev(:,1), Lev(:,2), ...
 RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttGPSlevelling m^4/s^4',1);
+figure(3)
+imagesc(ACOVttRTM_lev)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %doing the multiplication one row of latitude at a time.
 %Convert degrees to radians
@@ -298,7 +290,7 @@ LSC_solrt = LSC_sol(:) + ...
     [LongDEM(:) - mean(Lev(:,1)), ...
      LatDEM(:)  - mean(Lev(:,2)), ...
      ones(size(LongDEM(:)))] * trendCoefficients;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LongDEM','LatDEM','LSC_solrt','LSC_sol')
