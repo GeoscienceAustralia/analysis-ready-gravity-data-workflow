@@ -146,6 +146,37 @@ geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficie
 if LEVELLING_PARA.Plot_Stats
    plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravGeoidDiffDetrended,geomGravGeoidDiff2022Detrended,OUTPUT_PARA.plotsFolder)
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%experiment  with MATLAB 
+% Inputs (Nx1 vectors)
+lon = Lev(:,1);        % longitude
+lat = Lev(:,2);        % latitude
+z   = geomGravGeoidDiffDetrended;        % e.g. gravity/geoid residuals
+
+% Remove invalid values
+idx = isfinite(lon) & isfinite(lat) & isfinite(z);
+lon = lon(idx);
+lat = lat(idx);
+z   = z(idx);
+
+% Create interpolant
+F = scatteredInterpolant(lon, lat, z, ...
+                          'natural', ...   % interpolation method
+                          'none');          % no extrapolation
+
+% Define output grid
+lonq = linspace(min(lon), max(lon), 200);
+latq = linspace(min(lat), max(lat), 200);
+[LON, LAT] = meshgrid(lonq, latq);
+
+% Evaluate surface
+Zq = F(LON, LAT);
+
+% Plot
+figure
+surf(LON, LAT, Zq)
+shading interp
+xlabel('Longitude'); ylabel('Latitude'); zlabel('Z')
+title('Surface fitted using scatteredInterpolant')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
@@ -156,7 +187,14 @@ covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeo
 
 % Plot covariance function
 plotSphericalCovarianceFunction(covarianceInfo(:,1), covarianceInfo(:,2), fittedCovariance,'m^2','global Gaussian Covariance', OUTPUT_PARA.plotsFolder)
-
+%%%%%%%%%%%%%%%%%%%copy the covariance parameters from Brown et al(2018)
+constants                                       % load constants
+sigma2Paper=0.0092;
+bestFitCoeffPaper=75000/deg2meter;
+fittedCovariancePaper = sigma2Paper*exp(-(covarianceInfo(:,1).^2)/(2*bestFitCoeffPaper^2));
+% Plot covariance function
+plotSphericalCovarianceFunction(covarianceInfo(:,1), covarianceInfo(:,2), fittedCovariancePaper,'m^2','global Gaussian Covariance Brown 2018', OUTPUT_PARA.plotsFolder)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Convert degrees to radians
 longitudeLevRadian = deg2rad (Lev(:,1));
 latitudeLevRadian = deg2rad (Lev(:,2));
@@ -170,12 +208,12 @@ end
 
 % Plot covariance function
 plotSphericalCovarianceFunction(haversineDistance, ACOVtt(7252, :), 0*rad2deg(haversineDistance),'m^2','Gaussian Covariance', OUTPUT_PARA.plotsFolder)
-figure(1)
+figure
 imagesc(ACOVtt)
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
-figure(2)
+figure
 imagesc(inverseCovarianceMatrix)
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
 %%%%%%%%%%%%% this block trimmes and cut the DEM
@@ -314,7 +352,7 @@ clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
 customizeMap('geomGravGeoidDiffDetrended','m',Coastline,axisLimits)
-caxis([-.1 .1])
+caxis([-.8 .8])
 saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiffDetrended','.png'])
 
 figure('Name','Grid','NumberTitle','off'); 
@@ -322,6 +360,7 @@ clf
 hold on
 imagesc(LongDEM(1,:),LatDEM(:,1),LSC_solrt)
 customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
+caxis([-.8 .8])
 saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiff','.png'])
 
 
