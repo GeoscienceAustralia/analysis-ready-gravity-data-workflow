@@ -1,6 +1,28 @@
 close all
 clear
 
+% Look at WA Data.
+WA_Data=importdata('Data/GRAVITY/AIRBORNE/WA/WA_Airborne.mat');
+WA_Long=round(WA_Data(:,1)*60)/60;
+WA_Lat=round(WA_Data(:,2)*60)/60;
+WA_H=WA_Data(:,3);
+WA_Grav_anom=WA_Data(:,4)/10;
+
+figure
+scatter(WA_Long,WA_Lat,1,WA_Grav_anom)
+colorbar
+colormap(jet)
+title(colorbar,'mGal','FontSize',10);
+title('WAairborne')
+
+figure
+scatter(WA_Long,WA_Lat,1,WA_H)
+colorbar
+colormap(jet)
+title(colorbar,'m','FontSize',10);
+title('elevMSL')
+saveas(gcf,'outputs/plots/elevWA.png');
+
 % Look at Adelaide Data.
 Adelaide_Data=importdata('Data/GRAVITY/AIRBORNE/adelaide2025-06-05/GRAV.DAT');
 Adelaide_Long=round(Adelaide_Data(:,20)*60)/60;
@@ -98,9 +120,45 @@ disp('Done.');
 GGM=importdata('Data/GGM/EGM2008_For_Gridded_Int.mat');
 GGM_Gi=griddedInterpolant(GGM.x,GGM.y,GGM.z,GGM.g);
 
+GGM_Gi_interpolatedWA=GGM_Gi(WA_Long,-WA_Lat,WA_H);
 GGM_Gi_interpolatedVIC=GGM_Gi(longitude,-latitude,elev_MSL);
 GGM_Gi_interpolatedAdelaide=GGM_Gi(Adelaide_Long,-Adelaide_Lat,Adelaide_H);
 GGM_Gi_interpolatedGippsland=GGM_Gi(Gippsland_Long,-Gippsland_Lat,Gippsland_H);
+
+figure
+
+% ---------- Sub‑plot 1 ----------
+subplot(2,1,1)
+hold on
+scatter(WA_Long, WA_Lat, 1, WA_Grav_anom)
+colormap(jet)
+cb1 = colorbar;                       % capture handle so we can title it
+title(cb1,'mGal','FontSize',10)
+title('WA')
+
+% ---------- Sub‑plot 2 ----------
+subplot(2,1,2)
+hold on
+diffVals = WA_Grav_anom - GGM_Gi_interpolatedWA;
+scatter(WA_Long, WA_Lat, 1, diffVals)
+colormap(jet)
+cb2 = colorbar;
+title(cb2,'mGal','FontSize',10)
+title('WA - EGM2008')
+
+% ---------- Compute & display mean ----------
+meanDiff = mean(diffVals);
+% ---------- Add mean as figure text ----------
+% Place it near the bottom of the figure; adjust position to taste
+annotation('textbox',[0.15 0.02 0.7 0.05], ...
+           'String',sprintf('Mean difference (GGM – WA): %.4f mGal',meanDiff), ...
+           'EdgeColor','none', ...
+           'HorizontalAlignment','center', ...
+           'FontSize',10, ...
+           'FontWeight','bold');
+
+% ---------- Save ----------
+saveas(gcf,'outputs/plots/EGM2008WA.png');
 
 figure
 

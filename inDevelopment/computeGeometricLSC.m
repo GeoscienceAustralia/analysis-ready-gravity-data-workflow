@@ -89,7 +89,7 @@ COAST_PARA.filename='Data\COASTLINE\CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
-LEVELLING_PARA.Plot_Stats=false;% If true, the levelling data are compared to the geoid as its computed.
+LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data\EXISTING_GEOID_MODELS\AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
@@ -108,6 +108,8 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
+ plotLevellingData(Lev,Lev(:,3),'h - H','m',OUTPUT_PARA.plotsFolder)
+
 % read final matfiles
 
 dateCreated ='23-Mar-2026';
@@ -125,6 +127,8 @@ geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1
 geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
 
 geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
+
+plotLevellingData(Lev,geomGravDiff,'h - H - AGQG','m',OUTPUT_PARA.plotsFolder)
 
 if LEVELLING_PARA.Plot_Stats
    plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravDiff,geomGravDiff2022,OUTPUT_PARA.plotsFolder)
