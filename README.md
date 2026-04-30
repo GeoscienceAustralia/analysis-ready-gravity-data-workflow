@@ -70,8 +70,9 @@ All functions are in the `functions` folder. The hierarchy of the four main scri
 
 
 ## Citations
+Darbeheshti, N., McCubbine, J. (2025). Height Anomaly Determination Using a Tile-Based LSC Approach: Program Development and Case Study. In: International Association of Geodesy Symposia. Springer, Berlin, Heidelberg. https://doi.org/10.1007/1345_2025_293
 
-If you use this code in your research, please contact [neda.darbeheshti@ga.gov.au](mailto:neda.darbeheshti@ga.gov.au) for citation information.
+
 
 
 
