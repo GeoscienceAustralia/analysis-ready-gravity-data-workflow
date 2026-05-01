@@ -1,100 +1,72 @@
-function plotLevellingData(LongDEM,LatDEM,Lev,Vals_Levog,Vals_REFERENCE_GEOID,Vals_REFERENCE_GEOIDog,Vals_GGM,Vals_Lev, ...
-    Grid_res_geoid,Weights,GGM_Zeta_griddedInterpolant,REFERENCE_GEOID_Zetai,Coastline,GRID_PARA,LEVELLING_PARA) 
+function fig = plotLevellingData(Lon, Lat, Lev, quantityName, plotsFolder)
+% plotLevellingData  Plot GPS levelling data on a lon/lat scatter map
+%
+% Inputs:
+%   Lon           [Nx1] longitude (deg)
+%   Lat           [Nx1] latitude (deg)
+%   Lev           [Nx1] levelling values (m)
+%   quantityName  string/char, plot title
+%   plotsFolder   string/char (optional), output folder
+%
+% Output:
+%   fig           figure handle
 
-            figure(7)
-            clf
-            histogram(Vals_Levog(isnan(Vals_Levog)==0)-median(Vals_Levog(isnan(Vals_Levog)==0),"omitnan"),20)
+    arguments
+        Lon (:,1) double
+        Lat (:,1) double
+        Lev (:,1) double
+        quantityName {mustBeText}
+        plotsFolder {mustBeText} = ""
+    end
 
-            figure(8)
-            clf
-            hold on
-            plot(sort(Vals_Levog(isnan(Vals_Levog)==0))-median(Vals_Levog(isnan(Vals_Levog)==0),"omitnan"),0:1/length(Vals_Levog(isnan(Vals_Levog)==0)):1-1/length(Vals_Levog(isnan(Vals_Levog)==0)),'g')
-            if LEVELLING_PARA.Compare_To_Existing_Model
-            plot(sort(Vals_REFERENCE_GEOIDog(isnan(Vals_Levog)==0))-median(Vals_REFERENCE_GEOIDog(isnan(Vals_Levog)==0),"omitnan"),0:1/length(Vals_Levog(isnan(Vals_Levog)==0)):1-1/length(Vals_Levog(isnan(Vals_Levog)==0)),'r--')
-            legend('LSC','Reference Geoid model')
-            else
-            legend('LSC')
-            end
-            title('Cumulative distribution plot')
-            grid on
+    % --- Robust colour limits (match your Python logic) ---
+    mu  = mean(Lev, 'omitnan');
+    sig = std(Lev,  'omitnan');
 
-            figure(9)
-            clf
-            hold on
-            plot(sort(Vals_GGM(isnan(Vals_Levog)==0))-median(Vals_GGM(isnan(Vals_Levog)==0),"omitnan"),0:1/length(Vals_GGM(isnan(Vals_Levog)==0)):1-1/length(Vals_GGM(isnan(Vals_Levog)==0)),'k')
-            plot(sort(Vals_Levog(isnan(Vals_Levog)==0))-median(Vals_Levog(isnan(Vals_Levog)==0),"omitnan"),0:1/length(Vals_Levog(isnan(Vals_Levog)==0)):1-1/length(Vals_Levog(isnan(Vals_Levog)==0)),'g')
-            if LEVELLING_PARA.Compare_To_Existing_Model
-            plot(sort(Vals_REFERENCE_GEOIDog(isnan(Vals_Levog)==0))-median(Vals_REFERENCE_GEOIDog(isnan(Vals_Levog)==0),"omitnan"),0:1/length(Vals_Levog(isnan(Vals_Levog)==0)):1-1/length(Vals_Levog(isnan(Vals_Levog)==0)),'r--')
-            legend('GGM','LSC','Reference Geoid model')
-            else
-            legend('GGM','LSC')
-            end
-            title('Cumulative distribution plot')
-            grid on
+    cmin = mu - 2*sig;
+    cmax = mu + 2*sig;
 
-            figure(10)
-            clf
-            hold on
-            for jj=1:9
-            plot(Coastline.long{jj},Coastline.lat{jj},'k')
-            end
-            scatter(Lev(:,1),Lev(:,2),50,Vals_Lev-median(Vals_Lev,"omitnan"),'filled')
-            colorbar
-            colormap(jet)
-            axis([GRID_PARA.MINLONG GRID_PARA.MAXLONG GRID_PARA.MINLAT GRID_PARA.MAXLAT])
-            ax=gca;
-            ax.PlotBoxAspectRatio =[1 abs(cos(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT])*pi/180)) 1];
-            caxis([-0.25 0.25])
-            title('LSC Geoid minus GPS-levelling data')
-            drawnow
+    % --- Create figure ---
+    fig = figure( ...
+        'Name', 'GPS Levelling', ...
+        'NumberTitle', 'off', ...
+        'Color', 'w');
 
-            figure(11)
-            clf
-            hold on
-            for jj=1:9
-                plot(Coastline.long{jj},Coastline.lat{jj},'k')
-            end
-            scatter(Lev((isnan(Vals_Lev)==0),1),Lev((isnan(Vals_Lev)==0),2),50,Vals_GGM(isnan(Vals_Lev)==0)-median(Vals_GGM((isnan(Vals_Lev)==0)),"omitnan"),'filled')
-            colorbar
-            colormap(jet)
-            axis([GRID_PARA.MINLONG GRID_PARA.MAXLONG GRID_PARA.MINLAT GRID_PARA.MAXLAT])
-            ax=gca;
-            ax.PlotBoxAspectRatio =[1 abs(cos(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT])*pi/180)) 1];
-            caxis([-0.25 0.25])
-            title('GGM minus GPS-levelling data')
-            drawnow
+    clf(fig)
+    hold on
 
-            if LEVELLING_PARA.Compare_To_Existing_Model
-                figure(12)
-                clf
-                hold on
-                for jj=1:9
-                    plot(Coastline.long{jj},Coastline.lat{jj},'k')
-                end
-                scatter(Lev((isnan(Vals_Lev)==0),1),Lev((isnan(Vals_Lev)==0),2),50,Vals_REFERENCE_GEOID(isnan(Vals_Lev)==0)-median(Vals_REFERENCE_GEOID((isnan(Vals_Lev)==0)),"omitnan"),'filled')
-                colorbar
-                colormap(jet)
-                axis([GRID_PARA.MINLONG GRID_PARA.MAXLONG GRID_PARA.MINLAT GRID_PARA.MAXLAT])
-                ax=gca;
-                ax.PlotBoxAspectRatio =[1 abs(cos(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT])*pi/180)) 1];
-                caxis([-0.25 0.25])
-                title('Reference Geoid minus GPS-levelling data')
-                drawnow
+    % --- Scatter plot ---
+    scatter(Lon, Lat, 10, Lev, 'filled')
 
-                figure(13)
-                clf
-                hold on
-                imagesc(LongDEM(1,:),LatDEM(:,1),(REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0))-mean(mean(REFERENCE_GEOID_Zetai(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0))))
-                for jj=1:9
-                    plot(Coastline.long{jj},Coastline.lat{jj},'k')
-                end
-                colorbar
-                colormap(jet)
-                axis([GRID_PARA.MINLONG GRID_PARA.MAXLONG GRID_PARA.MINLAT GRID_PARA.MAXLAT])
-                ax=gca;
-                ax.PlotBoxAspectRatio =[1 abs(cos(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT])*pi/180)) 1];
-                title('Residual Reference Geoid')
-                caxis([-2*std(Grid_res_geoid(:)./Weights(:),"omitnan") 2*std(Grid_res_geoid(:)./Weights(:),"omitnan")])
-                drawnow
+    % --- Axes & appearance ---
+    axis equal tight
+    grid on
+    colormap(jet)
+    caxis([cmin cmax])
+    set(gca, 'FontSize', 11)
 
-            end
+    % --- Colorbar ---
+    cb = colorbar;
+    cb.Label.String  = 'm';
+    cb.Label.FontSize = 11;
+
+    % --- Labels & title ---
+    xlabel('Longitude')
+    ylabel('Latitude')
+    title(quantityName, 'Interpreter','none')
+
+    % --- Save outputs if requested ---
+    if strlength(plotsFolder) > 0
+        if ~exist(plotsFolder, 'dir')
+            mkdir(plotsFolder)
+        end
+
+        % Make filename safe
+        safeName = regexprep(quantityName, '[^a-zA-Z0-9_-]', '_');
+        baseName = fullfile(plotsFolder, "levelling_" + safeName);
+
+        savefig(fig, baseName + ".fig")
+        exportgraphics(fig, baseName + ".png", 'Resolution', 300)
+    end
+
+end

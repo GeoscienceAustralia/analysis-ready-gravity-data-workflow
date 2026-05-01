@@ -6,7 +6,7 @@ function covarianceInfo = computeSphericalEmpiricalCovariance(Long, Lat, Gravity
     %         Gravity = gravity anomaly vector
     %         DecimationFactor = Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc.
     %
-    % Output: covarianceInfo= [covdist',covariance];
+    % Output: covarianceInfo= [covdist'(radian),covariance];
     %
     % Example: see computeCovarianceFunctionParameters
     %

@@ -108,6 +108,8 @@ disp('1/4 ..........................importAndFormatData is running ')
  REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline]=importAndFormatData...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
+plotLevellingData(Lev(:,1),Lev(:,2), Lev(:,3), 'h-H', OUTPUT_PARA.plotsFolder)
+
 % read final matfiles
 
 dateCreated ='23-Mar-2026';
@@ -124,11 +126,9 @@ geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1
     
 geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
 
-geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
+%geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2));
 
-if LEVELLING_PARA.Plot_Stats
-   plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravDiff,geomGravDiff2022,OUTPUT_PARA.plotsFolder)
-end 
+plotLevellingData(Lev(:,1),Lev(:,2), geomGravDiff,'h-H-AGQG', OUTPUT_PARA.plotsFolder)
 
 % Remove a tiled plane so the signal is zero mean for the LSC
 
@@ -137,63 +137,27 @@ trendMatrix = [Lev(:,1) - mean(Lev(:,1)), Lev(:,2) - mean(Lev(:,2)), ones(size(L
 
 % Calculate the coefficients of the best-fit plane
 trendCoefficients = trendMatrix \ geomGravDiff;
-trendCoefficients2022 = trendMatrix \ geomGravDiff2022;
+%trendCoefficients2022 = trendMatrix \ geomGravDiff2022;
 
 % Remove the planar trend to obtain zero-mean data
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
-geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
+%geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
 
-if LEVELLING_PARA.Plot_Stats
-   plotGPSlevelling(Coastline,GRID_PARA,Lev,geomGravGeoidDiffDetrended,geomGravGeoidDiff2022Detrended,OUTPUT_PARA.plotsFolder)
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%experiment  with MATLAB 
-% Inputs (Nx1 vectors)
-lon = Lev(:,1);        % longitude
-lat = Lev(:,2);        % latitude
-z   = geomGravGeoidDiffDetrended;        % e.g. gravity/geoid residuals
+plotLevellingData(Lev(:,1),Lev(:,2), geomGravGeoidDiffDetrended,'h-H-AGQG Detrended', OUTPUT_PARA.plotsFolder)
 
-% Remove invalid values
-idx = isfinite(lon) & isfinite(lat) & isfinite(z);
-lon = lon(idx);
-lat = lat(idx);
-z   = z(idx);
-
-% Create interpolant
-F = scatteredInterpolant(lon, lat, z, ...
-                          'natural', ...   % interpolation method
-                          'none');          % no extrapolation
-
-% Define output grid
-lonq = linspace(min(lon), max(lon), 200);
-latq = linspace(min(lat), max(lat), 200);
-[LON, LAT] = meshgrid(lonq, latq);
-
-% Evaluate surface
-Zq = F(LON, LAT);
-
-% Plot
-figure
-surf(LON, LAT, Zq)
-shading interp
-xlabel('Longitude'); ylabel('Latitude'); zlabel('Z')
-title('Surface fitted using scatteredInterpolant')
-
+plotInterpolatedGeometricCorrection( ...
+        Lev, geomGravGeoidDiffDetrended, ...
+        LongDEM, LatDEM, ...
+        GRID_PARA, OUTPUT_PARA, Coastline)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
 
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
 
-[sigma2,bestFitCoeff,fittedCovariance]=fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2));
+[sigma2, L, Cfit] = fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2), ...
+    'anchor_sigma2', false, ...
+    'do_plot', true);
 
-% Plot covariance function
-plotSphericalCovarianceFunction(covarianceInfo(:,1), covarianceInfo(:,2), fittedCovariance,'m^2','global Gaussian Covariance', OUTPUT_PARA.plotsFolder)
-%%%%%%%%%%%%%%%%%%%copy the covariance parameters from Brown et al(2018)
-constants                                       % load constants
-sigma2Paper=0.0092;
-bestFitCoeffPaper=75000/deg2meter;
-fittedCovariancePaper = sigma2Paper*exp(-(covarianceInfo(:,1).^2)/(2*bestFitCoeffPaper^2));
-% Plot covariance function
-plotSphericalCovarianceFunction(covarianceInfo(:,1), covarianceInfo(:,2), fittedCovariancePaper,'m^2','global Gaussian Covariance Brown 2018', OUTPUT_PARA.plotsFolder)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Convert degrees to radians
 longitudeLevRadian = deg2rad (Lev(:,1));
