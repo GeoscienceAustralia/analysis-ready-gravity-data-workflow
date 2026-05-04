@@ -1,7 +1,8 @@
 close all
 clear 
 %% Import the various gravity datasets
-Grav1=importdata('Data\processedData\AirborneAllJuly14.mat');
+Grav1=importdata('Data\processedData\AirborneAllMay2026.mat');
+%Grav1=importdata('Data\processedData\AirborneAllJuly14.mat');
 %Grav1=importdata('Data\processedData\AirborneAll.mat');
 %Grav1=importdata('Data\processedData\AirborneGravityGippslandCaravanOtterNSW.mat');
 %Grav1=importdata('Data\processedData\AirborneGravityCaravanOtterNSW.mat');
@@ -25,5 +26,5 @@ Out(isnan(Out(:,3)),:)=[];
 %save('Data\processedData\GravityAllPerthSynthetic70sLP1kLines.mat','Out')
 %save('Data\processedData\GravityAllCaravanOtterNSW.mat','Out')
 %save('Data\processedData\GravityAllGippslandCaravanOtterNSW.mat','Out')
-save('Data\processedData\GravityAllTerrestrialAirborneJuly14.mat','Out')
+save('Data\processedData\GravityAllTerrestrialAirborneMay2026.mat','Out')
 disp('Done')
