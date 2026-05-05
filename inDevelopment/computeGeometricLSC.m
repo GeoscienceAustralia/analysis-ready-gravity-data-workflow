@@ -154,10 +154,9 @@ disp('computing covariance functions')
 
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
 
-[sigma2, L, Cfit] = fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2), ...
+[sigma2, correlationL, Cfit] = fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2), ...
     'anchor_sigma2', false, ...
     'do_plot', true);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Convert degrees to radians
 longitudeLevRadian = deg2rad (Lev(:,1));
@@ -167,18 +166,15 @@ latitudeLevRadian = deg2rad (Lev(:,2));
 ACOVtt = zeros(length(Lev(:,1)),length(Lev(:,1)));
 for lonCounter=1:length(Lev(:,1))
 haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLevRadian(:), longitudeLevRadian(:));
-ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
+ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*correlationL.^2));
 end
 
 % Plot covariance function
 plotSphericalCovarianceFunction(haversineDistance, ACOVtt(7252, :), 0*rad2deg(haversineDistance),'m^2','Gaussian Covariance', OUTPUT_PARA.plotsFolder)
-figure
-imagesc(ACOVtt)
+
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
 inverseCovarianceMatrix=(ACOVtt+0.000025*eye(size(ACOVtt)))\eye(size(ACOVtt));
-figure
-imagesc(inverseCovarianceMatrix)
 temporaryVector=inverseCovarianceMatrix*(geomGravGeoidDiffDetrended);
 %%%%%%%%%%%%% this block trimmes and cut the DEM
 disp('DEM')
@@ -200,21 +196,6 @@ DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
 %Set the computational grid nodes
 LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
-%%%%%%%%%%%%%%%%%%%%%%%% new way to make the covariance matrix
-constants                                       % load constants
-phi=deg2rad(mean(GRID_REF(:,2)));
-RadiusBjerhammar= EarthMajorAxis*EarthMinorAxis/sqrt((EarthMajorAxis*sin(phi)).^2+(EarthMinorAxis*cos(phi)).^2)*10^3;% Pajama sphere radius.
-
-CCov_tt_int_fun_RTM=precomputeCovarianceFunction('cov_tt',RadiusBjerhammar,COV_PARA.width,COV_PARA.res,sigma2,bestFitCoeff,COV_PARA.N,COV_PARA.M);
-
-% Auto-covariance of potential at DEM points
-ACOVttRTM_lev = interpolateCovarianceFunction(...
-Lev(:,1), Lev(:,2), ...
-RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), ...
-Lev(:,1), Lev(:,2), ...
-RadiusBjerhammar + ZDEM_griddedInterpolant(Lev(:,1), Lev(:,2)), CCov_tt_int_fun_RTM,OUTPUT_PARA,'ACOVttGPSlevelling m^4/s^4',1);
-figure(3)
-imagesc(ACOVttRTM_lev)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %doing the multiplication one row of latitude at a time.
 %Convert degrees to radians
@@ -226,8 +207,8 @@ ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
 LSC_sol=LongDEM*0;
 LSC_solrt=LSC_sol;
 
-%for latCounter=1:length(LongDEM(:,1))
- for latCounter=1:1
+for latCounter=1:length(LongDEM(:,1))
+ %for latCounter=1:1
 
     ACOV_tt_dem=[];
 

@@ -48,4 +48,8 @@ function plotSphericalCovarianceFunction(distanceRad, ...
     % Save figure
     saveas(gcf, filename)
 
+
+    figure
+    imagesc(ACOVtt)
+
 end
