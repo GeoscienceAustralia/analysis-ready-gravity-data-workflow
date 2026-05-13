@@ -1,4 +1,4 @@
-function fig = plotLevellingData(Lon, Lat, Lev, quantityName, plotsFolder)
+function fig = plotLevellingData(Lon, Lat, Lev, climits, quantityName, plotsFolder)
 % plotLevellingData  Plot GPS levelling data on a lon/lat scatter map
 %
 % Inputs:
@@ -11,21 +11,27 @@ function fig = plotLevellingData(Lon, Lat, Lev, quantityName, plotsFolder)
 % Output:
 %   fig           figure handle
 
-    arguments
+   arguments
         Lon (:,1) double
         Lat (:,1) double
         Lev (:,1) double
+        climits
         quantityName {mustBeText}
         plotsFolder {mustBeText} = ""
     end
 
     % --- Robust colour limits (match your Python logic) ---
-    mu  = mean(Lev, 'omitnan');
-    sig = std(Lev,  'omitnan');
-
-    cmin = mu - 2*sig;
-    cmax = mu + 2*sig;
-
+   
+    if isempty(climits)
+            mu  = mean(Lev(:), 'omitnan');
+            sig = std(Lev(:),  'omitnan');
+        
+            cmin = mu - 2*sig;
+            cmax = mu + 2*sig;
+        else
+            cmin = climits(1);
+            cmax = climits(2);
+     end
     % --- Create figure ---
     fig = figure( ...
         'Name', 'GPS Levelling', ...
@@ -65,7 +71,7 @@ function fig = plotLevellingData(Lon, Lat, Lev, quantityName, plotsFolder)
         safeName = regexprep(quantityName, '[^a-zA-Z0-9_-]', '_');
         baseName = fullfile(plotsFolder, "levelling_" + safeName);
 
-        savefig(fig, baseName + ".fig")
+        %savefig(fig, baseName + ".fig")
         exportgraphics(fig, baseName + ".png", 'Resolution', 300)
     end
 

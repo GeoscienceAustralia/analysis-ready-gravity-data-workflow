@@ -1,7 +1,5 @@
-function fig = plotInterpolatedGeometricCorrection( ...
-        Lev, geomGravGeoidDiffDetrended, ...
-        LongDEM, LatDEM, ...
-        GRID_PARA, OUTPUT_PARA, Coastline)
+function fig = plotGridedGeometriCorrection(Zq,LongDEM, LatDEM,climits, ...
+        GRID_PARA, OUTPUT_PARA, Coastline,title)
 % plotInterpolatedGeometricCorrection
 % Interpolates detrended gravity/geoid residuals and plots a mosaic map
 %
@@ -15,30 +13,6 @@ function fig = plotInterpolatedGeometricCorrection( ...
 %
 % Output:
 %   fig                         figure handle
-
-    % --------------------------------------------------------------
-    % Extract coordinates
-    lon = Lev(:,1);
-    lat = Lev(:,2);
-    z   = geomGravGeoidDiffDetrended;
-
-    % --------------------------------------------------------------
-    % Remove invalid values
-    idx = isfinite(lon) & isfinite(lat) & isfinite(z);
-    lon = lon(idx);
-    lat = lat(idx);
-    z   = z(idx);
-
-    % --------------------------------------------------------------
-    % Create interpolant
-    F = scatteredInterpolant( ...
-        lon, lat, z, ...
-        'natural', ...   % interpolation
-        'none');         % no extrapolation
-
-    % Evaluate on DEM grid
-    Zq = F(LongDEM, LatDEM);
-
     % --------------------------------------------------------------
     % Axis limits
     axisLimits.latMeanCosine = abs(cosd(mean([GRID_PARA.MINLAT, GRID_PARA.MAXLAT])));
@@ -49,11 +23,17 @@ function fig = plotInterpolatedGeometricCorrection( ...
 
     % --------------------------------------------------------------
     % Robust colour limits (±2σ)
-    mu  = mean(Zq(:), 'omitnan');
-    sig = std(Zq(:),  'omitnan');
-
-    cmin = mu - 2*sig;
-    cmax = mu + 2*sig;
+    
+    if isempty(climits)
+        mu  = mean(Zq(:), 'omitnan');
+        sig = std(Zq(:),  'omitnan');
+    
+        cmin = mu - 2*sig;
+        cmax = mu + 2*sig;
+    else
+        cmin = climits(1);
+        cmax = climits(2);
+    end
 
     % --------------------------------------------------------------
     % Plot
@@ -70,7 +50,7 @@ function fig = plotInterpolatedGeometricCorrection( ...
     colormap(jet)
     caxis([cmin cmax])
 
-    customizeMap('Geometric correction','m',Coastline,axisLimits)
+    customizeMap(title,'m',Coastline,axisLimits)
 
     % --------------------------------------------------------------
     % Save output
@@ -80,7 +60,7 @@ function fig = plotInterpolatedGeometricCorrection( ...
 
     outName = fullfile( ...
         OUTPUT_PARA.plotsFolder, ...
-        'MosaicTiles_Geometric_correction.png');
+        [title,'.png']);
 
     exportgraphics(fig, outName, 'Resolution', 300)
 

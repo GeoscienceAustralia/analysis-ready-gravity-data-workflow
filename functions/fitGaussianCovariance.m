@@ -1,5 +1,5 @@
 function [sigma2, correlationLength, fittedCovariance] = fitGaussianCovariance( ...
-    sphericalDistance, empiricalCovariance, varargin)
+    sphericalDistance, empiricalCovariance,plotsFolder, varargin)
 % fitGaussianCovariance1
 % Robust Gaussian covariance fit
 %
@@ -138,5 +138,10 @@ function [sigma2, correlationLength, fittedCovariance] = fitGaussianCovariance( 
         ax.YAxis.Exponent = 0;
         ax.YAxis.TickLabelFormat = '%.3f';
     end
+
+    % Save figure
+    filename = fullfile(plotsFolder, ...
+        ['fitGaussianCovariance.png']);
+    saveas(gcf, filename)
 
 end

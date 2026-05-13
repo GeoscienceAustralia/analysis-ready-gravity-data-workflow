@@ -128,9 +128,13 @@ geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));
 
 %geomGravDiff2022=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2));
 
-plotLevellingData(Lev(:,1),Lev(:,2), geomGravDiff,'h-H-AGQG', OUTPUT_PARA.plotsFolder)
+plotLevellingData(Lev(:,1),Lev(:,2), geomGravDiff,[],'h-H-AGQG', OUTPUT_PARA.plotsFolder)
 
 % Remove a tiled plane so the signal is zero mean for the LSC
+
+[plane_params, res_detrended] = remove_tilted_plane_geo(Lev(:,2), Lev(:,3), geomGravDiff); % from pyhton
+
+plotLevellingData(Lev(:,1),Lev(:,2), res_detrended,[-0.3 0.3],'h-H-AGQG Detrended Python', OUTPUT_PARA.plotsFolder)
 
 % Construct the matrix for linear trend removal
 trendMatrix = [Lev(:,1) - mean(Lev(:,1)), Lev(:,2) - mean(Lev(:,2)), ones(size(Lev(:,2)))];
@@ -143,18 +147,14 @@ trendCoefficients = trendMatrix \ geomGravDiff;
 geomGravGeoidDiffDetrended = geomGravDiff - trendMatrix * trendCoefficients;
 %geomGravGeoidDiff2022Detrended = geomGravDiff2022 - trendMatrix * trendCoefficients2022;
 
-plotLevellingData(Lev(:,1),Lev(:,2), geomGravGeoidDiffDetrended,'h-H-AGQG Detrended', OUTPUT_PARA.plotsFolder)
-
-plotInterpolatedGeometricCorrection( ...
-        Lev, geomGravGeoidDiffDetrended, ...
-        LongDEM, LatDEM, ...
-        GRID_PARA, OUTPUT_PARA, Coastline)
+plotLevellingData(Lev(:,1),Lev(:,2), geomGravGeoidDiffDetrended,[-0.3 0.3],'h-H-AGQG Detrended', OUTPUT_PARA.plotsFolder)
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 disp('computing covariance functions')
 
 covarianceInfo=computeSphericalEmpiricalCovariance(Lev(:,1),Lev(:,2),geomGravGeoidDiffDetrended,1);
 
-[sigma2, correlationL, Cfit] = fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2), ...
+[sigma2, correlationL, Cfit] = fitGaussianCovariance(covarianceInfo(:,1),covarianceInfo(:,2),OUTPUT_PARA.plotsFolder, ...
     'anchor_sigma2', false, ...
     'do_plot', true);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,8 +169,8 @@ haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lo
 ACOVtt(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*correlationL.^2));
 end
 
-% Plot covariance function
-plotSphericalCovarianceFunction(haversineDistance, ACOVtt(7252, :), 0*rad2deg(haversineDistance),'m^2','Gaussian Covariance', OUTPUT_PARA.plotsFolder)
+% Plot covariance matrix
+plotCovarianceMatrix(haversineDistance, ACOVtt,'m^2','Gaussian Covariance', OUTPUT_PARA.plotsFolder)
 
 % LSC matrix multiplication 
 % inverse of auto covariance matrix
@@ -197,121 +197,104 @@ DEM_PARA.num_rows=(max(DEM3D(:,2))-min(DEM3D(:,2)))*60+1;
 LongDEM=reshape(DEM3D(:,1),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 LatDEM=reshape(DEM3D(:,2),DEM_PARA.num_cols,DEM_PARA.num_rows)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%doing the multiplication one row of latitude at a time.
-%Convert degrees to radians
-longitudeLongDEMRadian = deg2rad (LongDEM);
-latitudeLatDEMRadian = deg2rad (LatDEM);
 
-ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-   
-LSC_sol=LongDEM*0;
-LSC_solrt=LSC_sol;
+psi_vals = linspace(0, pi/6, 10000);
 
-for latCounter=1:length(LongDEM(:,1))
- %for latCounter=1:1
+C_tt_interp = build_covariance_interpolator_mixed_gaussian(psi_vals, sigma2, correlationL);
 
-    ACOV_tt_dem=[];
+C_tt = evaluate_covariance_block_mixed_gaussian(Lev(:,2), Lev(:,1), Lev(:,2) , Lev(:,1), C_tt_interp);
 
-    for lonCounter=1:length(Lev(:,1))
+% Plot covariance matrix
+plotCovarianceMatrix(haversineDistance, C_tt,'m^2','Gaussian CovariancePyhton', OUTPUT_PARA.plotsFolder)
 
-    haversineDistance=haversine(latitudeLevRadian(lonCounter), longitudeLevRadian(lonCounter),latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:));
-    ACOV_tt_dem(lonCounter,:)=sigma2*exp(-(haversineDistance.^2)/(2*bestFitCoeff.^2));
-    
-    end
+% Solve linear system:
+% rhs = (C_tt + 0.0025 * I) \ res_detrended
+n = numel(geomGravGeoidDiffDetrended);
+rhs = (C_tt + 0.0025 * eye(n)) \ geomGravGeoidDiffDetrended;
 
-    ACOV_tt_dem=ACOV_tt_dem';     
-    LSC_sol(latCounter,:)=ACOV_tt_dem*temporaryVector;
-    disp(latCounter)
-    % Add code to restore the tilt
-    LSC_solrt(:)=LSC_sol(:)+[LongDEM(:)-mean(Lev(:,1)),LatDEM(:)-mean(Lev(:,2)),ones(size(LongDEM(:)))]*trendCoefficients;
-    
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-longitudeLongDEMRadian = deg2rad (LongDEM);
-latitudeLatDEMRadian = deg2rad (LatDEM);
+% Print standard deviations
+fprintf('std(res_detrended - C_tt * rhs) = %.6f\n', ...
+        std(geomGravGeoidDiffDetrended - C_tt * rhs));
 
-ACOV_tt_dem = zeros(size(LongDEM,2),length(Lev(:,1)));
-   
-LSC_sol=LongDEM*0;
-LSC_solrt=LSC_sol;
+fprintf('std(res_detrended) = %.6f\n', ...
+        std(geomGravGeoidDiffDetrended));
 
+% Plot residuals after LSC
+plotLevellingData(Lev(:,1),Lev(:,2), geomGravGeoidDiffDetrended - C_tt * rhs,[-0.3 0.3],'LSC Residual', OUTPUT_PARA.plotsFolder)
 
-nLat = size(LongDEM, 1);
+% Initialise output grid (same shape as lat_grid_potential_restore)
+tt_gp = LatDEM * 0;
 
-for latCounter = 1:1
-    % Vectorized haversine over all Lev points at once (if haversine supports it)
-    D = haversine( ...
-        latitudeLevRadian(:), longitudeLevRadian(:), ...
-        latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
+% Grid size
+[n_rows, n_cols] = size(LongDEM);
 
-    % Build covariance in one go
-    ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
+% Choose a block size (same meaning as Python)
+block_size = 1;   % adjust as needed
 
-    % Ensure correct orientation (depends on haversine output shape)
-    LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
+for i0 = 1:block_size:n_rows
+    fprintf('%d\n', i0);   % equivalent to print(i0)
 
-    disp(latCounter)
-end
+    i1 = min(i0 + block_size - 1, n_rows);
 
+    % Take a block of rows and flatten to 1D for the covariance call
+    lat_block = reshape(LatDEM(i0:i1, :), [], 1);
+    lon_block = reshape(LongDEM(i0:i1, :), [], 1);
 
-parfor latCounter = 1:nLat
+    % Evaluate covariance block
+    Ctt_block = evaluate_covariance_block_mixed_gaussian( ...
+                    lat_block, lon_block, ...
+                    Lev(:,2), Lev(:,1), ...
+                    C_tt_interp );
 
-    % Vectorised haversine over all Lev points
-    D = haversine( ...
-        latitudeLevRadian(:), longitudeLevRadian(:), ...
-        latitudeLatDEMRadian(latCounter,:), longitudeLongDEMRadian(latCounter,:) );
+    % Multiply by solution vector
+    tt_block_flat = Ctt_block * rhs;
 
-    % Build covariance
-    ACOV_tt_dem = sigma2 * exp(-(D.^2) / (2*bestFitCoeff.^2));
-
-    % Store result (sliced output – parfor safe)
-    LSC_sol(latCounter,:) = (ACOV_tt_dem.') * temporaryVector;
-
+    % Reshape back to (n_block_rows x n_cols) and store
+    tt_gp(i0:i1, :) = reshape(tt_block_flat, i1 - i0 + 1, n_cols);
 end
 
-LSC_solrt = LSC_sol(:) + ...
-    [LongDEM(:) - mean(Lev(:,1)), ...
-     LatDEM(:)  - mean(Lev(:,2)), ...
-     ones(size(LongDEM(:)))] * trendCoefficients;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[tt_gp_restored, plane_grid] = restore_tilted_plane_geo( ...
+    LongDEM, ...
+    LatDEM, ...
+    tt_gp, ...
+    plane_params);
+
+plotGridedGeometriCorrection( tt_gp, LongDEM, LatDEM,[-0.3 0.3], ...
+    GRID_PARA, OUTPUT_PARA, Coastline,'Geometric Correction using LSC')
+
+plotGridedGeometriCorrection( tt_gp_restored, LongDEM, LatDEM,[], ...
+    GRID_PARA, OUTPUT_PARA, Coastline,'Geometric Correction with trend using LSC')
+
+% figure
+% imagesc(Ctt_block)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% use matlab generic interpolator
+ % Extract coordinates
+lon = Lev(:,1);
+lat = Lev(:,2);
+z   = geomGravGeoidDiffDetrended;
+
+% --------------------------------------------------------------
+% Remove invalid values
+idx = isfinite(lon) & isfinite(lat) & isfinite(z);
+lon = lon(idx);
+lat = lat(idx);
+z   = z(idx);
+
+% --------------------------------------------------------------
+% Create interpolant
+F = scatteredInterpolant( ...
+    lon, lat, z, ...
+    'natural', ...   % interpolation
+    'none');         % no extrapolation
+
+% Evaluate on DEM grid
+Zq = F(LongDEM, LatDEM);
+
+plotGridedGeometriCorrection( Zq, LongDEM, LatDEM,[-0.3 0.3], ...
+    GRID_PARA, OUTPUT_PARA, Coastline,'Geometric Correction using MATLAB')
 
 
-save([OUTPUT_PARA.Grids_name,'geometricgeoidgg',date,'.mat'],'LongDEM','LatDEM','LSC_solrt','LSC_sol')
-
-fprintf('%f size    gridgeomGravGeoidDiffDetrended\n',size          (LSC_sol));
-fprintf('%f min     gridgeomGravGeoidDiffDetrended\n',min(min       (LSC_sol)));
-fprintf('%f max     gridgeomGravGeoidDiffDetrended\n',max(max       (LSC_sol)));
-fprintf('%f mean    gridgeomGravGeoidDiffDetrended\n',mean(mean     (LSC_sol)));
-fprintf('%f median  gridgeomGravGeoidDiffDetrended\n',median(median (LSC_sol)));
-fprintf('%f std     gridgeomGravGeoidDiffDetrended\n',std(std       (LSC_sol)));
-
-% common variables for plotting
-axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-
-figure('Name','Grid','NumberTitle','off'); 
-clf
-hold on
-imagesc(LongDEM(1,:),LatDEM(:,1),LSC_sol)
-customizeMap('geomGravGeoidDiffDetrended','m',Coastline,axisLimits)
-caxis([-.8 .8])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiffDetrended','.png'])
-
-figure('Name','Grid','NumberTitle','off'); 
-clf
-hold on
-imagesc(LongDEM(1,:),LatDEM(:,1),LSC_solrt)
-customizeMap('geomGravGeoidDiff','m',Coastline,axisLimits)
-caxis([-.8 .8])
-saveas(gcf,[OUTPUT_PARA.plotsFolder,'Grid','geomGravGeoidDiff','.png'])
-
-
-
-
- 
 
 
 

@@ -1,5 +1,5 @@
-function plotSphericalCovarianceFunction(distanceRad, ...
-    covariance, fittedCovariance, covarianceUnit, ...
+function plotCovarianceMatrix(distanceRad, ...
+    covariance, covarianceUnit, ...
     covarianceTitle, outputParameters)
 % plotSphericalCovarianceFunction
 % Plots empirical and fitted spherical covariance functions
@@ -23,33 +23,37 @@ function plotSphericalCovarianceFunction(distanceRad, ...
     grid on
 
     % Plot data
-    plot(distanceDeg, covariance, 'k*', 'DisplayName','Empirical data')
-    plot(distanceDeg, fittedCovariance, 'r-', ...
-        'LineWidth', 1.5, 'DisplayName','Fitted function')
-
+    plot(distanceDeg, covariance(end,:), 'k*')
+    
     % Axes formatting
-    xlabel('Spherical distance in degrees')
-    xlim([0 max(distanceDeg)])
-    ylabel('Covariance (m^2)')
+    xlabel('Spherical distance (degrees)')
+    xlim([0 1.2])
     ylabel(covarianceUnit, 'Interpreter','latex')
     title(covarianceTitle, 'Interpreter','none')
     ax = gca;
     ax.YAxis.Exponent = 0;              % remove ×10^n
     ax.YAxis.TickLabelFormat = '%.3f';  % fixed decimal format
-    legend('Location','best')
-
+    
     drawnow
 
     % Make filename safe
     safeTitle = regexprep(covarianceTitle,'[^\w]','_');
     filename = fullfile(outputParameters, ...
         ['Covariance_', safeTitle, '.png']);
-
     % Save figure
     saveas(gcf, filename)
 
 
-%     figure
-%     imagesc(ACOVtt)
+     figure
+     imagesc(covariance)
+     set(gca,'YDir','normal')
+     colorbar
+     colormap(jet)
+     title(colorbar,covarianceUnit,'FontSize',10);
+     title(covarianceTitle, 'Interpreter','none')
+     % Save figure
+     filename = fullfile(outputParameters, ...
+        ['CovarianceMatrix', safeTitle, '.png']);
+     saveas(gcf,filename)
 
 end
