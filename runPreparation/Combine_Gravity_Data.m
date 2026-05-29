@@ -13,6 +13,7 @@ Grav1=importdata('Data\processedData\AirborneAllMay2026.mat');
 % relative to EGM2008, calculating bias at intersection.
 % Grav3=importdata('AIRBORNE/NSW/Xcalibur_Gravity.mat');
 Grav4=importdata('Data\processedData\Terrestrial_Gravity.mat');
+Grav1(:,5)=1;% uncertainty for airborne gravity, decided on May 2026
 Grav1(:,6)=3;% Flag for airborne gravity
 %% Create output
 % Grav_out=[Longitude,Latitude,Ortho-H,gravity anomaly,uncertainty,flag];
@@ -26,5 +27,7 @@ Out(isnan(Out(:,3)),:)=[];
 %save('Data\processedData\GravityAllPerthSynthetic70sLP1kLines.mat','Out')
 %save('Data\processedData\GravityAllCaravanOtterNSW.mat','Out')
 %save('Data\processedData\GravityAllGippslandCaravanOtterNSW.mat','Out')
+%save('Data\processedData\GravityAllTerrestrialAirborneJuly14.mat','Out')
 save('Data\processedData\GravityAllTerrestrialAirborneMay2026.mat','Out')
+%save('Data\processedData\GravityAllTerrestrialAirborneJuly14amgal.mat','Out')
 disp('Done')

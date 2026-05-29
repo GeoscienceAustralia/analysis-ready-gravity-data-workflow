@@ -56,7 +56,7 @@ DEM_PARA.num_rows=3181;
 GRAV_PARA.filename ='Data\processedData\AirborneAllJuly14.mat';%'Data/processedData/GravityAllTerrestrialAirborneJuly14.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
-GRAV_PARA.Grav_Faye_TypeB = 3;
+GRAV_PARA.Grav_Faye_TypeB = 3;% 1 or 0
 GRAV_PARA.inputGravity_weighting = false; 
 %% Gravity Gradiometry data
 % Add notes here
