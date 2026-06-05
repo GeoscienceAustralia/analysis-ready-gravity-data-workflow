@@ -44,10 +44,10 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
 % WA=[113 129 -36 -14];
-GRID_PARA.MINLONG=124;
-GRID_PARA.MAXLONG=129;
-GRID_PARA.MINLAT=-30;
-GRID_PARA.MAXLAT=-14;
+GRID_PARA.MINLONG=125;%124;
+GRID_PARA.MAXLONG=127;%129;
+GRID_PARA.MINLAT=-21;%-30;
+GRID_PARA.MAXLAT=-19;%-14;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -56,7 +56,7 @@ DEM_PARA.num_rows=3181;
 % First run ./Data/GRAVITY/XXXX/PrepareGravity_XXXXX.m
 % And then /Data/GRAVITY/Combine_Gravity_Data.m
 % this collates all of the gravity and position data into one matlab array.
-GRAV_PARA.filename = 'Data/processedData/GravityAllTerrestrialAirborneJuly14.mat';%Data/processedData/GravityAllTerrestrialAirborneMay2026.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
+GRAV_PARA.filename = 'Data/processedData/GravityAllTerrestrialAirborneMay2026.mat';%Data/processedData/GravityAllTerrestrialAirborneMay2026.mat';%'Data/processedData/GravityAllPerthSynthetic70sLP2kLines.mat';%'Data/processedData/GravityAllVicNSW.mat';
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
 GRAV_PARA.Grav_Faye_TypeB = 3;

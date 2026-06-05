@@ -140,17 +140,17 @@ disp('1/4 ..........................importAndFormatData is running ')
 % Lev(Lev(:,4) == 2, :) = []; %just for Lev131pointsNEXY, reduced form 131
 % to 121, elimination smiley face outlier data
 
-% if GRAV_PARA.inputGravity_weighting 
-% 
-%      load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
-% 
-%      plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
-% 
-%      plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
-% 
-%      plotCustomScatter(fullTopoCorrectedGravityGradient(:,1),fullTopoCorrectedGravityGradient(:,2),fullTopoCorrectedGravityGradient(:,4), GRID_PARA,'Prism Gravity Gradient Effect','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder);
-% 
-% end 
+if GRAV_PARA.inputGravity_weighting 
+
+     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+
+     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+
+     plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
+
+     plotCustomScatter(fullTopoCorrectedGravityGradient(:,1),fullTopoCorrectedGravityGradient(:,2),fullTopoCorrectedGravityGradient(:,4), GRID_PARA,'Prism Gravity Gradient Effect','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder);
+
+end 
 
 if GRAV_PARA.inputGravity_weighting 
      Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
