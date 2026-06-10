@@ -44,10 +44,11 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
 % WA=[113 129 -36 -14];
-GRID_PARA.MINLONG=125;%124;
-GRID_PARA.MAXLONG=127;%129;
-GRID_PARA.MINLAT=-21;%-30;
-GRID_PARA.MAXLAT=-19;%-14;
+%AusNCI=[93 173 -59 -9];
+GRID_PARA.MINLONG=93;%124;
+GRID_PARA.MAXLONG=173;%129;
+GRID_PARA.MINLAT=-59;%-30;
+GRID_PARA.MAXLAT=-9;%-14;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -63,9 +64,9 @@ GRAV_PARA.Grav_Faye_TypeB = 3;
 GRAV_PARA.inputGravity_weighting = true; 
 %% Gravity Gradiometry data
 % Add notes here
-GRAV_GRAD_PARA.filename='Data/GRAVITY_GRAD/OtwayXcalibur.mat ';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
+GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat ';%'Data/GRAVITY_GRAD/OtwayMgalm.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat'
 GRAV_GRAD_PARA.TypeB=10^(-4);% This is a Type B uncertainty value (in mGal/m) which is added to the uncertainty values.
-GRAV_GRAD_PARA.avail=false;
+GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
@@ -80,7 +81,7 @@ COV_PARA.Airbornedataonly=false;%Only use airborne data in establishing Covarian
 COV_PARA.COVPlot=false;% true plots progress, false turns this off.
 %% Topo condensation parameters
 Topo_PARA.Corr=true;% MAKE SURE YOU TURN THIS ON!!!
-Topo_PARA.TopoPlot=true;% true plots progress, false turns this off.
+Topo_PARA.TopoPlot=false;% true plots progress, false turns this off.
 Topo_PARA.Density=2.67;% Assumed density in g/cm^3.
 Topo_PARA.Depth=0;% Condensation layer depth. 0 is on the geoid
 Topo_PARA.Rad=1;% Radius out to which to compute the effects in degress.
@@ -99,10 +100,10 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='AustraliaWAadded';
+outputName='AustraliaJune26';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.Tiles_dir_name=['outputs/ResidualTiles',outputName,'/'];
-OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
+OUTPUT_PARA.PLOT_GRIDS=false;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',date,outputName];
 % If there is a region of interest, for plotting purposes
 OUTPUT_PARA.polygonLon = [];%[147.4 147.4 147.6 147.6 147.4];%marsden%otway[141 141 143 143 141];

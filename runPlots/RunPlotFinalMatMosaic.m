@@ -46,7 +46,7 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 %Aus=[114 154 -44 -10];
 %WA=[114 130 -44 -10];
 GRID_PARA.MINLONG=114;
-GRID_PARA.MAXLONG=130;
+GRID_PARA.MAXLONG=154;
 GRID_PARA.MINLAT=-44;
 GRID_PARA.MAXLAT=-10;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
@@ -100,7 +100,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='AustraliaWAadded';
+outputName='AustraliaWAmgal';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -153,7 +153,7 @@ if GRAV_PARA.inputGravity_weighting
 end 
 
 if GRAV_PARA.inputGravity_weighting 
-     Gravo = weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
+     weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
 end
 
 % read final matfiles
