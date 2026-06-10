@@ -43,12 +43,13 @@ GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value i
 % NENSW=[153 154 -29 -28];
 % vic=[140 154 -39 -33];
 % NSW=[140 154 -38 -27];
-% WA=[113 129 -36 -14];
+% WA=[114 129 -36 -14];
 %AusNCI=[93 173 -59 -9];
-GRID_PARA.MINLONG=93;%124;
-GRID_PARA.MAXLONG=173;%129;
-GRID_PARA.MINLAT=-59;%-30;
-GRID_PARA.MAXLAT=-9;%-14;
+%Aus=[114 154 -44 -10];
+GRID_PARA.MINLONG=114;%124;
+GRID_PARA.MAXLONG=129;%129;
+GRID_PARA.MINLAT=-36;%-30;
+GRID_PARA.MAXLAT=-14;%-14;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -125,7 +126,7 @@ diary(['outputs/Grids',outputName,'/',date,outputName,'.txt']);% start recording
 disp('1/4 ..........................importAndFormatData is running ')
 [Gravo,gravGradFiltered,DEM_data,ZDEM_griddedInterpolant,LongDEM,LatDEM,...
  GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,Lev,...
- REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatData...
+ REFERENCE_Zeta_griddedInterpolant,GRID_REF,Coastline,DEM_PARA]=importAndFormatDataFocusedDEM...
  (GRID_PARA,DEM_PARA,GRAV_PARA,Topo_PARA,COAST_PARA,LEVELLING_PARA,GGM_PARA,GRAV_GRAD_PARA);
 
 if OUTPUT_PARA.PLOT_GRIDS

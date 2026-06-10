@@ -100,7 +100,7 @@ LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are 
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='AustraliaWAmgal';
+outputName='AustraliaJune26';
 plotName='';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
@@ -144,7 +144,7 @@ if GRAV_PARA.inputGravity_weighting
 
      load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
 
-     plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+     %plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
 
      plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
 
@@ -152,9 +152,9 @@ if GRAV_PARA.inputGravity_weighting
 
 end 
 
-if GRAV_PARA.inputGravity_weighting 
-     weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-end
+% if GRAV_PARA.inputGravity_weighting 
+%      weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
+% end
 
 % read final matfiles
 
