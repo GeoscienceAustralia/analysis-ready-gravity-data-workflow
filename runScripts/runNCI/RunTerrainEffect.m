@@ -1,4 +1,4 @@
-function RunMainScript(varargin)
+function RunTerrainEffect(varargin)
 % RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.
 %               The process involves sequence of "remove-predict-restore" operations, where the Global
 %               Gravity Model (GGM) and topographic effects are removed, a geoid is predicted (here with LSC),
