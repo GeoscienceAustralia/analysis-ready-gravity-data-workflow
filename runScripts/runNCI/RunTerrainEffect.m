@@ -328,7 +328,7 @@ disp('2/2 ..........................computeTerrainEffect is running')
         computeFullTerrainEffects(GRID_PARA, Topo_PARA, Gravo, gravGradFiltered, GGM_Gravity_griddedInterpolant, DEM_data, ZDEM_griddedInterpolant, ...
         LongDEM, LatDEM, Coastline, OUTPUT_PARA.plotsFolder);
 
-save([OUTPUT_PARA.Tiles_dir_name,'/TerainEfect',num2str(GRID_PARA.MINLONG),'_',num2str(abs(GRID_PARA.MINLAT)),'.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient')
+save([OUTPUT_PARA.Grids_name, 'terrainEffects','.mat'], 'fullTopoCorrectedGravityPoint', 'longwaveTopo_griddedInterpolant', 'fullTopo_griddedInterpolant', 'fullTopoCorrectedGravityGradient');
 
 function helptext
 str={' RunMainScript computes regional gravimetric geoids using gravity observations from gravity anomalies.'

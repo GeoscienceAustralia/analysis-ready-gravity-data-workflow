@@ -39,16 +39,16 @@ GRID_PARA.filterSize=15;% filter size for spatial grid weight, this value is fro
 GRID_PARA.filterRadius=10; % filter radius for spatial grid weight, this value is from experiment for tiles of one degree
 % Grid extents - ensure these values are in GRID_PARA.STEP degree value increments.
 % Boundary for computation
+%WA=[114 130 -44 -10];
 %Adelaid=[137 140 -36 -33.5]
 %Victoria=[141 150 -39 -34]
 %NSW=[141 153 -37 -29]
 %AusNCI=[93 173 -59 -9];
 %Aus=[114 154 -44 -10];
-%WA=[114 130 -44 -10];
-GRID_PARA.MINLONG=114;
-GRID_PARA.MAXLONG=154;
-GRID_PARA.MINLAT=-44;
-GRID_PARA.MAXLAT=-10;
+GRID_PARA.MINLONG=141;
+GRID_PARA.MAXLONG=150;
+GRID_PARA.MINLAT=-39;
+GRID_PARA.MAXLAT=-34;
 %% DEM data - N.B. the dem is used to specify the grid nodes.
 DEM_PARA.filename='Data/DEM/AUSDEM1min.xyz';
 DEM_PARA.num_cols=4861;
@@ -60,8 +60,8 @@ DEM_PARA.num_rows=3181;
 GRAV_PARA.filename ='Data\processedData\GravityAllTerrestrialAirborneMay2026.mat';%GravityAllTerrestrialAirborneJuly14.mat
 GRAV_PARA.filename1 = [];%'Data/GRAVITY/Xcalibur_Gravity.mat';% gravity from gradiometry
 GRAV_PARA.TypeB = 1;% This is a Type B uncertainty value (in mGal) which is added to the uncertainty values.
-GRAV_PARA.Grav_Faye_TypeB = 3;
-GRAV_PARA.inputGravity_weighting = true; 
+GRAV_PARA.Grav_Faye_TypeB = 1;
+GRAV_PARA.inputGravity_weighting = false; 
 %% Gravity Gradiometry data
 % Add notes here
 GRAV_GRAD_PARA.filename='Data/processedData/OtwayXcalibur.mat';%'Data/GRAVITY_GRAD/Xcalibur_FVD_GDD.mat''Data/GRAVITY_GRAD/OtwayMgalm.mat';
@@ -70,7 +70,7 @@ GRAV_GRAD_PARA.avail=true;
 %% Covariance function parameters
 COV_PARA.Compute_Empircal_COV_Dec=3; % Decimation factor for empirical covariance estimates. e.g. 1 is no decimation, 2 drops 50% of the data etc. see sph_empcov for logic.
 COV_PARA.Fit_Empircal_COV='auto';%'auto';% process to fit covariance N & M function values 'man' for manual to fit them on the cmd line or 'auto' , '' to just use what you supply here.
-COV_PARA.FitEmpiricalCOVNSearch=[21600,1,21600];%10800 is not working:speckelly pattern% Start, step, stop parameter sweep values for N parameter - if auto
+COV_PARA.FitEmpiricalCOVNSearch=[21600,1,21600];%[43200,1,43200];%[21600,1,21600];%10800 is not working:speckelly pattern% Start, step, stop parameter sweep values for N parameter - if auto
 COV_PARA.FitEmpiricalCOVMSearch=[200,20,300];% Start, step, stop parameter sweep values for M parameter - if auto
 COV_PARA.N=10800;% max Legender polynonial of cov func. 
 COV_PARA.M=200;% min Legender polynonial of cov func. 
@@ -94,30 +94,32 @@ GGM_PARA.filename='Data/GGM/GOCE_For_Gridded_Int.mat';%'Data/GGM/EGM2008_For_Gri
 COAST_PARA.filename='Data/COASTLINE/CoastAus.mat';
 %% Levelling data comparisons
 LEVELLING_PARA.Lev_eval=true;% If true, the levelling data are compared to the geoid as its computed.
-LEVELLING_PARA.filename='Data/GPS_LEVELLING/CARS2009zeta7301.mat';%CARS2009zeta7301.mat%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
+LEVELLING_PARA.filename='Data/GPS_LEVELLING/AHDzeta7319.mat';%CARS2009zeta7301.mat%AHDzeta7319.mat';%8749 points,'Data/GPS_LEVELLING/Lev_CARS.mat';% The format of these data needs to be an array with rows [Long,Lat,h-H].
 LEVELLING_PARA.Plot_Stats=true;% If true, the levelling data are compared to the geoid as its computed.
 LEVELLING_PARA.Compare_To_Existing_Model=true;% If true, the levelling data are also compared to another existing geoid as its computed.
 LEVELLING_PARA.Existing_Model='Data/EXISTING_GEOID_MODELS/AGQG20221120.mat';% File location of the existing model.
 LEVELLING_PARA.max_diff=0.15;% Threshold for an outlier with the GNSS-levelling
 %% Output
-outputName='AustraliaJune26';
-plotName='';
+outputName='TypeB';
+plotName='Vichigh';
 OUTPUT_PARA.Grids_name=['outputs/Grids',outputName,'/'];
 OUTPUT_PARA.PLOT_GRIDS=true;% A gridded solution is plotted and output as well as the tiles.
 OUTPUT_PARA.plotsFolder=['outputs/Grids',outputName,'/',plotName];
 % If there is a region of interest, for plotting purposes
 %AdelaidLon=[137.5 137.5 139.5 139.5 137.5];
 %AdelaidLat=[-34 -35.5 -35.5 -34 -34];
-%VicLon=[144.5 144.5 150 150 144.5];
-%VicLat=[-36.5 -39 -39 -36.5 -36.5];
+% VicLon=[144.5 144.5 150 150 144.5];
+% VicLat=[-36.5 -39 -39 -36.5 -36.5];
+VicLon=[146 146 149 149 146];
+VicLat=[-36.5 -38 -38 -36.5 -36.5];
 %otwayLon=[141 141 143 143 141];
 %otwayLat=[-37 -38.5 -39 -37.5 -37];
 %NSWinLon=[141 141 147 150 141];
 %NSWinLat=[-29 -34 -36 -29 -29];
 %NSWoutLon=[150 147.5 150 153.5 150];
 %NSWoutLat=[-29 -36.5   -37.5   -29   -29];
-OUTPUT_PARA.polygonLon = [];
-OUTPUT_PARA.polygonLat = [];
+OUTPUT_PARA.polygonLon = VicLon;
+OUTPUT_PARA.polygonLat = VicLat;
 % Keep the computer awake
 keepawake=true;% Setting this to true wiggles the mouse every so often so the compute doesnt go to sleep.
 
@@ -142,101 +144,58 @@ disp('1/4 ..........................importAndFormatData is running ')
 
 if GRAV_PARA.inputGravity_weighting 
 
-     load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
+    plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data);
 
-     %plotInputData(Gravo,gravGradFiltered,Coastline,GRID_PARA,OUTPUT_PARA,DEM_data)
+    weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);% seperates gravity data for plotting
 
-     plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
+    plotGGMfunctionals(GRID_PARA,GRAV_GRAD_PARA,OUTPUT_PARA,Gravo,gravGradFiltered,LongDEM,LatDEM, ...
+           GGM_Gravity_griddedInterpolant,GGM_Zeta_griddedInterpolant,ZDEM_griddedInterpolant,Coastline)
 
-     plotCustomScatter(fullTopoCorrectedGravityGradient(:,1),fullTopoCorrectedGravityGradient(:,2),fullTopoCorrectedGravityGradient(:,4), GRID_PARA,'Prism Gravity Gradient Effect','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder);
+    load([OUTPUT_PARA.Grids_name,'terrainEffects.mat']);
 
-end 
+    plotCustomScatter(fullTopoCorrectedGravityPoint(:,1),fullTopoCorrectedGravityPoint(:,2),fullTopoCorrectedGravityPoint(:,4), GRID_PARA,'Prism Gravity Effect','mGal',Coastline,[],OUTPUT_PARA.plotsFolder);
 
-% if GRAV_PARA.inputGravity_weighting 
-%      weightInputGravity(Gravo,Coastline,GRID_PARA,OUTPUT_PARA);
-% end
+    plotCustomScatter(fullTopoCorrectedGravityGradient(:,1),fullTopoCorrectedGravityGradient(:,2),fullTopoCorrectedGravityGradient(:,4), GRID_PARA,'Prism Gravity Gradient Effect','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder);
+ end 
 
 % read final matfiles
 
-% dateCreated ='15-Apr-2026';
-% 
-% covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
-% 
-% load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
-% 
-% load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',dateCreated,'.mat'])
-% 
-% load([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',dateCreated,'.mat'])
-% 
-% load([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',dateCreated,'.mat'])
-% 
-% load([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',dateCreated,'.mat'])
-% 
-% ZDeg=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
-% 
-% resAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
-% 
-% Geoid_temp=double(Grid_res_geoid_w+GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0));
-%        
-% geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1:1,:)',Geoid_temp(end:-1:1,:)');
-%     
-% geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
-%     
-% geomRefAGQGDiff=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
-% 
-% plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
-% Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
-% 
-% DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
-%     Grid_res_geoid_err_w,OUTPUT_PARA);
-% 
-% plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
+dateCreated ='19-Jun-2026';
+
+covParameters=load([OUTPUT_PARA.Grids_name,'covParameters',dateCreated,'.mat']);
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_geoid_err_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_err_w',dateCreated,'.mat'])
+
+load([OUTPUT_PARA.Grids_name,'Grid_res_grav_Bouguer_w',dateCreated,'.mat'])
+
+ZDeg=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0)));
+
+resAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
+
+Geoid_temp=double(Grid_res_geoid_w+GGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0));
+       
+geoidLSCgriddedInterpolant=griddedInterpolant(LongDEM(end:-1:1,:)',LatDEM(end:-1:1,:)',Geoid_temp(end:-1:1,:)');
+    
+geomGravDiff=Lev(:,3)-geoidLSCgriddedInterpolant(Lev(:,1),Lev(:,2));  
+    
+geomRefAGQGDiff=Lev(:,3)-REFERENCE_Zeta_griddedInterpolant(Lev(:,1),Lev(:,2)); 
+
+plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,resAGQG,ZDeg,Lev,geomGravDiff, geomRefAGQGDiff, ...
+Grid_res_geoid_err_w,Grid_res_grav_w,Grid_res_grav_Bouguer_w,Grid_res_grav_err_w,OUTPUT_PARA.plotsFolder)
+
+DisplayAreaStatistics(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w, ...
+    Grid_res_geoid_err_w,OUTPUT_PARA);
+
+plotCovParameters(covParameters,GRID_PARA,Coastline,OUTPUT_PARA.plotsFolder);
 
 %plotKmeanGPS(Lev,geomGravDiff,geomRefAGQGDiff,Coastline,GRID_PARA,OUTPUT_PARA.plotsFolder);
 
-
-
-% EGM_PARA.filename='Data/GGM/EGM2008_For_Gridded_Int.mat';
-% 
-% EGM=importdata(EGM_PARA.filename);
-% 
-% EGM_Zeta_griddedInterpolant=griddedInterpolant(EGM.x,EGM.y,EGM.z,EGM.zeta);
-% 
-% EGM_ZetaonDEM=EGM_Zeta_griddedInterpolant(LongDEM,-LatDEM,LatDEM*0);
-% 
-% ZDegEGM=mean(mean(REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_ZetaonDEM));
-% 
-% EGMresAGQG=REFERENCE_Zeta_griddedInterpolant(LongDEM,LatDEM)-EGM_ZetaonDEM;
-% 
-% ZDegEGMLSCAGQG=mean(mean(Grid_res_geoid_w-EGM_ZetaonDEM));
-% 
-% EGMresLSCAGQG=Grid_res_geoid_w-EGM_ZetaonDEM;
-% 
-% % common variables for plotting
-% axisLimits.latMeanCosine=abs(cos(deg2rad(mean([GRID_PARA.MINLAT GRID_PARA.MAXLAT]))));
-% axisLimits.lonMinLimit=GRID_PARA.MINLONG-GRID_PARA.buffer;
-% axisLimits.lonMaxLimit=GRID_PARA.MAXLONG+GRID_PARA.buffer;
-% axisLimits.latMinLimit=GRID_PARA.MINLAT-GRID_PARA.buffer;
-% axisLimits.latMaxLimit=GRID_PARA.MAXLAT+GRID_PARA.buffer;
-% 
-% % plot residualGeoidvsAGQG
-% figure('Name','MosaicTiles','NumberTitle','off'); 
-% clf
-% subplot(1,2,1);
-% hold on
-% imagesc(LongDEM(1,:),LatDEM(:,1),EGMresLSCAGQG-ZDegEGMLSCAGQG)
-% customizeMap('ResEGM2008 LSC AGQG','m',Coastline,axisLimits)
-% caxis([-0.1 0.1])
-%  
-% subplot(1,2,2);
-% %figure
-% hold on
-% imagesc(LongDEM(1,:),LatDEM(:,1),EGMresAGQG-ZDegEGM)
-% customizeMap('ResEGM2008 2022 AGQG','m',Coastline,axisLimits) 
-% caxis([-0.1 0.1])
-% saveas(gcf,[OUTPUT_PARA.plotsFolder,'MosaicTiles','EGM2008residualLSCvs2022AGQG','.png']) 
-% 
-% diary off
 
 
 
