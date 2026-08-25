@@ -11,18 +11,19 @@ function plotMosaicTiles(Coastline,GRID_PARA,LongDEM,LatDEM,Grid_res_geoid_w,res
     % plot residualGeoidvsAGQG
     figure('Name','MosaicTiles','NumberTitle','off'); 
     clf
-    subplot(1,2,1);
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),Grid_res_geoid_w)
     customizeMap('Residual LSC AGQG','m',Coastline,axisLimits)
     caxis([-0.5 0.5])
-     
-    subplot(1,2,2);
+    saveas(gcf,[plotsFolder,'MosaicTiles','residualLSC','.png']) 
+
+    figure('Name','MosaicTiles','NumberTitle','off'); 
+    clf 
     hold on
     imagesc(LongDEM(1,:),LatDEM(:,1),resAGQG-ZDeg)
     customizeMap('Residual 2022 AGQG','m',Coastline,axisLimits) 
     caxis([-0.5 0.5])
-    saveas(gcf,[plotsFolder,'MosaicTiles','residualLSCvs2022AGQG','.png']) 
+    saveas(gcf,[plotsFolder,'MosaicTiles','2022AGQG','.png']) 
 
     % plot GPSlevelling
     plotGPSlevelling(Coastline,GRID_PARA,Lev,geoGravGeoidDiff, geoRefGravGeoidDiff,plotsFolder)

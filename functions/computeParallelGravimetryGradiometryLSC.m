@@ -48,7 +48,7 @@ Grav(:,4) = Grav(:,4) - GGM_Gravity;
 
 if OUTPUT_PARA.PLOT_GRIDS
     plotCustomScatter(Grav(:,1),Grav(:,2),GGM_Gravity,GRID_PARA,'GGMgravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
-    plotCustomScatter(Grav(:,1),Grav(:,2),Grav(:,4),GRID_PARA,'GGMreferencedGravity','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
+    plotCustomScatter(Grav(:,1),Grav(:,2),Grav(:,4),GRID_PARA,'GGMreferencedGravityTerrainCorrected','mGal',Coastline,[],OUTPUT_PARA.plotsFolder)
 end
 
 if GRAV_GRAD_PARA.avail
@@ -61,7 +61,7 @@ if GRAV_GRAD_PARA.avail
 
     if OUTPUT_PARA.PLOT_GRIDS
         plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),GGM_GravityGradient,GRID_PARA,'GGMgravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
-        plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),Grav_grad(:,4),GRID_PARA,'GGMreferencedGravityGradient','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
+        plotCustomScatter(Grav_grad(:,1),Grav_grad(:,2),Grav_grad(:,4),GRID_PARA,'GGMreferencedGravityGradientTerrainCorrected','mGal/m',Coastline,[],OUTPUT_PARA.plotsFolder)
     end
 end
 lat_range = GRID_PARA.MAXLAT:-GRID_PARA.STEP:GRID_PARA.MINLAT;

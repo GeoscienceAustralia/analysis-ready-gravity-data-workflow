@@ -1,4 +1,4 @@
-function gravity6D = weightInputGravity(gravity6D,Coastline,GRID_PARA,OUTPUT_PARA)
+function weightInputGravity(gravity6D,Coastline,GRID_PARA,OUTPUT_PARA)
 
     % plot gravity data with different source
     
